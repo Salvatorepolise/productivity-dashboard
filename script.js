@@ -38,7 +38,6 @@ habits.forEach((habit) => {
   });
 });
 
-// Notes (se scrivo note sul sito rimangono salvate in locale)
 const notesTextarea = document.getElementById("notes");
 
 const savedNotes = localStorage.getItem("notes");
@@ -50,4 +49,57 @@ notesTextarea.addEventListener("input", () => {
   localStorage.setItem("notes", notesTextarea.value);
 });
 
+function updateProgress() {
+  const checkboxes = document.querySelectorAll(
+    `#habits input[type="checkbox"]`,
+  );
+  let completed = 0;
+
+  checkboxes.forEach((checkbox) => {
+    if (checkbox.checked) {
+      completed++;
+    }
+  });
+
+  const progressText = document.getElementById("progress-text");
+  progressText.textContent = `Progress: ${completed}/4 completed`;
+}
+
+// Daily Coding Goal section
+
+const goalMinutes = 60;
+const todayInput = document.getElementById("today-input");
+const goalEl = document.getElementById("goal-minutes");
+const statusEl = document.getElementById("goal-status");
+const progressBar = document.getElementById("progress-bar");
+
+const savedMinutes = localStorage.getItem("todayMinutes");
+if (savedMinutes !== null) {
+  todayInput.value = savedMinutes;
+}
+
+function updateCodingGoal() {
+  const todayMinutes = Number(todayInput.value) || 0;
+
+  goalEl.textContent = goalMinutes;
+
+  const percentage = Math.min((todayMinutes / goalMinutes) * 100, 100);
+  progressBar.style.width = percentage + "%";
+
+  if (todayMinutes >= goalMinutes) {
+    statusEl.textContent = "Goal completed ✓";
+    statusEl.style.color = "#16a34a";
+  } else {
+    statusEl.textContent = "Not completed yet";
+    statusEl.style.color = "#a1a1aa";
+  }
+}
+
+todayInput.addEventListener("input", () => {
+  localStorage.setItem("todayMinutes", todayInput.value);
+  updateCodingGoal();
+});
+
+updateCodingGoal();
+updateProgress();
 renderGoals();

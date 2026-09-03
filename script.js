@@ -100,6 +100,50 @@ todayInput.addEventListener("input", () => {
   updateCodingGoal();
 });
 
+// Daily coding tracker
+
+const codingMinutesInput = document.getElementById("coding-minutes");
+const dailyGoalInput = document.getElementById("daily-goal");
+const checkGoalBtn = document.getElementById("check-goal-btn");
+const goalResult = document.getElementById("goal-result");
+const goalSummary = document.getElementById("goal-summary");
+
+function checkGoal() {
+  const codingMinutes = Number(codingMinutesInput.value) || 0;
+  const dailyGoal = Number(dailyGoalInput.value) || 60;
+
+  goalSummary.textContent = `${codingMinutes} / ${dailyGoal} minutes`;
+
+  if (codingMinutes >= dailyGoal) {
+    goalResult.textContent = "Goal reached ✅";
+    goalResult.style.color = "#16a34a";
+  } else {
+    goalResult.textContent = "Goal not reached ❌";
+    goalResult.style.color = "#dc2626";
+  }
+}
+
+checkGoalBtn.addEventListener("click", checkGoal);
+
+const savedCodingMinutes = localStorage.getItem("codingMinutes");
+const savedDailyGoal = localStorage.getItem("dailyGoal");
+
+if (savedCodingMinutes !== null) {
+  codingMinutesInput.value = savedCodingMinutes;
+}
+if (savedDailyGoal !== null) {
+  dailyGoalInput.value = savedDailyGoal;
+}
+
+codingMinutesInput.addEventListener("input", () => {
+  localStorage.setItem("codingMinutes", codingMinutesInput.value);
+});
+
+dailyGoalInput.addEventListener("input", () => {
+  localStorage.setItem("dailyGoal", dailyGoalInput.value);
+});
+
+checkGoal();
 updateCodingGoal();
 updateProgress();
 renderGoals();

@@ -12,6 +12,8 @@ const goals = [
 ];
 
 const goalsList = document.getElementById("goals-list");
+const newGoalInput = document.getElementById("new-goal-input");
+const addGoalBtn = document.getElementById("add-goal-btn");
 
 function renderGoals() {
   goalsList.innerHTML = "";
@@ -23,6 +25,25 @@ function renderGoals() {
   });
 }
 
+function addGoal() {
+  const goalText = newGoalInput.value.trim();
+
+  if (goalText === "") return;
+
+  goals.push(goalText);
+  renderGoals();
+  newGoalInput.value = "";
+}
+
+addGoalBtn.addEventListener("click", addGoal);
+
+newGoalInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    addGoal();
+  }
+});
+
+// ===== HABITS =====
 const habits = ["english", "coding", "reading", "exercise"];
 
 habits.forEach((habit) => {
@@ -35,18 +56,8 @@ habits.forEach((habit) => {
 
   checkbox.addEventListener("change", () => {
     localStorage.setItem(`habit-${habit}`, checkbox.checked);
+    updateProgress();
   });
-});
-
-const notesTextarea = document.getElementById("notes");
-
-const savedNotes = localStorage.getItem("notes");
-if (savedNotes) {
-  notesTextarea.value = savedNotes;
-}
-
-notesTextarea.addEventListener("input", () => {
-  localStorage.setItem("notes", notesTextarea.value);
 });
 
 function updateProgress() {
@@ -56,17 +67,24 @@ function updateProgress() {
   let completed = 0;
 
   checkboxes.forEach((checkbox) => {
-    if (checkbox.checked) {
-      completed++;
-    }
+    if (checkbox.checked) completed++;
   });
 
   const progressText = document.getElementById("progress-text");
   progressText.textContent = `Progress: ${completed}/4 completed`;
 }
 
-// Daily Coding Goal section
+// ===== NOTES =====
+const notesTextarea = document.getElementById("notes");
+const savedNotes = localStorage.getItem("notes");
+if (savedNotes) {
+  notesTextarea.value = savedNotes;
+}
+notesTextarea.addEventListener("input", () => {
+  localStorage.setItem("notes", notesTextarea.value);
+});
 
+// ===== DAILY CODING GOAL =====
 const goalMinutes = 60;
 const todayInput = document.getElementById("today-input");
 const goalEl = document.getElementById("goal-minutes");
@@ -80,7 +98,6 @@ if (savedMinutes !== null) {
 
 function updateCodingGoal() {
   const todayMinutes = Number(todayInput.value) || 0;
-
   goalEl.textContent = goalMinutes;
 
   const percentage = Math.min((todayMinutes / goalMinutes) * 100, 100);
@@ -100,8 +117,7 @@ todayInput.addEventListener("input", () => {
   updateCodingGoal();
 });
 
-// Daily coding tracker
-
+// ===== DAILY CODING TRACKER =====
 const codingMinutesInput = document.getElementById("coding-minutes");
 const dailyGoalInput = document.getElementById("daily-goal");
 const checkGoalBtn = document.getElementById("check-goal-btn");
@@ -128,21 +144,17 @@ checkGoalBtn.addEventListener("click", checkGoal);
 const savedCodingMinutes = localStorage.getItem("codingMinutes");
 const savedDailyGoal = localStorage.getItem("dailyGoal");
 
-if (savedCodingMinutes !== null) {
-  codingMinutesInput.value = savedCodingMinutes;
-}
-if (savedDailyGoal !== null) {
-  dailyGoalInput.value = savedDailyGoal;
-}
+if (savedCodingMinutes !== null) codingMinutesInput.value = savedCodingMinutes;
+if (savedDailyGoal !== null) dailyGoalInput.value = savedDailyGoal;
 
 codingMinutesInput.addEventListener("input", () => {
   localStorage.setItem("codingMinutes", codingMinutesInput.value);
 });
-
 dailyGoalInput.addEventListener("input", () => {
   localStorage.setItem("dailyGoal", dailyGoalInput.value);
 });
 
+// ===== INIT =====
 checkGoal();
 updateCodingGoal();
 updateProgress();

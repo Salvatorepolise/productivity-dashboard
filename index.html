@@ -3,27 +3,33 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Day 1 - Productivity Dashboard</title>
+    <title>Productivity Dashboard</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <h1>Personal Productivity Dashboard</h1>
 
     <section>
-      <h2>Today's Goals</h2>
-      <ul id="goals-list"></ul>
-    </section>
+<section>
+  <h2>Today's Goals</h2>
+
+  <div style="margin-bottom: 12px;">
+    <input type="text" id="new-goal-input" placeholder="Write a new goal..." />
+    <button id="add-goal-btn">Add Goal</button>
+  </div>
+
+  <ul id="goals-list"></ul>
+</section>
 
     <section>
       <h2>Habit Tracker</h2>
       <div id="habits">
-        <label> <input type="checkbox" id="habit-english" /> English </label>
-        <br />
-        <label> <input type="checkbox" id="habit-coding" /> Coding </label>
-        <br />
-        <label> <input type="checkbox" id="habit-reading" /> Reading </label>
-        <br />
-        <label> <input type="checkbox" id="habit-exercise" /> Exercise </label>
+        <label><input type="checkbox" id="habit-english" /> English</label
+        ><br />
+        <label><input type="checkbox" id="habit-coding" /> Coding</label><br />
+        <label><input type="checkbox" id="habit-reading" /> Reading</label
+        ><br />
+        <label><input type="checkbox" id="habit-exercise" /> Exercise</label>
       </div>
       <br />
       <p id="progress-text">Progress: 0/4 completed</p>
@@ -31,7 +37,6 @@
 
     <section>
       <h2>Daily Coding Goal</h2>
-
       <p>Goal: <strong id="goal-minutes">60</strong> minutes</p>
       <p>
         Today:
@@ -44,41 +49,35 @@
         />
         minutes
       </p>
-
       <div class="progress-bar-container">
         <div class="progress-bar" id="progress-bar"></div>
       </div>
-
       <p id="goal-status">Not completed yet</p>
     </section>
 
     <section>
       <h2>Daily Coding Tracker</h2>
-
       <div>
         <label>
           Coding minutes today:
           <input type="number" id="coding-minutes" min="0" value="0" />
         </label>
       </div>
-
       <div style="margin-top: 10px">
         <label>
           Daily goal:
           <input type="number" id="daily-goal" min="1" value="60" />
         </label>
       </div>
-
       <button id="check-goal-btn" style="margin-top: 15px">Check Goal</button>
-
       <p id="goal-result" style="margin-top: 15px; font-weight: bold"></p>
       <p id="goal-summary"></p>
     </section>
 
     <section>
       <h2>Challenge</h2>
-      <p>Day 2</p>
-      <p>September 2, 2026</p>
+      <p>Day 4</p>
+      <p>September 4, 2026</p>
       <p>MRR: $0</p>
     </section>
 

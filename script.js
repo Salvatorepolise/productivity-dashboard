@@ -27,7 +27,6 @@ function renderGoals() {
 
 function addGoal() {
   const goalText = newGoalInput.value.trim();
-
   if (goalText === "") return;
 
   goals.push(goalText);
@@ -38,31 +37,50 @@ function addGoal() {
 addGoalBtn.addEventListener("click", addGoal);
 
 newGoalInput.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
-    addGoal();
-  }
+  if (e.key === "Enter") addGoal();
 });
 
-// ===== HABITS =====
-const habits = ["english", "coding", "reading", "exercise"];
+// ===== HABITS (DINAMICI) =====
+const habitsData = [
+  { id: "english", name: "English" },
+  { id: "coding", name: "Coding" },
+  { id: "reading", name: "Reading" },
+  { id: "exercise", name: "Exercise" },
+];
 
-habits.forEach((habit) => {
-  const checkbox = document.getElementById(`habit-${habit}`);
+function renderHabits() {
+  const habitsContainer = document.getElementById("habits");
+  habitsContainer.innerHTML = "";
 
-  const saved = localStorage.getItem(`habit-${habit}`);
-  if (saved === "true") {
-    checkbox.checked = true;
-  }
+  habitsData.forEach((habit) => {
+    const label = document.createElement("label");
 
-  checkbox.addEventListener("change", () => {
-    localStorage.setItem(`habit-${habit}`, checkbox.checked);
-    updateProgress();
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.id = `habit-${habit.id}`;
+
+    // Carica stato salvato
+    const saved = localStorage.getItem(`habit-${habit.id}`);
+    if (saved === "true") {
+      checkbox.checked = true;
+    }
+
+    checkbox.addEventListener("change", () => {
+      localStorage.setItem(`habit-${habit.id}`, checkbox.checked);
+      updateProgress();
+    });
+
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(" " + habit.name));
+
+    habitsContainer.appendChild(label);
+    habitsContainer.appendChild(document.createElement("br"));
   });
-});
+}
 
 function updateProgress() {
   const checkboxes = document.querySelectorAll(
-    `#habits input[type="checkbox"]`,
+    "#habits input[type='checkbox']",
   );
   let completed = 0;
 
@@ -70,8 +88,16 @@ function updateProgress() {
     if (checkbox.checked) completed++;
   });
 
+  const total = checkboxes.length || 4;
   const progressText = document.getElementById("progress-text");
-  progressText.textContent = `Progress: ${completed}/4 completed`;
+  progressText.textContent = `Progress: ${completed}/${total} completed`;
+
+  // Progress bar bonus
+  const habitsProgressBar = document.getElementById("habits-progress-bar");
+  if (habitsProgressBar) {
+    const percentage = total === 0 ? 0 : (completed / total) * 100;
+    habitsProgressBar.style.width = percentage + "%";
+  }
 }
 
 // ===== NOTES =====
@@ -155,7 +181,8 @@ dailyGoalInput.addEventListener("input", () => {
 });
 
 // ===== INIT =====
+renderHabits();
+updateProgress();
 checkGoal();
 updateCodingGoal();
-updateProgress();
 renderGoals();

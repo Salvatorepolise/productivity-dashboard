@@ -40,13 +40,19 @@ newGoalInput.addEventListener("keypress", (e) => {
   if (e.key === "Enter") addGoal();
 });
 
-// ===== HABITS (DINAMICI) =====
-const habitsData = [
-  { id: "english", name: "English" },
-  { id: "coding", name: "Coding" },
-  { id: "reading", name: "Reading" },
-  { id: "exercise", name: "Exercise" },
+// ===== HABITS (STATE + LOCAL STORAGE) =====
+let habitsData = [
+  { id: "english", name: "English", completed: false },
+  { id: "coding", name: "Coding", completed: false },
+  { id: "reading", name: "Reading", completed: false },
+  { id: "exercise", name: "Exercise", completed: false },
 ];
+
+// Carica lo state salvato
+const savedHabits = localStorage.getItem("habitsData");
+if (savedHabits) {
+  habitsData = JSON.parse(savedHabits);
+}
 
 function renderHabits() {
   const habitsContainer = document.getElementById("habits");
@@ -58,15 +64,11 @@ function renderHabits() {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.id = `habit-${habit.id}`;
-
-    // Carica stato salvato
-    const saved = localStorage.getItem(`habit-${habit.id}`);
-    if (saved === "true") {
-      checkbox.checked = true;
-    }
+    checkbox.checked = habit.completed; // usa lo state
 
     checkbox.addEventListener("change", () => {
-      localStorage.setItem(`habit-${habit.id}`, checkbox.checked);
+      habit.completed = checkbox.checked; // aggiorna lo state
+      localStorage.setItem("habitsData", JSON.stringify(habitsData)); // salva tutto l'array
       updateProgress();
     });
 
@@ -79,20 +81,12 @@ function renderHabits() {
 }
 
 function updateProgress() {
-  const checkboxes = document.querySelectorAll(
-    "#habits input[type='checkbox']",
-  );
-  let completed = 0;
+  const total = habitsData.length;
+  const completed = habitsData.filter((habit) => habit.completed).length;
 
-  checkboxes.forEach((checkbox) => {
-    if (checkbox.checked) completed++;
-  });
-
-  const total = checkboxes.length || 4;
   const progressText = document.getElementById("progress-text");
   progressText.textContent = `Progress: ${completed}/${total} completed`;
 
-  // Progress bar bonus
   const habitsProgressBar = document.getElementById("habits-progress-bar");
   if (habitsProgressBar) {
     const percentage = total === 0 ? 0 : (completed / total) * 100;

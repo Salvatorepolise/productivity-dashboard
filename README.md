@@ -6,7 +6,9 @@ Simple personal productivity dashboard built during my public challenge.
 
 - Today's Goals (dynamic list + ability to add new goals)
 - Habit Tracker generated dynamically from JavaScript array
+- Habit state with `completed` property
 - Progress Tracker + progress bar
+- Persistent data with localStorage (full array saved)
 - Daily Coding Goal (editable + progress bar + localStorage)
 - Daily Coding Tracker (user input + Check Goal button + localStorage)
 - Notes with auto-save
@@ -29,6 +31,7 @@ Or view the live version: [https://salvatorepolise.github.io/productivity-dashbo
 - **Day 3** (3 September 2026): Added interactive Daily Coding Tracker
 - **Day 4** (4 September 2026): Added ability to dynamically create new goals
 - **Day 5** (7 September 2026): Made Habit Tracker fully dynamic (array → DOM)
+- **Day 6** (8 September 2026): Improved state management + persistent habits with JSON
 - MRR: $0
 
 ---

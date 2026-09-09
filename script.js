@@ -40,7 +40,7 @@ newGoalInput.addEventListener("keypress", (e) => {
   if (e.key === "Enter") addGoal();
 });
 
-// ===== HABITS (STATE + LOCAL STORAGE) =====
+// ===== HABITS (REFACTORED) =====
 let habitsData = [
   { id: "english", name: "English", completed: false },
   { id: "coding", name: "Coding", completed: false },
@@ -48,15 +48,20 @@ let habitsData = [
   { id: "exercise", name: "Exercise", completed: false },
 ];
 
-// Carica lo state salvato
-const savedHabits = localStorage.getItem("habitsData");
-if (savedHabits) {
-  habitsData = JSON.parse(savedHabits);
+function loadHabits() {
+  const saved = localStorage.getItem("habitsData");
+  if (saved) {
+    habitsData = JSON.parse(saved);
+  }
+}
+
+function saveHabits() {
+  localStorage.setItem("habitsData", JSON.stringify(habitsData));
 }
 
 function renderHabits() {
-  const habitsContainer = document.getElementById("habits");
-  habitsContainer.innerHTML = "";
+  const container = document.getElementById("habits");
+  container.innerHTML = "";
 
   habitsData.forEach((habit) => {
     const label = document.createElement("label");
@@ -64,35 +69,56 @@ function renderHabits() {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.id = `habit-${habit.id}`;
-    checkbox.checked = habit.completed; // usa lo state
+    checkbox.checked = habit.completed;
 
     checkbox.addEventListener("change", () => {
-      habit.completed = checkbox.checked; // aggiorna lo state
-      localStorage.setItem("habitsData", JSON.stringify(habitsData)); // salva tutto l'array
-      updateProgress();
+      updateHabit(habit.id);
     });
 
     label.appendChild(checkbox);
     label.appendChild(document.createTextNode(" " + habit.name));
 
-    habitsContainer.appendChild(label);
-    habitsContainer.appendChild(document.createElement("br"));
+    container.appendChild(label);
+    container.appendChild(document.createElement("br"));
   });
+}
+
+function updateHabit(id) {
+  const habit = habitsData.find((h) => h.id === id);
+  if (!habit) return;
+
+  habit.completed = !habit.completed;
+  saveHabits();
+  updateProgress();
 }
 
 function updateProgress() {
   const total = habitsData.length;
-  const completed = habitsData.filter((habit) => habit.completed).length;
+  const completed = habitsData.filter((h) => h.completed).length;
 
-  const progressText = document.getElementById("progress-text");
-  progressText.textContent = `Progress: ${completed}/${total} completed`;
+  document.getElementById("progress-text").textContent =
+    `Progress: ${completed}/${total} completed`;
 
-  const habitsProgressBar = document.getElementById("habits-progress-bar");
-  if (habitsProgressBar) {
+  const bar = document.getElementById("habits-progress-bar");
+  if (bar) {
     const percentage = total === 0 ? 0 : (completed / total) * 100;
-    habitsProgressBar.style.width = percentage + "%";
+    bar.style.width = percentage + "%";
   }
 }
+
+function resetHabits() {
+  habitsData.forEach((habit) => {
+    habit.completed = false;
+  });
+
+  saveHabits();
+  renderHabits();
+  updateProgress();
+}
+
+document
+  .getElementById("reset-habits-btn")
+  .addEventListener("click", resetHabits);
 
 // ===== NOTES =====
 const notesTextarea = document.getElementById("notes");
@@ -175,6 +201,7 @@ dailyGoalInput.addEventListener("input", () => {
 });
 
 // ===== INIT =====
+loadHabits();
 renderHabits();
 updateProgress();
 checkGoal();

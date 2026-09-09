@@ -90,3 +90,17 @@ textarea:focus {
   border-radius: 999px;
   transition: width 0.3s ease;
 }
+
+#reset-habits-btn {
+  padding: 8px 14px;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+#reset-habits-btn:hover {
+  background-color: #dc2626;
+}

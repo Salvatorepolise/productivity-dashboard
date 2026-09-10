@@ -7,11 +7,11 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>Personal Productivity Dashboard</h1>
+    <h1>Productivity Dashboard</h1>
 
+    <!-- GOALS -->
     <section>
       <h2>Today's Goals</h2>
-
       <div style="margin-bottom: 12px">
         <input
           type="text"
@@ -20,10 +20,10 @@
         />
         <button id="add-goal-btn">Add Goal</button>
       </div>
-
       <ul id="goals-list"></ul>
     </section>
 
+    <!-- HABITS -->
     <section>
       <h2>Habit Tracker</h2>
 
@@ -31,17 +31,25 @@
 
       <p id="progress-text">Progress: 0/4 completed</p>
 
-      <div class="progress-bar-container" style="margin-top: 10px">
+      <div class="progress-bar-container">
         <div class="progress-bar" id="habits-progress-bar"></div>
       </div>
 
-      <button id="reset-habits-btn" style="margin-top: 12px">
-        Reset Today's Habits
-      </button>
+      <!-- Analytics -->
+      <div id="habit-analytics" style="margin-top: 12px; font-size: 0.95rem">
+        <p>Completed: <strong id="completed-count">0</strong></p>
+        <p>Remaining: <strong id="remaining-count">4</strong></p>
+        <p id="habit-message" style="margin-top: 8px; font-weight: 500">
+          Let's get started 🚀
+        </p>
+      </div>
+
+      <button id="reset-habits-btn">Reset Today's Habits</button>
     </section>
 
+    <!-- CODING -->
     <section>
-      <h2>Daily Coding Goal</h2>
+      <h2>Daily Coding</h2>
       <p>Goal: <strong id="goal-minutes">60</strong> minutes</p>
       <p>
         Today:
@@ -60,32 +68,7 @@
       <p id="goal-status">Not completed yet</p>
     </section>
 
-    <section>
-      <h2>Daily Coding Tracker</h2>
-      <div>
-        <label>
-          Coding minutes today:
-          <input type="number" id="coding-minutes" min="0" value="0" />
-        </label>
-      </div>
-      <div style="margin-top: 10px">
-        <label>
-          Daily goal:
-          <input type="number" id="daily-goal" min="1" value="60" />
-        </label>
-      </div>
-      <button id="check-goal-btn" style="margin-top: 15px">Check Goal</button>
-      <p id="goal-result" style="margin-top: 15px; font-weight: bold"></p>
-      <p id="goal-summary"></p>
-    </section>
-
-    <section>
-      <h2>Challenge</h2>
-      <p>Day 7</p>
-      <p>September 9, 2026</p>
-      <p>MRR: $0</p>
-    </section>
-
+    <!-- NOTES -->
     <section>
       <h2>Notes</h2>
       <textarea
@@ -93,6 +76,13 @@
         rows="4"
         placeholder="What did I learn today?"
       ></textarea>
+    </section>
+
+    <!-- FOOTER -->
+    <section>
+      <p style="margin: 0; color: #71717a; font-size: 0.9rem">
+        Day 8 · September 10, 2026 · MRR: $0
+      </p>
     </section>
 
     <script src="script.js"></script>

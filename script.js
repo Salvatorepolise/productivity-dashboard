@@ -53,18 +53,68 @@ function renderHabits() {
   container.innerHTML = "";
 
   habitsData.forEach((habit) => {
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.alignItems = "center";
+    wrapper.style.marginBottom = "6px";
+    wrapper.style.gap = "8px";
+
     const label = document.createElement("label");
+    label.style.flex = "1";
+    label.style.cursor = "pointer";
+
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = habit.completed;
-
     checkbox.addEventListener("change", () => updateHabit(habit.id));
 
     label.appendChild(checkbox);
     label.appendChild(document.createTextNode(" " + habit.name));
-    container.appendChild(label);
-    container.appendChild(document.createElement("br"));
+
+    // Bottone Delete
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Delete";
+    deleteBtn.className = "delete-habit-btn";
+    deleteBtn.addEventListener("click", () => deleteHabit(habit.id));
+
+    wrapper.appendChild(label);
+    wrapper.appendChild(deleteBtn);
+    container.appendChild(wrapper);
   });
+}
+
+function addHabit() {
+  const input = document.getElementById("new-habit-input");
+  const name = input.value.trim();
+
+  if (!name) return;
+
+  const id = name.toLowerCase().replace(/\s+/g, "-");
+
+  const exists = habitsData.some((h) => h.id === id);
+  if (exists) {
+    input.value = "";
+    return;
+  }
+
+  const newHabit = {
+    id: id,
+    name: name,
+    completed: false,
+  };
+
+  habitsData.push(newHabit);
+  saveHabits();
+  renderHabits();
+  updateProgress();
+  input.value = "";
+}
+
+function deleteHabit(id) {
+  habitsData = habitsData.filter((habit) => habit.id !== id);
+  saveHabits();
+  renderHabits();
+  updateProgress();
 }
 
 function updateHabit(id) {
@@ -82,18 +132,15 @@ function updateProgress() {
   const remaining = total - completed;
   const percentage = total === 0 ? 0 : (completed / total) * 100;
 
-  // Progress text + bar
   document.getElementById("progress-text").textContent =
     `Progress: ${completed}/${total} completed`;
 
   const bar = document.getElementById("habits-progress-bar");
   if (bar) bar.style.width = percentage + "%";
 
-  // Analytics
   document.getElementById("completed-count").textContent = completed;
   document.getElementById("remaining-count").textContent = remaining;
 
-  // Dynamic message
   const messageEl = document.getElementById("habit-message");
   if (percentage === 0) {
     messageEl.textContent = "Let's get started 🚀";
@@ -113,6 +160,10 @@ function resetHabits() {
   updateProgress();
 }
 
+document.getElementById("add-habit-btn").addEventListener("click", addHabit);
+document.getElementById("new-habit-input").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") addHabit();
+});
 document
   .getElementById("reset-habits-btn")
   .addEventListener("click", resetHabits);

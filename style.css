@@ -104,3 +104,70 @@ textarea:focus {
 #reset-habits-btn:hover {
   background-color: #dc2626;
 }
+
+#new-habit-input {
+  padding: 7px 10px;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  width: 220px;
+  margin-right: 8px;
+}
+
+#add-habit-btn {
+  padding: 7px 14px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+#add-habit-btn:hover {
+  background-color: #2563eb;
+}
+
+.delete-habit-btn {
+  padding: 4px 10px;
+  background-color: #f4f4f5;
+  border: 1px solid #d4d4d8;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #71717a;
+}
+
+.delete-habit-btn:hover {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+#new-goal-input {
+  padding: 7px 10px;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  width: 220px;
+  margin-right: 8px;
+}
+
+#new-goal-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+#add-goal-btn {
+  padding: 7px 14px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+#add-goal-btn:hover {
+  background-color: #2563eb;
+}

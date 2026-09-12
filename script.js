@@ -71,6 +71,12 @@ function renderHabits() {
     label.appendChild(checkbox);
     label.appendChild(document.createTextNode(" " + habit.name));
 
+    // Bottone Edit
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "Edit";
+    editBtn.className = "edit-habit-btn";
+    editBtn.addEventListener("click", () => editHabit(habit.id));
+
     // Bottone Delete
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "Delete";
@@ -78,6 +84,7 @@ function renderHabits() {
     deleteBtn.addEventListener("click", () => deleteHabit(habit.id));
 
     wrapper.appendChild(label);
+    wrapper.appendChild(editBtn);
     wrapper.appendChild(deleteBtn);
     container.appendChild(wrapper);
   });
@@ -112,6 +119,33 @@ function addHabit() {
 
 function deleteHabit(id) {
   habitsData = habitsData.filter((habit) => habit.id !== id);
+  saveHabits();
+  renderHabits();
+  updateProgress();
+}
+
+function editHabit(id) {
+  const habit = habitsData.find((h) => h.id === id);
+  if (!habit) return;
+
+  const newName = prompt("Enter the new name:", habit.name);
+
+  if (newName === null) return; // utente ha premuto Cancel
+
+  const trimmedName = newName.trim();
+  if (!trimmedName) return; // nome vuoto → non aggiornare
+
+  // Aggiorna usando .map()
+  habitsData = habitsData.map((h) => {
+    if (h.id === id) {
+      return {
+        ...h,
+        name: trimmedName,
+      };
+    }
+    return h;
+  });
+
   saveHabits();
   renderHabits();
   updateProgress();

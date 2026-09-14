@@ -66,22 +66,23 @@ function renderHabits() {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = habit.completed;
-    checkbox.addEventListener("change", () => updateHabit(habit.id));
+    checkbox.dataset.id = habit.id; // serve per event delegation
+    checkbox.className = "habit-checkbox";
 
     label.appendChild(checkbox);
     label.appendChild(document.createTextNode(" " + habit.name));
 
-    // Bottone Edit
+    // Bottone Edit (niente listener qui)
     const editBtn = document.createElement("button");
     editBtn.textContent = "Edit";
     editBtn.className = "edit-habit-btn";
-    editBtn.addEventListener("click", () => editHabit(habit.id));
+    editBtn.dataset.id = habit.id;
 
-    // Bottone Delete
+    // Bottone Delete (niente listener qui)
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "Delete";
     deleteBtn.className = "delete-habit-btn";
-    deleteBtn.addEventListener("click", () => deleteHabit(habit.id));
+    deleteBtn.dataset.id = habit.id;
 
     wrapper.appendChild(label);
     wrapper.appendChild(editBtn);
@@ -130,12 +131,11 @@ function editHabit(id) {
 
   const newName = prompt("Enter the new name:", habit.name);
 
-  if (newName === null) return; // utente ha premuto Cancel
+  if (newName === null) return;
 
   const trimmedName = newName.trim();
-  if (!trimmedName) return; // nome vuoto → non aggiornare
+  if (!trimmedName) return;
 
-  // Aggiorna usando .map()
   habitsData = habitsData.map((h) => {
     if (h.id === id) {
       return {
@@ -193,6 +193,32 @@ function resetHabits() {
   renderHabits();
   updateProgress();
 }
+
+// ===== EVENT DELEGATION =====
+document.getElementById("habits").addEventListener("click", function (event) {
+  const target = event.target;
+  const id = target.dataset.id;
+
+  if (!id) return;
+
+  if (target.classList.contains("edit-habit-btn")) {
+    editHabit(id);
+  }
+
+  if (target.classList.contains("delete-habit-btn")) {
+    deleteHabit(id);
+  }
+});
+
+// Un solo listener per i checkbox
+document.getElementById("habits").addEventListener("change", function (event) {
+  const target = event.target;
+
+  if (target.classList.contains("habit-checkbox")) {
+    const id = target.dataset.id;
+    if (id) updateHabit(id);
+  }
+});
 
 document.getElementById("add-habit-btn").addEventListener("click", addHabit);
 document.getElementById("new-habit-input").addEventListener("keypress", (e) => {

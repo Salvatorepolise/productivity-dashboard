@@ -10,6 +10,7 @@ Simple and focused personal productivity dashboard built during my public challe
   - Read (Render Habits)
   - Update (Edit Habit)
   - Delete (Delete Habit)
+- Event delegation for cleaner interaction handling
 - Habit state with `completed` property
 - Progress bar + Completed / Remaining analytics
 - Dynamic motivational messages
@@ -41,6 +42,7 @@ Or view the live version: [https://salvatorepolise.github.io/productivity-dashbo
 - **Day 8** (10 September 2026): Simplified dashboard + Habit Analytics
 - **Day 9** (11 September 2026): Added Create & Delete habits
 - **Day 10** (12 September 2026): Added Edit Habit → full CRUD completed
+- **Day 11** (14 September 2026): Refactored events with event delegation
 - MRR: $0
 
 ---

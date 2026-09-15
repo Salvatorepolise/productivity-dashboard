@@ -5,15 +5,12 @@ Simple and focused personal productivity dashboard built during my public challe
 ## Features
 
 - Today's Goals (dynamic list + add new goals)
-- Habit Tracker with full CRUD:
-  - Create (Add Habit)
-  - Read (Render Habits)
-  - Update (Edit Habit)
-  - Delete (Delete Habit)
-- Event delegation for cleaner interaction handling
-- Habit state with `completed` property
+- Habit Tracker with full CRUD (Create, Read, Update, Delete)
+- Search habits (filter by name)
+- Duplicate validation (case-insensitive)
+- Event delegation for cleaner interactions
 - Progress bar + Completed / Remaining analytics
-- Dynamic motivational messages
+- Dynamic messages with `some()` / `every()`
 - Reset Habits button
 - Persistent data with localStorage
 - Daily Coding tracker
@@ -43,6 +40,7 @@ Or view the live version: [https://salvatorepolise.github.io/productivity-dashbo
 - **Day 9** (11 September 2026): Added Create & Delete habits
 - **Day 10** (12 September 2026): Added Edit Habit → full CRUD completed
 - **Day 11** (14 September 2026): Refactored events with event delegation
+- **Day 12** (15 September 2026): Habit search with filter + stronger validation
 - MRR: $0
 
 ---

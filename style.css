@@ -187,3 +187,17 @@ textarea:focus {
   color: #0284c7;
   border-color: #7dd3fc;
 }
+
+#search-habit-input {
+  padding: 7px 10px;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  width: 100%;
+  max-width: 300px;
+}
+
+#search-habit-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}

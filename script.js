@@ -39,6 +39,8 @@ let habitsData = [
   { id: "exercise", name: "Exercise", completed: false },
 ];
 
+let searchText = "";
+
 function loadHabits() {
   const saved = localStorage.getItem("habitsData");
   if (saved) habitsData = JSON.parse(saved);
@@ -48,11 +50,32 @@ function saveHabits() {
   localStorage.setItem("habitsData", JSON.stringify(habitsData));
 }
 
+function getVisibleHabits() {
+  if (!searchText.trim()) {
+    return habitsData;
+  }
+
+  return habitsData.filter((habit) =>
+    habit.name.toLowerCase().includes(searchText.toLowerCase()),
+  );
+}
+
 function renderHabits() {
   const container = document.getElementById("habits");
   container.innerHTML = "";
 
-  habitsData.forEach((habit) => {
+  const visibleHabits = getVisibleHabits();
+
+  if (visibleHabits.length === 0) {
+    const emptyMessage = document.createElement("p");
+    emptyMessage.textContent = "No habits found";
+    emptyMessage.style.color = "#71717a";
+    emptyMessage.style.fontSize = "0.95rem";
+    container.appendChild(emptyMessage);
+    return;
+  }
+
+  visibleHabits.forEach((habit) => {
     const wrapper = document.createElement("div");
     wrapper.style.display = "flex";
     wrapper.style.alignItems = "center";
@@ -66,19 +89,17 @@ function renderHabits() {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = habit.completed;
-    checkbox.dataset.id = habit.id; // serve per event delegation
+    checkbox.dataset.id = habit.id;
     checkbox.className = "habit-checkbox";
 
     label.appendChild(checkbox);
     label.appendChild(document.createTextNode(" " + habit.name));
 
-    // Bottone Edit (niente listener qui)
     const editBtn = document.createElement("button");
     editBtn.textContent = "Edit";
     editBtn.className = "edit-habit-btn";
     editBtn.dataset.id = habit.id;
 
-    // Bottone Delete (niente listener qui)
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "Delete";
     deleteBtn.className = "delete-habit-btn";
@@ -99,9 +120,13 @@ function addHabit() {
 
   const id = name.toLowerCase().replace(/\s+/g, "-");
 
-  const exists = habitsData.some((h) => h.id === id);
+  // Validazione duplicati migliorata (case-insensitive sul nome)
+  const exists = habitsData.some(
+    (h) => h.name.toLowerCase() === name.toLowerCase(),
+  );
+
   if (exists) {
-    input.value = "";
+    alert("This habit already exists");
     return;
   }
 
@@ -135,6 +160,15 @@ function editHabit(id) {
 
   const trimmedName = newName.trim();
   if (!trimmedName) return;
+
+  // Evita di rinominare in un nome già esistente
+  const nameExists = habitsData.some(
+    (h) => h.id !== id && h.name.toLowerCase() === trimmedName.toLowerCase(),
+  );
+  if (nameExists) {
+    alert("This habit name already exists");
+    return;
+  }
 
   habitsData = habitsData.map((h) => {
     if (h.id === id) {
@@ -176,14 +210,15 @@ function updateProgress() {
   document.getElementById("remaining-count").textContent = remaining;
 
   const messageEl = document.getElementById("habit-message");
-  if (percentage === 0) {
-    messageEl.textContent = "Let's get started 🚀";
-  } else if (percentage < 50) {
-    messageEl.textContent = "Keep going 💪";
-  } else if (percentage < 100) {
-    messageEl.textContent = "You're making progress 🔥";
+
+  if (total === 0) {
+    messageEl.textContent = "Add your first habit";
+  } else if (!habitsData.some((h) => h.completed)) {
+    messageEl.textContent = "Start your day! 🚀";
+  } else if (habitsData.every((h) => h.completed)) {
+    messageEl.textContent = "Everything done! 🔥";
   } else {
-    messageEl.textContent = "All habits completed today! 🎉";
+    messageEl.textContent = "Good progress! 💪";
   }
 }
 
@@ -210,7 +245,6 @@ document.getElementById("habits").addEventListener("click", function (event) {
   }
 });
 
-// Un solo listener per i checkbox
 document.getElementById("habits").addEventListener("change", function (event) {
   const target = event.target;
 
@@ -218,6 +252,12 @@ document.getElementById("habits").addEventListener("change", function (event) {
     const id = target.dataset.id;
     if (id) updateHabit(id);
   }
+});
+
+// Search
+document.getElementById("search-habit-input").addEventListener("input", (e) => {
+  searchText = e.target.value;
+  renderHabits();
 });
 
 document.getElementById("add-habit-btn").addEventListener("click", addHabit);

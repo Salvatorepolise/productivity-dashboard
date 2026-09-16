@@ -201,3 +201,25 @@ textarea:focus {
   outline: none;
   border-color: #3b82f6;
 }
+
+.habits-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+#sort-habits {
+  padding: 7px 10px;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: white;
+  cursor: pointer;
+}
+
+#sort-habits:focus {
+  outline: none;
+  border-color: #3b82f6;
+}

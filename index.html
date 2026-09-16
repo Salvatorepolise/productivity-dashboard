@@ -27,13 +27,19 @@
     <section>
       <h2>Habit Tracker</h2>
 
-      <!-- SEARCH -->
-      <div style="margin-bottom: 12px">
+      <!-- SEARCH + SORT -->
+      <div class="habits-controls">
         <input
           type="text"
           id="search-habit-input"
           placeholder="Search habits..."
         />
+        <select id="sort-habits">
+          <option value="default">Default</option>
+          <option value="az">A → Z</option>
+          <option value="completed">Completed first</option>
+          <option value="remaining">Remaining first</option>
+        </select>
       </div>
 
       <!-- ADD HABIT -->
@@ -99,7 +105,7 @@
     <!-- FOOTER -->
     <section>
       <p style="margin: 0; color: #71717a; font-size: 0.9rem">
-        Day 12 · September 15, 2026 · MRR: $0
+        Day 13 · September 16, 2026 · MRR: $0
       </p>
     </section>
 

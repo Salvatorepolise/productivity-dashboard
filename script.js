@@ -40,6 +40,7 @@ let habitsData = [
 ];
 
 let searchText = "";
+let sortOption = "default";
 
 function loadHabits() {
   const saved = localStorage.getItem("habitsData");
@@ -50,14 +51,32 @@ function saveHabits() {
   localStorage.setItem("habitsData", JSON.stringify(habitsData));
 }
 
-function getVisibleHabits() {
+function getFilteredHabits() {
   if (!searchText.trim()) {
-    return habitsData;
+    return [...habitsData]; // copia, non muta lo state
   }
 
   return habitsData.filter((habit) =>
     habit.name.toLowerCase().includes(searchText.toLowerCase()),
   );
+}
+
+function getVisibleHabits() {
+  const filtered = getFilteredHabits();
+
+  if (sortOption === "az") {
+    return filtered.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  if (sortOption === "completed") {
+    return filtered.sort((a, b) => Number(b.completed) - Number(a.completed));
+  }
+
+  if (sortOption === "remaining") {
+    return filtered.sort((a, b) => Number(a.completed) - Number(b.completed));
+  }
+
+  return filtered;
 }
 
 function renderHabits() {
@@ -120,7 +139,6 @@ function addHabit() {
 
   const id = name.toLowerCase().replace(/\s+/g, "-");
 
-  // Validazione duplicati migliorata (case-insensitive sul nome)
   const exists = habitsData.some(
     (h) => h.name.toLowerCase() === name.toLowerCase(),
   );
@@ -130,13 +148,12 @@ function addHabit() {
     return;
   }
 
-  const newHabit = {
+  habitsData.push({
     id: id,
     name: name,
     completed: false,
-  };
+  });
 
-  habitsData.push(newHabit);
   saveHabits();
   renderHabits();
   updateProgress();
@@ -155,13 +172,11 @@ function editHabit(id) {
   if (!habit) return;
 
   const newName = prompt("Enter the new name:", habit.name);
-
   if (newName === null) return;
 
   const trimmedName = newName.trim();
   if (!trimmedName) return;
 
-  // Evita di rinominare in un nome già esistente
   const nameExists = habitsData.some(
     (h) => h.id !== id && h.name.toLowerCase() === trimmedName.toLowerCase(),
   );
@@ -172,10 +187,7 @@ function editHabit(id) {
 
   habitsData = habitsData.map((h) => {
     if (h.id === id) {
-      return {
-        ...h,
-        name: trimmedName,
-      };
+      return { ...h, name: trimmedName };
     }
     return h;
   });
@@ -192,11 +204,16 @@ function updateHabit(id) {
   habit.completed = !habit.completed;
   saveHabits();
   updateProgress();
+  renderHabits();
 }
 
 function updateProgress() {
   const total = habitsData.length;
-  const completed = habitsData.filter((h) => h.completed).length;
+
+  const completed = habitsData.reduce((count, habit) => {
+    return habit.completed ? count + 1 : count;
+  }, 0);
+
   const remaining = total - completed;
   const percentage = total === 0 ? 0 : (completed / total) * 100;
 
@@ -233,21 +250,14 @@ function resetHabits() {
 document.getElementById("habits").addEventListener("click", function (event) {
   const target = event.target;
   const id = target.dataset.id;
-
   if (!id) return;
 
-  if (target.classList.contains("edit-habit-btn")) {
-    editHabit(id);
-  }
-
-  if (target.classList.contains("delete-habit-btn")) {
-    deleteHabit(id);
-  }
+  if (target.classList.contains("edit-habit-btn")) editHabit(id);
+  if (target.classList.contains("delete-habit-btn")) deleteHabit(id);
 });
 
 document.getElementById("habits").addEventListener("change", function (event) {
   const target = event.target;
-
   if (target.classList.contains("habit-checkbox")) {
     const id = target.dataset.id;
     if (id) updateHabit(id);
@@ -257,6 +267,12 @@ document.getElementById("habits").addEventListener("change", function (event) {
 // Search
 document.getElementById("search-habit-input").addEventListener("input", (e) => {
   searchText = e.target.value;
+  renderHabits();
+});
+
+// Sort
+document.getElementById("sort-habits").addEventListener("change", (e) => {
+  sortOption = e.target.value;
   renderHabits();
 });
 

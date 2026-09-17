@@ -53,7 +53,7 @@ function saveHabits() {
 
 function getFilteredHabits() {
   if (!searchText.trim()) {
-    return [...habitsData]; // copia, non muta lo state
+    return [...habitsData];
   }
 
   return habitsData.filter((habit) =>
@@ -134,7 +134,6 @@ function renderHabits() {
 function addHabit() {
   const input = document.getElementById("new-habit-input");
   const name = input.value.trim();
-
   if (!name) return;
 
   const id = name.toLowerCase().replace(/\s+/g, "-");
@@ -142,18 +141,12 @@ function addHabit() {
   const exists = habitsData.some(
     (h) => h.name.toLowerCase() === name.toLowerCase(),
   );
-
   if (exists) {
     alert("This habit already exists");
     return;
   }
 
-  habitsData.push({
-    id: id,
-    name: name,
-    completed: false,
-  });
-
+  habitsData.push({ id, name, completed: false });
   saveHabits();
   renderHabits();
   updateProgress();
@@ -186,9 +179,7 @@ function editHabit(id) {
   }
 
   habitsData = habitsData.map((h) => {
-    if (h.id === id) {
-      return { ...h, name: trimmedName };
-    }
+    if (h.id === id) return { ...h, name: trimmedName };
     return h;
   });
 
@@ -205,6 +196,23 @@ function updateHabit(id) {
   saveHabits();
   updateProgress();
   renderHabits();
+}
+
+// ===== STATISTICS (Day 14) =====
+function updateStatistics() {
+  const total = habitsData.length;
+
+  const completed = habitsData.reduce((count, habit) => {
+    return habit.completed ? count + 1 : count;
+  }, 0);
+
+  const remaining = total - completed;
+  const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+  document.getElementById("total-habits").textContent = total;
+  document.getElementById("completed-habits").textContent = completed;
+  document.getElementById("remaining-habits").textContent = remaining;
+  document.getElementById("progress-percentage").textContent = `${percentage}%`;
 }
 
 function updateProgress() {
@@ -237,6 +245,8 @@ function updateProgress() {
   } else {
     messageEl.textContent = "Good progress! 💪";
   }
+
+  updateStatistics();
 }
 
 function resetHabits() {
@@ -264,13 +274,11 @@ document.getElementById("habits").addEventListener("change", function (event) {
   }
 });
 
-// Search
 document.getElementById("search-habit-input").addEventListener("input", (e) => {
   searchText = e.target.value;
   renderHabits();
 });
 
-// Sort
 document.getElementById("sort-habits").addEventListener("change", (e) => {
   sortOption = e.target.value;
   renderHabits();

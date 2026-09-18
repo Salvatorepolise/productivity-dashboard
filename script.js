@@ -146,7 +146,8 @@ function addHabit() {
     return;
   }
 
-  habitsData.push({ id, name, completed: false });
+  // Spread: nuovo array invece di mutare solo con push (stesso effetto, pratica Day 15)
+  habitsData = [...habitsData, { id, name, completed: false }];
   saveHabits();
   renderHabits();
   updateProgress();
@@ -178,6 +179,7 @@ function editHabit(id) {
     return;
   }
 
+  // Object spread: nuovo object senza mutare direttamente
   habitsData = habitsData.map((h) => {
     if (h.id === id) return { ...h, name: trimmedName };
     return h;
@@ -189,16 +191,18 @@ function editHabit(id) {
 }
 
 function updateHabit(id) {
-  const habit = habitsData.find((h) => h.id === id);
-  if (!habit) return;
+  // Object spread per aggiornare completed senza mutare l'object originale
+  habitsData = habitsData.map((h) => {
+    if (h.id === id) return { ...h, completed: !h.completed };
+    return h;
+  });
 
-  habit.completed = !habit.completed;
   saveHabits();
   updateProgress();
   renderHabits();
 }
 
-// ===== STATISTICS (Day 14) =====
+// ===== STATISTICS =====
 function updateStatistics() {
   const total = habitsData.length;
 
@@ -213,6 +217,42 @@ function updateStatistics() {
   document.getElementById("completed-habits").textContent = completed;
   document.getElementById("remaining-habits").textContent = remaining;
   document.getElementById("progress-percentage").textContent = `${percentage}%`;
+}
+
+// ===== INSIGHT (Day 15) =====
+function getHabitInsight() {
+  const total = habitsData.length;
+
+  if (total === 0) {
+    return "Add your first habit to get started.";
+  }
+
+  const completed = habitsData.reduce((count, habit) => {
+    return habit.completed ? count + 1 : count;
+  }, 0);
+
+  const percentage = Math.round((completed / total) * 100);
+
+  if (percentage === 0) {
+    return "Start your day by completing your first habit.";
+  }
+
+  if (percentage < 50) {
+    return "Keep going — small steps still count.";
+  }
+
+  if (percentage < 100) {
+    return "You're more than halfway. Finish strong.";
+  }
+
+  return "All habits completed today. Great work!";
+}
+
+function updateInsight() {
+  const insightEl = document.getElementById("habit-insight");
+  if (!insightEl) return; // optional-chaining style guard
+
+  insightEl.textContent = getHabitInsight();
 }
 
 function updateProgress() {
@@ -247,10 +287,11 @@ function updateProgress() {
   }
 
   updateStatistics();
+  updateInsight();
 }
 
 function resetHabits() {
-  habitsData.forEach((h) => (h.completed = false));
+  habitsData = habitsData.map((h) => ({ ...h, completed: false }));
   saveHabits();
   renderHabits();
   updateProgress();
@@ -335,6 +376,6 @@ notesTextarea.addEventListener("input", () => {
 // ===== INIT =====
 loadHabits();
 renderHabits();
-updateProgress();
+updateProgress(); // statistics + insight
 updateCodingGoal();
 renderGoals();

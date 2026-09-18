@@ -5,6 +5,7 @@ Simple and focused personal productivity dashboard built during my public challe
 ## Features
 
 - Today's Overview (Total / Completed / Remaining / Progress %)
+- Habit Insights (dynamic message from real data)
 - Today's Goals (dynamic list + add new goals)
 - Habit Tracker with full CRUD
 - Search + Sort habits (state vs view)
@@ -44,6 +45,7 @@ Or view the live version: [https://salvatorepolise.github.io/productivity-dashbo
 - **Day 12** (15 September 2026): Habit search with filter + stronger validation
 - **Day 13** (16 September 2026): Habit sorting + search/sort pipeline
 - **Day 14** (17 September 2026): Today's Overview statistics connected to state
+- **Day 15** (18 September 2026): Habit Insights + immutable updates with spread
 - MRR: $0
 
 ---

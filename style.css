@@ -254,3 +254,28 @@ textarea:focus {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+.insight-box {
+  margin-top: 16px;
+  padding: 12px 14px;
+  background: #eff6ff;
+  border-radius: 10px;
+  border: 1px solid #bfdbfe;
+}
+
+.insight-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #2563eb;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
+}
+
+#habit-insight {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #1e3a8a;
+  font-weight: 500;
+}

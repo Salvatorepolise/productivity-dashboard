@@ -57,7 +57,7 @@ function getFilteredHabits() {
   }
 
   return habitsData.filter((habit) =>
-    habit.name.toLowerCase().includes(searchText.toLowerCase()),
+    habit.name.toLowerCase().includes(searchText.toLowerCase())
   );
 }
 
@@ -139,7 +139,7 @@ function addHabit() {
   const id = name.toLowerCase().replace(/\s+/g, "-");
 
   const exists = habitsData.some(
-    (h) => h.name.toLowerCase() === name.toLowerCase(),
+    (h) => h.name.toLowerCase() === name.toLowerCase()
   );
   if (exists) {
     alert("This habit already exists");
@@ -171,7 +171,7 @@ function editHabit(id) {
   if (!trimmedName) return;
 
   const nameExists = habitsData.some(
-    (h) => h.id !== id && h.name.toLowerCase() === trimmedName.toLowerCase(),
+    (h) => h.id !== id && h.name.toLowerCase() === trimmedName.toLowerCase()
   );
   if (nameExists) {
     alert("This habit name already exists");
@@ -252,48 +252,6 @@ function updateInsight() {
   insightEl.textContent = getHabitInsight();
 }
 
-// ===== HABIT STATUS (Day 16) =====
-function getHabitStatusKey() {
-  if (habitsData.length === 0) {
-    return "no habits";
-  }
-
-  if (habitsData.every((habit) => habit.completed)) {
-    return "all completed";
-  }
-
-  if (habitsData.some((habit) => habit.completed)) {
-    return "some completed";
-  }
-
-  return "none completed";
-}
-
-function getHabitStatusMessage() {
-  const status = getHabitStatusKey();
-
-  if (status === "no habits") {
-    return "🌱 No habits yet. Add your first one.";
-  }
-
-  if (status === "all completed") {
-    return "🔥 All habits completed!";
-  }
-
-  if (status === "some completed") {
-    return "💪 You still have habits to complete.";
-  }
-
-  return "🌱 None completed yet. Start with one.";
-}
-
-function updateHabitStatus() {
-  const statusEl = document.getElementById("habit-status");
-  if (!statusEl) return;
-
-  statusEl.textContent = getHabitStatusMessage();
-}
-
 function updateProgress() {
   const total = habitsData.length;
 
@@ -327,7 +285,6 @@ function updateProgress() {
 
   updateStatistics();
   updateInsight();
-  updateHabitStatus();
 }
 
 function resetHabits() {

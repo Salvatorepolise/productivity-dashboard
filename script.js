@@ -146,7 +146,6 @@ function addHabit() {
     return;
   }
 
-  // Spread: nuovo array invece di mutare solo con push (stesso effetto, pratica Day 15)
   habitsData = [...habitsData, { id, name, completed: false }];
   saveHabits();
   renderHabits();
@@ -179,7 +178,6 @@ function editHabit(id) {
     return;
   }
 
-  // Object spread: nuovo object senza mutare direttamente
   habitsData = habitsData.map((h) => {
     if (h.id === id) return { ...h, name: trimmedName };
     return h;
@@ -191,7 +189,6 @@ function editHabit(id) {
 }
 
 function updateHabit(id) {
-  // Object spread per aggiornare completed senza mutare l'object originale
   habitsData = habitsData.map((h) => {
     if (h.id === id) return { ...h, completed: !h.completed };
     return h;
@@ -219,7 +216,7 @@ function updateStatistics() {
   document.getElementById("progress-percentage").textContent = `${percentage}%`;
 }
 
-// ===== INSIGHT (Day 15) =====
+// ===== INSIGHT =====
 function getHabitInsight() {
   const total = habitsData.length;
 
@@ -250,9 +247,51 @@ function getHabitInsight() {
 
 function updateInsight() {
   const insightEl = document.getElementById("habit-insight");
-  if (!insightEl) return; // optional-chaining style guard
+  if (!insightEl) return;
 
   insightEl.textContent = getHabitInsight();
+}
+
+// ===== HABIT STATUS (Day 16) =====
+function getHabitStatusKey() {
+  if (habitsData.length === 0) {
+    return "no habits";
+  }
+
+  if (habitsData.every((habit) => habit.completed)) {
+    return "all completed";
+  }
+
+  if (habitsData.some((habit) => habit.completed)) {
+    return "some completed";
+  }
+
+  return "none completed";
+}
+
+function getHabitStatusMessage() {
+  const status = getHabitStatusKey();
+
+  if (status === "no habits") {
+    return "🌱 No habits yet. Add your first one.";
+  }
+
+  if (status === "all completed") {
+    return "🔥 All habits completed!";
+  }
+
+  if (status === "some completed") {
+    return "💪 You still have habits to complete.";
+  }
+
+  return "🌱 None completed yet. Start with one.";
+}
+
+function updateHabitStatus() {
+  const statusEl = document.getElementById("habit-status");
+  if (!statusEl) return;
+
+  statusEl.textContent = getHabitStatusMessage();
 }
 
 function updateProgress() {
@@ -288,6 +327,7 @@ function updateProgress() {
 
   updateStatistics();
   updateInsight();
+  updateHabitStatus();
 }
 
 function resetHabits() {
@@ -376,6 +416,6 @@ notesTextarea.addEventListener("input", () => {
 // ===== INIT =====
 loadHabits();
 renderHabits();
-updateProgress(); // statistics + insight
+updateProgress();
 updateCodingGoal();
 renderGoals();

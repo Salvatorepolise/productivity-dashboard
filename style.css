@@ -279,3 +279,28 @@ textarea:focus {
   color: #1e3a8a;
   font-weight: 500;
 }
+
+.status-box {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: #f0fdf4;
+  border-radius: 10px;
+  border: 1px solid #bbf7d0;
+}
+
+.status-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #16a34a;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
+}
+
+#habit-status {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #14532d;
+  font-weight: 500;
+}

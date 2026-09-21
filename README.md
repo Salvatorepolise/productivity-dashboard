@@ -47,6 +47,9 @@ Or view the live version: [https://salvatorepolise.github.io/productivity-dashbo
 - **Day 14** (17 September 2026): Today's Overview statistics connected to state
 - **Day 15** (18 September 2026): Habit Insights + immutable updates with spread
 - **Day 16** (19 September 2026): Smart Habit Status with some() / every()
+- **Day 17** (21 September 2026):
+Loaded daily quote from external API with async/await
+
 - MRR: $0
 
 ---

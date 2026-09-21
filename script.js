@@ -57,7 +57,7 @@ function getFilteredHabits() {
   }
 
   return habitsData.filter((habit) =>
-    habit.name.toLowerCase().includes(searchText.toLowerCase())
+    habit.name.toLowerCase().includes(searchText.toLowerCase()),
   );
 }
 
@@ -139,7 +139,7 @@ function addHabit() {
   const id = name.toLowerCase().replace(/\s+/g, "-");
 
   const exists = habitsData.some(
-    (h) => h.name.toLowerCase() === name.toLowerCase()
+    (h) => h.name.toLowerCase() === name.toLowerCase(),
   );
   if (exists) {
     alert("This habit already exists");
@@ -171,7 +171,7 @@ function editHabit(id) {
   if (!trimmedName) return;
 
   const nameExists = habitsData.some(
-    (h) => h.id !== id && h.name.toLowerCase() === trimmedName.toLowerCase()
+    (h) => h.id !== id && h.name.toLowerCase() === trimmedName.toLowerCase(),
   );
   if (nameExists) {
     alert("This habit name already exists");
@@ -369,6 +369,34 @@ if (savedNotes) notesTextarea.value = savedNotes;
 notesTextarea.addEventListener("input", () => {
   localStorage.setItem("notes", notesTextarea.value);
 });
+// ===== DAILY QUOTE (Day 17 — Fetch API) =====
+async function loadDailyQuote() {
+  const quoteEl = document.getElementById("daily-quote");
+  const authorEl = document.getElementById("quote-author");
+
+  if (!quoteEl || !authorEl) return;
+
+  quoteEl.textContent = "Loading quote...";
+  authorEl.textContent = "";
+
+  try {
+    const response = await fetch("https://dummyjson.com/quotes/random");
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // DummyJSON usa: data.quote e data.author
+    quoteEl.textContent = `"${data.quote}"`;
+    authorEl.textContent = `— ${data.author}`;
+  } catch (error) {
+    console.error("Quote fetch failed:", error);
+    quoteEl.textContent = "Could not load quote.";
+    authorEl.textContent = "";
+  }
+}
 
 // ===== INIT =====
 loadHabits();
@@ -376,3 +404,4 @@ renderHabits();
 updateProgress();
 updateCodingGoal();
 renderGoals();
+loadDailyQuote();

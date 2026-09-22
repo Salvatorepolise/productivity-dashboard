@@ -6,7 +6,7 @@ Simple and focused personal productivity dashboard built during my public challe
 
 - Today's Overview (Total / Completed / Remaining / Progress %)
 - Habit Insights (dynamic motivational message)
-- Habit Status (no / none / some / all completed)
+- Quote of the day (external API + async/await)
 - Today's Goals (dynamic list + add new goals)
 - Habit Tracker with full CRUD
 - Search + Sort habits (state vs view)
@@ -22,12 +22,21 @@ Simple and focused personal productivity dashboard built during my public challe
 
 - HTML
 - CSS
-- Vanilla JavaScript
+- Vanilla JavaScript (ES Modules)
+
+## Project structure
+
+js/
+├── main.js # app entry + events
+├── state.js # habits state + CRUD
+├── storage.js # localStorage
+├── ui.js # render + statistics + insight
+└── api.js # external quote fetch
 
 ## How to run
 
-Just open `index.html` in your browser.  
-Or view the live version: [https://salvatorepolise.github.io/productivity-dashboard/](https://salvatorepolise.github.io/productivity-dashboard/)
+Open with a local server (Live Server / `npx serve`) or view the live version:  
+[https://salvatorepolise.github.io/productivity-dashboard/](https://salvatorepolise.github.io/productivity-dashboard/)
 
 ## Progress
 
@@ -46,10 +55,9 @@ Or view the live version: [https://salvatorepolise.github.io/productivity-dashbo
 - **Day 13** (16 September 2026): Habit sorting + search/sort pipeline
 - **Day 14** (17 September 2026): Today's Overview statistics connected to state
 - **Day 15** (18 September 2026): Habit Insights + immutable updates with spread
-- **Day 16** (19 September 2026): Smart Habit Status with some() / every()
-- **Day 17** (21 September 2026):
-Loaded daily quote from external API with async/await
-
+- **Day 16** (19 September 2026): Practiced find/some/every, kept UI minimal
+- **Day 17** (21 September 2026): Connected external API for daily quote
+- **Day 18** (22 September 2026): Refactored into ES Modules (state/ui/storage/api)
 - MRR: $0
 
 ---

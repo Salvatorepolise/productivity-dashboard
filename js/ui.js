@@ -1,4 +1,5 @@
 import { habitsData, getVisibleHabits } from "./state.js";
+import { getHabitStats, getHabitInsightMessage } from "./habits-logic.js";
 
 export function renderHabits() {
   const container = document.getElementById("habits");
@@ -53,81 +54,41 @@ export function renderHabits() {
 }
 
 function updateStatistics() {
-  const total = habitsData.length;
+  const stats = getHabitStats(habitsData);
 
-  const completed = habitsData.reduce((count, habit) => {
-    return habit.completed ? count + 1 : count;
-  }, 0);
-
-  const remaining = total - completed;
-  const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
-
-  document.getElementById("total-habits").textContent = total;
-  document.getElementById("completed-habits").textContent = completed;
-  document.getElementById("remaining-habits").textContent = remaining;
-  document.getElementById("progress-percentage").textContent = `${percentage}%`;
-}
-
-function getHabitInsight() {
-  const total = habitsData.length;
-
-  if (total === 0) {
-    return "Add your first habit to get started.";
-  }
-
-  const completed = habitsData.reduce((count, habit) => {
-    return habit.completed ? count + 1 : count;
-  }, 0);
-
-  const percentage = Math.round((completed / total) * 100);
-
-  if (percentage === 0) {
-    return "Start your day by completing your first habit.";
-  }
-
-  if (percentage < 50) {
-    return "Keep going — small steps still count.";
-  }
-
-  if (percentage < 100) {
-    return "You're more than halfway. Finish strong.";
-  }
-
-  return "All habits completed today. Great work!";
+  document.getElementById("total-habits").textContent = stats.total;
+  document.getElementById("completed-habits").textContent = stats.completed;
+  document.getElementById("remaining-habits").textContent = stats.remaining;
+  document.getElementById("progress-percentage").textContent =
+    `${stats.percentage}%`;
 }
 
 function updateInsight() {
   const insightEl = document.getElementById("habit-insight");
   if (!insightEl) return;
-  insightEl.textContent = getHabitInsight();
+
+  insightEl.textContent = getHabitInsightMessage(habitsData);
 }
 
 export function updateProgress() {
-  const total = habitsData.length;
-
-  const completed = habitsData.reduce((count, habit) => {
-    return habit.completed ? count + 1 : count;
-  }, 0);
-
-  const remaining = total - completed;
-  const percentage = total === 0 ? 0 : (completed / total) * 100;
+  const stats = getHabitStats(habitsData);
 
   document.getElementById("progress-text").textContent =
-    `Progress: ${completed}/${total} completed`;
+    `Progress: ${stats.completed}/${stats.total} completed`;
 
   const bar = document.getElementById("habits-progress-bar");
-  if (bar) bar.style.width = percentage + "%";
+  if (bar) bar.style.width = stats.percentage + "%";
 
-  document.getElementById("completed-count").textContent = completed;
-  document.getElementById("remaining-count").textContent = remaining;
+  document.getElementById("completed-count").textContent = stats.completed;
+  document.getElementById("remaining-count").textContent = stats.remaining;
 
   const messageEl = document.getElementById("habit-message");
 
-  if (total === 0) {
+  if (stats.total === 0) {
     messageEl.textContent = "Add your first habit";
-  } else if (!habitsData.some((h) => h.completed)) {
+  } else if (stats.completed === 0) {
     messageEl.textContent = "Start your day! 🚀";
-  } else if (habitsData.every((h) => h.completed)) {
+  } else if (stats.completed === stats.total) {
     messageEl.textContent = "Everything done! 🔥";
   } else {
     messageEl.textContent = "Good progress! 💪";

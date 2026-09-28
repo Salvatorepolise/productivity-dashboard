@@ -58,6 +58,8 @@ Open with a local server (Live Server / `npx serve`) or view the live version:
 - **Day 16** (19 September 2026): Practiced find/some/every, kept UI minimal
 - **Day 17** (21 September 2026): Connected external API for daily quote
 - **Day 18** (22 September 2026): Refactored into ES Modules (state/ui/storage/api)
+- **Day 19–21**: TypeScript data model + typed habit layer (separate practice)
+- **Day 22** (28 September 2026): Extracted pure habit logic from UI (`habits-logic.js`)
 - MRR: $0
 
 ---

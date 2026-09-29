@@ -10,7 +10,7 @@ import {
 } from "./state.js";
 
 import { renderHabits, updateProgress, renderGoals } from "./ui.js";
-import { loadDailyQuote } from "./api.js";
+import { loadDailyQuote, loadWeather } from "./api.js";
 
 // ===== GOALS =====
 const goals = [
@@ -152,3 +152,4 @@ updateProgress();
 updateCodingGoal();
 renderGoals(goals, goalsList);
 loadDailyQuote();
+loadWeather();

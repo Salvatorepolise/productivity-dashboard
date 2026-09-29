@@ -321,3 +321,16 @@ textarea:focus {
   font-size: 0.85rem;
   color: #71717a;
 }
+
+.weather-temp {
+  margin: 0 0 4px 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #18181b;
+}
+
+.weather-desc {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #71717a;
+}

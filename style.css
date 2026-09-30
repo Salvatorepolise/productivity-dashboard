@@ -334,3 +334,41 @@ textarea:focus {
   font-size: 0.95rem;
   color: #71717a;
 }
+/* Compact mode (Day 25) */
+body.compact section {
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.85rem;
+}
+
+body.compact #habits > div {
+  margin-bottom: 2px !important;
+  gap: 6px !important;
+}
+
+body.compact .edit-habit-btn,
+body.compact .delete-habit-btn {
+  padding: 2px 8px;
+  font-size: 0.75rem;
+}
+
+body.compact h1 {
+  margin-bottom: 1.25rem;
+  font-size: 1.5rem;
+}
+
+body.compact h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+}
+
+#temp-unit {
+  padding: 6px 10px;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: white;
+}
+
+#compact-mode {
+  margin-right: 0.5rem;
+}

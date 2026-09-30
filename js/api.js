@@ -1,3 +1,5 @@
+import { getPreferences } from "./preferences.js";
+
 export async function loadDailyQuote() {
   const quoteEl = document.getElementById("daily-quote");
   const authorEl = document.getElementById("quote-author");
@@ -26,12 +28,11 @@ export async function loadDailyQuote() {
 }
 
 /**
- * Weather model:
+ * Weather model (always stored in Celsius from API):
  * { temperature: number, weatherCode: number, description: string }
- *
- * Open-Meteo — no API key
- * Fixed location: Rome (approx)
  */
+
+let cachedWeather = null;
 
 function getWeatherDescription(code) {
   if (code === 0) return "Clear sky";
@@ -42,6 +43,14 @@ function getWeatherDescription(code) {
   if (code >= 80 && code <= 82) return "Rain showers";
   if (code >= 95 && code <= 99) return "Thunderstorm";
   return "Unknown conditions";
+}
+
+/** Pure conversion — API stays in °C */
+export function convertTemperature(celsius, unit) {
+  if (unit === "fahrenheit") {
+    return Math.round((celsius * 9) / 5 + 32);
+  }
+  return Math.round(celsius);
 }
 
 /** API layer only — no DOM */
@@ -65,14 +74,16 @@ export async function getWeather() {
   const temperature = data.current.temperature_2m;
   const weatherCode = data.current.weather_code;
 
-  return {
+  const weather = {
     temperature,
     weatherCode,
     description: getWeatherDescription(weatherCode),
   };
+
+  cachedWeather = weather;
+  return weather;
 }
 
-/** UI helpers */
 function renderWeatherLoading() {
   const tempEl = document.getElementById("weather-temp");
   const descEl = document.getElementById("weather-desc");
@@ -87,7 +98,11 @@ function renderWeather(weather) {
   const descEl = document.getElementById("weather-desc");
   if (!tempEl || !descEl) return;
 
-  tempEl.textContent = `${weather.temperature}°C`;
+  const { temperatureUnit } = getPreferences();
+  const value = convertTemperature(weather.temperature, temperatureUnit);
+  const symbol = temperatureUnit === "fahrenheit" ? "°F" : "°C";
+
+  tempEl.textContent = `${value}${symbol}`;
   descEl.textContent = weather.description;
 }
 
@@ -100,7 +115,13 @@ function renderWeatherError() {
   descEl.textContent = "";
 }
 
-/** Orchestration: loading → API → UI */
+/** Re-render from cache when unit changes (no new API call) */
+export function refreshWeatherDisplay() {
+  if (cachedWeather) {
+    renderWeather(cachedWeather);
+  }
+}
+
 export async function loadWeather() {
   renderWeatherLoading();
 

@@ -10,7 +10,13 @@ import {
 } from "./state.js";
 
 import { renderHabits, updateProgress, renderGoals } from "./ui.js";
-import { loadDailyQuote, loadWeather } from "./api.js";
+import { loadDailyQuote, loadWeather, refreshWeatherDisplay } from "./api.js";
+import {
+  loadPreferences,
+  savePreferences,
+  getPreferences,
+  applyCompactMode,
+} from "./preferences.js";
 
 // ===== GOALS =====
 const goals = [
@@ -145,7 +151,33 @@ notesTextarea.addEventListener("input", () => {
   localStorage.setItem("notes", notesTextarea.value);
 });
 
+// ===== SETTINGS (Day 25) =====
+const tempUnitSelect = document.getElementById("temp-unit");
+const compactModeCheckbox = document.getElementById("compact-mode");
+
+function syncSettingsUI() {
+  const prefs = getPreferences();
+  tempUnitSelect.value = prefs.temperatureUnit;
+  compactModeCheckbox.checked = prefs.compactMode;
+  applyCompactMode();
+}
+
+tempUnitSelect.addEventListener("change", () => {
+  savePreferences({ temperatureUnit: tempUnitSelect.value });
+  refreshWeatherDisplay(); // aggiorna °C/°F senza nuova request
+});
+
+compactModeCheckbox.addEventListener("change", () => {
+  savePreferences({ compactMode: compactModeCheckbox.checked });
+  applyCompactMode();
+});
+
 // ===== INIT =====
+// 1. preferenze prima di tutto (così weather usa l'unità corretta)
+loadPreferences();
+syncSettingsUI();
+
+// 2. resto dell'app
 initHabits();
 renderHabits();
 updateProgress();

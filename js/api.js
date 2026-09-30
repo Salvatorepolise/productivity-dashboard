@@ -26,12 +26,13 @@ export async function loadDailyQuote() {
 }
 
 /**
- * Weather model used by the Dashboard:
+ * Weather model:
  * { temperature: number, weatherCode: number, description: string }
  *
- * Open-Meteo — no API key required
+ * Open-Meteo — no API key
  * Fixed location: Rome (approx)
  */
+
 function getWeatherDescription(code) {
   if (code === 0) return "Clear sky";
   if (code >= 1 && code <= 3) return "Partly cloudy";
@@ -43,16 +44,8 @@ function getWeatherDescription(code) {
   return "Unknown conditions";
 }
 
-export async function loadWeather() {
-  const tempEl = document.getElementById("weather-temp");
-  const descEl = document.getElementById("weather-desc");
-
-  if (!tempEl || !descEl) return;
-
-  tempEl.textContent = "Loading weather...";
-  descEl.textContent = "";
-
-  // Rome approximate coordinates
+/** API layer only — no DOM */
+export async function getWeather() {
   const latitude = 41.9;
   const longitude = 12.5;
 
@@ -61,30 +54,61 @@ export async function loadWeather() {
     `?latitude=${latitude}&longitude=${longitude}` +
     `&current=temperature_2m,weather_code`;
 
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  const temperature = data.current.temperature_2m;
+  const weatherCode = data.current.weather_code;
+
+  return {
+    temperature,
+    weatherCode,
+    description: getWeatherDescription(weatherCode),
+  };
+}
+
+/** UI helpers */
+function renderWeatherLoading() {
+  const tempEl = document.getElementById("weather-temp");
+  const descEl = document.getElementById("weather-desc");
+  if (!tempEl || !descEl) return;
+
+  tempEl.textContent = "Loading weather...";
+  descEl.textContent = "";
+}
+
+function renderWeather(weather) {
+  const tempEl = document.getElementById("weather-temp");
+  const descEl = document.getElementById("weather-desc");
+  if (!tempEl || !descEl) return;
+
+  tempEl.textContent = `${weather.temperature}°C`;
+  descEl.textContent = weather.description;
+}
+
+function renderWeatherError() {
+  const tempEl = document.getElementById("weather-temp");
+  const descEl = document.getElementById("weather-desc");
+  if (!tempEl || !descEl) return;
+
+  tempEl.textContent = "Could not load weather.";
+  descEl.textContent = "";
+}
+
+/** Orchestration: loading → API → UI */
+export async function loadWeather() {
+  renderWeatherLoading();
+
   try {
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    const temperature = data.current.temperature_2m;
-    const weatherCode = data.current.weather_code;
-
-    // Useful model for the product (not the whole API response)
-    const weather = {
-      temperature,
-      weatherCode,
-      description: getWeatherDescription(weatherCode),
-    };
-
-    tempEl.textContent = `${weather.temperature}°C`;
-    descEl.textContent = weather.description;
+    const weather = await getWeather();
+    renderWeather(weather);
   } catch (error) {
     console.error("Weather fetch failed:", error);
-    tempEl.textContent = "Could not load weather.";
-    descEl.textContent = "";
+    renderWeatherError();
   }
 }

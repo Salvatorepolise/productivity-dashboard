@@ -7,6 +7,7 @@ import {
   resetHabits,
   setSearchText,
   setSortOption,
+  undoDelete,
 } from "./state.js";
 
 import { renderHabits, updateProgress, renderGoals } from "./ui.js";
@@ -111,6 +112,15 @@ document.getElementById("reset-habits-btn").addEventListener("click", () => {
   updateProgress();
 });
 
+// ===== UNDO DELETE (Day 26) =====
+document.getElementById("undo-delete-btn").addEventListener("click", () => {
+  const restored = undoDelete();
+  if (restored) {
+    renderHabits();
+    updateProgress();
+  }
+});
+
 // ===== CODING =====
 const goalMinutes = 60;
 const todayInput = document.getElementById("today-input");
@@ -164,7 +174,7 @@ function syncSettingsUI() {
 
 tempUnitSelect.addEventListener("change", () => {
   savePreferences({ temperatureUnit: tempUnitSelect.value });
-  refreshWeatherDisplay(); // aggiorna °C/°F senza nuova request
+  refreshWeatherDisplay();
 });
 
 compactModeCheckbox.addEventListener("change", () => {
@@ -173,11 +183,9 @@ compactModeCheckbox.addEventListener("change", () => {
 });
 
 // ===== INIT =====
-// 1. preferenze prima di tutto (così weather usa l'unità corretta)
 loadPreferences();
 syncSettingsUI();
 
-// 2. resto dell'app
 initHabits();
 renderHabits();
 updateProgress();

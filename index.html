@@ -36,19 +36,18 @@
         <p id="habit-insight">Start your first habit today.</p>
       </div>
 
-      <!-- WEATHER (Day 23) -->
-      <section>
-        <h2>Weather</h2>
-        <p id="weather-temp" class="weather-temp">Loading weather...</p>
-        <p id="weather-desc" class="weather-desc"></p>
-      </section>
-
-      <!-- QUOTE (Day 17 — external API) -->
       <div class="quote-box">
         <span class="quote-label">Quote of the day</span>
         <p id="daily-quote">Loading quote...</p>
         <p id="quote-author"></p>
       </div>
+    </section>
+
+    <!-- WEATHER -->
+    <section>
+      <h2>Weather</h2>
+      <p id="weather-temp" class="weather-temp">Loading weather...</p>
+      <p id="weather-desc" class="weather-desc"></p>
     </section>
 
     <!-- GOALS -->
@@ -142,7 +141,7 @@
       ></textarea>
     </section>
 
-    <!-- SETTINGS (Day 25) -->
+    <!-- SETTINGS -->
     <section>
       <h2>Settings</h2>
 
@@ -163,9 +162,15 @@
     <!-- FOOTER -->
     <section>
       <p style="margin: 0; color: #71717a; font-size: 0.9rem">
-        Day 25 · October 1, 2026 · MRR: $0
+        Day 26 · October 2, 2026 · MRR: $0
       </p>
     </section>
+
+    <!-- UNDO TOAST -->
+    <div id="undo-toast" class="undo-toast" hidden>
+      <span>Habit deleted.</span>
+      <button type="button" id="undo-delete-btn">Undo</button>
+    </div>
 
     <script type="module" src="js/main.js"></script>
   </body>

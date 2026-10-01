@@ -10,6 +10,10 @@ export let habitsData = [
 export let searchText = "";
 export let sortOption = "default";
 
+/** Temporary state — last deleted habit only (not in localStorage) */
+let recentlyDeletedHabit = null;
+let undoTimeoutId = null;
+
 export function initHabits() {
   const saved = loadHabitsFromStorage();
   if (saved) {
@@ -70,9 +74,64 @@ export function addHabit(name) {
   return true;
 }
 
+/**
+ * Soft delete: keep last deleted habit for undo (5s).
+ * Returns true if something was deleted.
+ */
 export function deleteHabit(id) {
-  habitsData = habitsData.filter((habit) => habit.id !== id);
+  const habit = habitsData.find((h) => h.id === id);
+  if (!habit) return false;
+
+  // Reset previous undo window
+  if (undoTimeoutId !== null) {
+    clearTimeout(undoTimeoutId);
+    undoTimeoutId = null;
+  }
+
+  recentlyDeletedHabit = { ...habit };
+  habitsData = habitsData.filter((h) => h.id !== id);
   saveHabitsToStorage(habitsData);
+
+  undoTimeoutId = setTimeout(() => {
+    recentlyDeletedHabit = null;
+    undoTimeoutId = null;
+    hideUndoToast();
+  }, 5000);
+
+  showUndoToast();
+  return true;
+}
+
+export function undoDelete() {
+  if (!recentlyDeletedHabit) return false;
+
+  if (undoTimeoutId !== null) {
+    clearTimeout(undoTimeoutId);
+    undoTimeoutId = null;
+  }
+
+  const restored = recentlyDeletedHabit;
+  recentlyDeletedHabit = null;
+
+  // Avoid duplicate if somehow already back
+  const exists = habitsData.some((h) => h.id === restored.id);
+  if (!exists) {
+    habitsData = [...habitsData, restored];
+    saveHabitsToStorage(habitsData);
+  }
+
+  hideUndoToast();
+  return true;
+}
+
+function showUndoToast() {
+  const toast = document.getElementById("undo-toast");
+  if (toast) toast.hidden = false;
+}
+
+function hideUndoToast() {
+  const toast = document.getElementById("undo-toast");
+  if (toast) toast.hidden = true;
 }
 
 export function editHabit(id) {

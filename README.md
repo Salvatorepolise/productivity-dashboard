@@ -9,6 +9,7 @@ Simple and focused personal productivity dashboard built during my public challe
 - Quote of the day (external API + async/await)
 - Weather (Open-Meteo — loading / success / error)
 - User preferences (temperature unit °C/°F + compact mode, persisted)
+- Undo delete (temporary state + 5s toast)
 - Today's Goals (dynamic list + add new goals)
 - Habit Tracker with full CRUD
 - Search + Sort habits (state vs view)
@@ -65,8 +66,9 @@ Open with a local server (Live Server / `npx serve`) or view the live version:
 - **Day 19–21**: TypeScript data model + typed habit layer (separate practice)
 - **Day 22** (28 September 2026): Extracted pure habit logic from UI (`habits-logic.js`)
 - **Day 23** (29 September 2026): Integrated Open-Meteo weather API
-- **Day 24** (30 September 2026): Separated weather API logic from UI (`getWeather` + render)
+- **Day 24** (30 September 2026): Separated weather API logic from UI
 - **Day 25** (1 October 2026): Persistent user preferences (°C/°F + compact mode)
+- **Day 26** (2 October 2026): Undo delete with temporary state + toast
 - MRR: $0
 
 ---

@@ -9,7 +9,11 @@ export let habitsData = [
 
 export let searchText = "";
 export let sortOption = "default";
+export let statusFilter = "all"; // "all" | "completed" | "remaining"
 
+export function setStatusFilter(value) {
+  statusFilter = value;
+}
 /** Temporary state — last deleted habit only (not in localStorage) */
 let recentlyDeletedHabit = null;
 let undoTimeoutId = null;
@@ -32,6 +36,7 @@ export function setSortOption(value) {
 export function getVisibleHabits() {
   let list;
 
+  // 1. Search (non muta habitsData)
   if (!searchText.trim()) {
     list = [...habitsData];
   } else {
@@ -40,6 +45,14 @@ export function getVisibleHabits() {
     );
   }
 
+  // 2. Status filter (Day 27)
+  if (statusFilter === "completed") {
+    list = list.filter((h) => h.completed);
+  } else if (statusFilter === "remaining") {
+    list = list.filter((h) => !h.completed);
+  }
+
+  // 3. Sort
   if (sortOption === "az") {
     return list.sort((a, b) => a.name.localeCompare(b.name));
   }

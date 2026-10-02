@@ -408,3 +408,16 @@ body.compact h2 {
 #undo-delete-btn:hover {
   background: #2563eb;
 }
+#habit-status-filter {
+  padding: 7px 10px;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: white;
+  cursor: pointer;
+}
+
+#habit-status-filter:focus {
+  outline: none;
+  border-color: #3b82f6;
+}

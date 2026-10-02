@@ -7,6 +7,7 @@ import {
   resetHabits,
   setSearchText,
   setSortOption,
+  setStatusFilter,
   undoDelete,
 } from "./state.js";
 
@@ -78,6 +79,13 @@ document.getElementById("search-habit-input").addEventListener("input", (e) => {
   setSearchText(e.target.value);
   renderHabits();
 });
+
+document
+  .getElementById("habit-status-filter")
+  .addEventListener("change", (e) => {
+    setStatusFilter(e.target.value);
+    renderHabits();
+  });
 
 document.getElementById("sort-habits").addEventListener("change", (e) => {
   setSortOption(e.target.value);

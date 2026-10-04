@@ -10,9 +10,10 @@ Simple and focused personal productivity dashboard built during my public challe
 - Weather (Open-Meteo — loading / success / error)
 - User preferences (temperature unit °C/°F + compact mode, persisted)
 - Undo delete (temporary state + 5s toast)
+- Keyboard shortcuts (Ctrl/Cmd+K search, N new habit, Esc clear search)
 - Today's Goals (dynamic list + add new goals)
 - Habit Tracker with full CRUD
-- Search + Sort habits (state vs view)
+- Search + Status filter + Sort (derived view, source state untouched)
 - Duplicate validation
 - Event delegation
 - Progress bar + analytics
@@ -30,8 +31,8 @@ Simple and focused personal productivity dashboard built during my public challe
 ## Project structure
 
 js/
-├── main.js # app entry + events + settings
-├── state.js # habits state + CRUD
+├── main.js # app entry + events + settings + keyboard shortcuts
+├── state.js # habits state + CRUD + search/filter/sort + undo
 ├── storage.js # localStorage (habits)
 ├── ui.js # render + DOM updates
 ├── habits-logic.js # pure habit calculations (no DOM)
@@ -69,6 +70,8 @@ Open with a local server (Live Server / `npx serve`) or view the live version:
 - **Day 24** (30 September 2026): Separated weather API logic from UI
 - **Day 25** (1 October 2026): Persistent user preferences (°C/°F + compact mode)
 - **Day 26** (2 October 2026): Undo delete with temporary state + toast
+- **Day 27** (3 October 2026): Status filter on derived view (search + filter + sort)
+- **Day 28** (4 October 2026): Keyboard shortcuts (Ctrl/Cmd+K, N, Esc)
 - MRR: $0
 
 ---

@@ -129,6 +129,48 @@ document.getElementById("undo-delete-btn").addEventListener("click", () => {
   }
 });
 
+// ===== KEYBOARD SHORTCUTS (Day 28) =====
+function isTypingInField(target) {
+  const tag = target.tagName;
+  return (
+    tag === "INPUT" ||
+    tag === "TEXTAREA" ||
+    tag === "SELECT" ||
+    target.isContentEditable
+  );
+}
+
+function handleKeyboardShortcuts(event) {
+  const target = event.target;
+
+  // Ctrl/Cmd + K → focus search
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+    event.preventDefault();
+    document.getElementById("search-habit-input").focus();
+    return;
+  }
+
+  // Esc → clear search + use existing setSearchText / render
+  if (event.key === "Escape") {
+    const searchInput = document.getElementById("search-habit-input");
+    if (searchInput.value !== "") {
+      searchInput.value = "";
+      setSearchText("");
+      renderHabits();
+    }
+    searchInput.blur();
+    return;
+  }
+
+  // N → focus new habit (only when not typing in a field)
+  if (event.key.toLowerCase() === "n" && !isTypingInField(target)) {
+    event.preventDefault();
+    document.getElementById("new-habit-input").focus();
+  }
+}
+
+document.addEventListener("keydown", handleKeyboardShortcuts);
+
 // ===== CODING =====
 const goalMinutes = 60;
 const todayInput = document.getElementById("today-input");

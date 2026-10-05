@@ -11,6 +11,7 @@ Simple and focused personal productivity dashboard built during my public challe
 - User preferences (temperature unit °C/°F + compact mode, persisted)
 - Undo delete (temporary state + 5s toast)
 - Keyboard shortcuts (Ctrl/Cmd+K search, N new habit, Esc clear search)
+- Export / Import habits (JSON backup + validation)
 - Today's Goals (dynamic list + add new goals)
 - Habit Tracker with full CRUD
 - Search + Status filter + Sort (derived view, source state untouched)
@@ -31,8 +32,8 @@ Simple and focused personal productivity dashboard built during my public challe
 ## Project structure
 
 js/
-├── main.js # app entry + events + settings + keyboard shortcuts
-├── state.js # habits state + CRUD + search/filter/sort + undo
+├── main.js # app entry + events + settings + keyboard + export/import
+├── state.js # habits state + CRUD + search/filter/sort + undo + import/export
 ├── storage.js # localStorage (habits)
 ├── ui.js # render + DOM updates
 ├── habits-logic.js # pure habit calculations (no DOM)
@@ -72,6 +73,7 @@ Open with a local server (Live Server / `npx serve`) or view the live version:
 - **Day 26** (2 October 2026): Undo delete with temporary state + toast
 - **Day 27** (3 October 2026): Status filter on derived view (search + filter + sort)
 - **Day 28** (4 October 2026): Keyboard shortcuts (Ctrl/Cmd+K, N, Esc)
+- **Day 29** (5 October 2026): Export / Import habits as JSON
 - MRR: $0
 
 ---

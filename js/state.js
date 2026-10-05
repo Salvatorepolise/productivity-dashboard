@@ -14,6 +14,7 @@ export let statusFilter = "all"; // "all" | "completed" | "remaining"
 export function setStatusFilter(value) {
   statusFilter = value;
 }
+
 /** Temporary state — last deleted habit only (not in localStorage) */
 let recentlyDeletedHabit = null;
 let undoTimeoutId = null;
@@ -36,7 +37,7 @@ export function setSortOption(value) {
 export function getVisibleHabits() {
   let list;
 
-  // 1. Search (non muta habitsData)
+  // 1. Search (does not mutate habitsData)
   if (!searchText.trim()) {
     list = [...habitsData];
   } else {
@@ -45,7 +46,7 @@ export function getVisibleHabits() {
     );
   }
 
-  // 2. Status filter (Day 27)
+  // 2. Status filter
   if (statusFilter === "completed") {
     list = list.filter((h) => h.completed);
   } else if (statusFilter === "remaining") {
@@ -95,7 +96,6 @@ export function deleteHabit(id) {
   const habit = habitsData.find((h) => h.id === id);
   if (!habit) return false;
 
-  // Reset previous undo window
   if (undoTimeoutId !== null) {
     clearTimeout(undoTimeoutId);
     undoTimeoutId = null;
@@ -126,7 +126,6 @@ export function undoDelete() {
   const restored = recentlyDeletedHabit;
   recentlyDeletedHabit = null;
 
-  // Avoid duplicate if somehow already back
   const exists = habitsData.some((h) => h.id === restored.id);
   if (!exists) {
     habitsData = [...habitsData, restored];
@@ -185,4 +184,47 @@ export function updateHabit(id) {
 export function resetHabits() {
   habitsData = habitsData.map((h) => ({ ...h, completed: false }));
   saveHabitsToStorage(habitsData);
+}
+
+/** Export: safe copy of state (does not mutate habitsData) */
+export function getHabitsForExport() {
+  return habitsData.map((h) => ({
+    id: h.id,
+    name: h.name,
+    completed: h.completed,
+  }));
+}
+
+/**
+ * Import: validate and replace habitsData.
+ * Returns { ok: true } | { ok: false, error: string }
+ */
+export function importHabitsFromData(data) {
+  if (!Array.isArray(data)) {
+    return { ok: false, error: "File must contain a JSON array." };
+  }
+
+  for (const item of data) {
+    if (
+      !item ||
+      typeof item.id !== "string" ||
+      typeof item.name !== "string" ||
+      typeof item.completed !== "boolean"
+    ) {
+      return {
+        ok: false,
+        error:
+          "Each habit needs id (string), name (string), completed (boolean).",
+      };
+    }
+  }
+
+  habitsData = data.map((h) => ({
+    id: h.id,
+    name: h.name,
+    completed: h.completed,
+  }));
+
+  saveHabitsToStorage(habitsData);
+  return { ok: true };
 }

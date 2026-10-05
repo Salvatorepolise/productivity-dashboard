@@ -9,6 +9,8 @@ import {
   setSortOption,
   setStatusFilter,
   undoDelete,
+  getHabitsForExport,
+  importHabitsFromData,
 } from "./state.js";
 
 import { renderHabits, updateProgress, renderGoals } from "./ui.js";
@@ -120,7 +122,7 @@ document.getElementById("reset-habits-btn").addEventListener("click", () => {
   updateProgress();
 });
 
-// ===== UNDO DELETE (Day 26) =====
+// ===== UNDO DELETE =====
 document.getElementById("undo-delete-btn").addEventListener("click", () => {
   const restored = undoDelete();
   if (restored) {
@@ -129,7 +131,7 @@ document.getElementById("undo-delete-btn").addEventListener("click", () => {
   }
 });
 
-// ===== KEYBOARD SHORTCUTS (Day 28) =====
+// ===== KEYBOARD SHORTCUTS =====
 function isTypingInField(target) {
   const tag = target.tagName;
   return (
@@ -143,14 +145,12 @@ function isTypingInField(target) {
 function handleKeyboardShortcuts(event) {
   const target = event.target;
 
-  // Ctrl/Cmd + K → focus search
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
     event.preventDefault();
     document.getElementById("search-habit-input").focus();
     return;
   }
 
-  // Esc → clear search + use existing setSearchText / render
   if (event.key === "Escape") {
     const searchInput = document.getElementById("search-habit-input");
     if (searchInput.value !== "") {
@@ -162,7 +162,6 @@ function handleKeyboardShortcuts(event) {
     return;
   }
 
-  // N → focus new habit (only when not typing in a field)
   if (event.key.toLowerCase() === "n" && !isTypingInField(target)) {
     event.preventDefault();
     document.getElementById("new-habit-input").focus();
@@ -170,6 +169,68 @@ function handleKeyboardShortcuts(event) {
 }
 
 document.addEventListener("keydown", handleKeyboardShortcuts);
+
+// ===== EXPORT / IMPORT (Day 29) =====
+function exportHabits() {
+  const data = getHabitsForExport();
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const date = new Date().toISOString().slice(0, 10);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `habits-backup-${date}.json`;
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function importHabitsFromFile(file) {
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(reader.result);
+      const result = importHabitsFromData(parsed);
+
+      if (!result.ok) {
+        alert(result.error);
+        return;
+      }
+
+      renderHabits();
+      updateProgress();
+    } catch (error) {
+      console.error(error);
+      alert("Could not read this file. Use a valid JSON habits backup.");
+    }
+  };
+
+  reader.onerror = () => {
+    alert("Failed to read the file.");
+  };
+
+  reader.readAsText(file);
+}
+
+document
+  .getElementById("export-habits-btn")
+  .addEventListener("click", exportHabits);
+
+document.getElementById("import-habits-btn").addEventListener("click", () => {
+  document.getElementById("import-habits-input").click();
+});
+
+document
+  .getElementById("import-habits-input")
+  .addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    importHabitsFromFile(file);
+    e.target.value = ""; // permette di ri-importare lo stesso file
+  });
 
 // ===== CODING =====
 const goalMinutes = 60;
@@ -211,7 +272,7 @@ notesTextarea.addEventListener("input", () => {
   localStorage.setItem("notes", notesTextarea.value);
 });
 
-// ===== SETTINGS (Day 25) =====
+// ===== SETTINGS =====
 const tempUnitSelect = document.getElementById("temp-unit");
 const compactModeCheckbox = document.getElementById("compact-mode");
 

@@ -2,13 +2,15 @@
  * UserPreferences:
  * {
  *   temperatureUnit: "celsius" | "fahrenheit",
- *   compactMode: boolean
+ *   compactMode: boolean,
+ *   theme: "light" | "dark"
  * }
  */
 
 export const defaultPreferences = {
   temperatureUnit: "celsius",
   compactMode: false,
+  theme: "light",
 };
 
 let preferences = { ...defaultPreferences };
@@ -50,4 +52,14 @@ export function savePreferences(next) {
 
 export function applyCompactMode() {
   document.body.classList.toggle("compact", preferences.compactMode);
+}
+
+export function applyTheme() {
+  document.body.classList.toggle("dark", preferences.theme === "dark");
+}
+
+/** Apply all visual preferences after load */
+export function applyPreferencesToUI() {
+  applyCompactMode();
+  applyTheme();
 }

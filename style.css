@@ -451,3 +451,201 @@ body.compact h2 {
   background-color: #e4e4e7;
   border-color: #a1a1aa;
 }
+/* ===== DARK MODE (Day 30) ===== */
+body.dark {
+  background-color: #09090b;
+  color: #fafafa;
+}
+
+body.dark section {
+  background: #18181b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+body.dark h1 {
+  color: #fafafa;
+}
+
+body.dark h2 {
+  color: #a1a1aa;
+}
+
+body.dark .stat-card {
+  background: #27272a;
+}
+
+body.dark .stat-label {
+  color: #a1a1aa;
+}
+
+body.dark .stat-value {
+  color: #fafafa;
+}
+
+body.dark .insight-box,
+body.dark .quote-box {
+  background: #27272a;
+}
+
+body.dark #habit-insight,
+body.dark #daily-quote,
+body.dark #quote-author,
+body.dark .weather-desc,
+body.dark #goal-status {
+  color: #a1a1aa;
+}
+
+body.dark .weather-temp {
+  color: #fafafa;
+}
+
+body.dark input[type="text"],
+body.dark input[type="number"],
+body.dark input[type="search"],
+body.dark select,
+body.dark textarea {
+  background: #27272a;
+  border-color: #3f3f46;
+  color: #fafafa;
+}
+
+body.dark input:focus,
+body.dark select:focus,
+body.dark textarea:focus {
+  border-color: #3b82f6;
+}
+
+body.dark #goals-list li {
+  border-bottom-color: #3f3f46;
+}
+
+body.dark .progress-bar-container {
+  background-color: #3f3f46;
+}
+
+body.dark .edit-habit-btn,
+body.dark .delete-habit-btn {
+  background-color: #27272a;
+  border-color: #3f3f46;
+  color: #a1a1aa;
+}
+
+body.dark .edit-habit-btn:hover {
+  background-color: #0c4a6e;
+  color: #7dd3fc;
+  border-color: #0284c7;
+}
+
+body.dark .delete-habit-btn:hover {
+  background-color: #450a0a;
+  color: #fca5a5;
+  border-color: #dc2626;
+}
+
+body.dark #import-habits-btn {
+  background-color: #27272a;
+  color: #e4e4e7;
+  border-color: #3f3f46;
+}
+
+body.dark #import-habits-btn:hover {
+  background-color: #3f3f46;
+}
+
+body.dark #dark-mode {
+  margin-right: 0.5rem;
+}
+/* Dark mode — buttons */
+body.dark #add-goal-btn,
+body.dark #add-habit-btn,
+body.dark #export-habits-btn {
+  background-color: #3b82f6;
+  color: #ffffff;
+  border: none;
+}
+
+body.dark #add-goal-btn:hover,
+body.dark #add-habit-btn:hover,
+body.dark #export-habits-btn:hover {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+body.dark #reset-habits-btn {
+  background-color: #dc2626;
+  color: #ffffff;
+  border: none;
+}
+
+body.dark #reset-habits-btn:hover {
+  background-color: #b91c1c;
+  color: #ffffff;
+}
+
+body.dark #import-habits-btn {
+  background-color: #27272a;
+  color: #fafafa;
+  border: 1px solid #52525b;
+}
+
+body.dark #import-habits-btn:hover {
+  background-color: #3f3f46;
+  color: #ffffff;
+}
+
+body.dark #undo-delete-btn {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+body.dark #undo-delete-btn:hover {
+  background-color: #2563eb;
+}
+
+body.dark .undo-toast {
+  background: #27272a;
+  color: #fafafa;
+  border: 1px solid #3f3f46;
+}
+
+/* generico: qualsiasi button senza classe specifica */
+body.dark button {
+  color: inherit;
+}
+
+body.dark label {
+  color: #e4e4e7;
+}
+body.dark #add-goal-btn,
+body.dark #add-habit-btn,
+body.dark #export-habits-btn,
+body.dark #reset-habits-btn {
+  background-color: #3b82f6 !important;
+  color: #fff !important;
+}
+
+body.dark #reset-habits-btn {
+  background-color: #dc2626 !important;
+}
+/* Dark mode — select & options */
+body.dark select,
+body.dark #habit-status-filter,
+body.dark #sort-habits,
+body.dark #temp-unit {
+  background-color: #27272a;
+  color: #fafafa;
+  border: 1px solid #52525b;
+}
+
+body.dark select:focus,
+body.dark #habit-status-filter:focus,
+body.dark #sort-habits:focus,
+body.dark #temp-unit:focus {
+  border-color: #3b82f6;
+  outline: none;
+}
+
+body.dark select option {
+  background-color: #27272a;
+  color: #fafafa;
+}

@@ -8,7 +8,7 @@ Simple and focused personal productivity dashboard built during my public challe
 - Habit Insights (dynamic motivational message)
 - Quote of the day (external API + async/await)
 - Weather (Open-Meteo — loading / success / error)
-- User preferences (temperature unit °C/°F + compact mode, persisted)
+- User preferences (°C/°F, compact mode, dark mode — persisted)
 - Undo delete (temporary state + 5s toast)
 - Keyboard shortcuts (Ctrl/Cmd+K search, N new habit, Esc clear search)
 - Export / Import habits (JSON backup + validation)
@@ -38,7 +38,7 @@ js/
 ├── ui.js # render + DOM updates
 ├── habits-logic.js # pure habit calculations (no DOM)
 ├── api.js # quote + weather (API layer + display)
-└── preferences.js # user preferences + persistence
+└── preferences.js # user preferences + persistence (theme, compact, °C/°F)
 
 ## How to run
 
@@ -74,6 +74,7 @@ Open with a local server (Live Server / `npx serve`) or view the live version:
 - **Day 27** (3 October 2026): Status filter on derived view (search + filter + sort)
 - **Day 28** (4 October 2026): Keyboard shortcuts (Ctrl/Cmd+K, N, Esc)
 - **Day 29** (5 October 2026): Export / Import habits as JSON
+- **Day 30** (6 October 2026): Dark mode preference + UI contrast fixes
 - MRR: $0
 
 ---

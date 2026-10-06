@@ -19,7 +19,7 @@ import {
   loadPreferences,
   savePreferences,
   getPreferences,
-  applyCompactMode,
+  applyPreferencesToUI,
 } from "./preferences.js";
 
 // ===== GOALS =====
@@ -170,7 +170,7 @@ function handleKeyboardShortcuts(event) {
 
 document.addEventListener("keydown", handleKeyboardShortcuts);
 
-// ===== EXPORT / IMPORT (Day 29) =====
+// ===== EXPORT / IMPORT =====
 function exportHabits() {
   const data = getHabitsForExport();
   const json = JSON.stringify(data, null, 2);
@@ -229,7 +229,7 @@ document
   .addEventListener("change", (e) => {
     const file = e.target.files[0];
     importHabitsFromFile(file);
-    e.target.value = ""; // permette di ri-importare lo stesso file
+    e.target.value = "";
   });
 
 // ===== CODING =====
@@ -275,12 +275,14 @@ notesTextarea.addEventListener("input", () => {
 // ===== SETTINGS =====
 const tempUnitSelect = document.getElementById("temp-unit");
 const compactModeCheckbox = document.getElementById("compact-mode");
+const darkModeCheckbox = document.getElementById("dark-mode");
 
 function syncSettingsUI() {
   const prefs = getPreferences();
   tempUnitSelect.value = prefs.temperatureUnit;
   compactModeCheckbox.checked = prefs.compactMode;
-  applyCompactMode();
+  darkModeCheckbox.checked = prefs.theme === "dark";
+  applyPreferencesToUI();
 }
 
 tempUnitSelect.addEventListener("change", () => {
@@ -290,7 +292,14 @@ tempUnitSelect.addEventListener("change", () => {
 
 compactModeCheckbox.addEventListener("change", () => {
   savePreferences({ compactMode: compactModeCheckbox.checked });
-  applyCompactMode();
+  applyPreferencesToUI();
+});
+
+darkModeCheckbox.addEventListener("change", () => {
+  savePreferences({
+    theme: darkModeCheckbox.checked ? "dark" : "light",
+  });
+  applyPreferencesToUI();
 });
 
 // ===== INIT =====

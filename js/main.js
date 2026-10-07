@@ -1,5 +1,6 @@
 import {
   initHabits,
+  checkAndResetForNewDay,
   addHabit,
   deleteHabit,
   editHabit,
@@ -307,6 +308,7 @@ loadPreferences();
 syncSettingsUI();
 
 initHabits();
+checkAndResetForNewDay(); // Day 31 — after load, before render
 renderHabits();
 updateProgress();
 updateCodingGoal();

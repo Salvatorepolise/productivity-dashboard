@@ -26,6 +26,22 @@ export function initHabits() {
   }
 }
 
+/**
+ * Day 31 — if calendar day changed, reset completed flags only.
+ * Habits list is kept; only daily progress resets.
+ */
+export function checkAndResetForNewDay() {
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const last = localStorage.getItem("lastActiveDate");
+
+  if (last && last !== today) {
+    habitsData = habitsData.map((h) => ({ ...h, completed: false }));
+    saveHabitsToStorage(habitsData);
+  }
+
+  localStorage.setItem("lastActiveDate", today);
+}
+
 export function setSearchText(value) {
   searchText = value;
 }
@@ -37,7 +53,6 @@ export function setSortOption(value) {
 export function getVisibleHabits() {
   let list;
 
-  // 1. Search (does not mutate habitsData)
   if (!searchText.trim()) {
     list = [...habitsData];
   } else {
@@ -46,14 +61,12 @@ export function getVisibleHabits() {
     );
   }
 
-  // 2. Status filter
   if (statusFilter === "completed") {
     list = list.filter((h) => h.completed);
   } else if (statusFilter === "remaining") {
     list = list.filter((h) => !h.completed);
   }
 
-  // 3. Sort
   if (sortOption === "az") {
     return list.sort((a, b) => a.name.localeCompare(b.name));
   }
@@ -88,10 +101,6 @@ export function addHabit(name) {
   return true;
 }
 
-/**
- * Soft delete: keep last deleted habit for undo (5s).
- * Returns true if something was deleted.
- */
 export function deleteHabit(id) {
   const habit = habitsData.find((h) => h.id === id);
   if (!habit) return false;
@@ -186,7 +195,6 @@ export function resetHabits() {
   saveHabitsToStorage(habitsData);
 }
 
-/** Export: safe copy of state (does not mutate habitsData) */
 export function getHabitsForExport() {
   return habitsData.map((h) => ({
     id: h.id,
@@ -195,10 +203,6 @@ export function getHabitsForExport() {
   }));
 }
 
-/**
- * Import: validate and replace habitsData.
- * Returns { ok: true } | { ok: false, error: string }
- */
 export function importHabitsFromData(data) {
   if (!Array.isArray(data)) {
     return { ok: false, error: "File must contain a JSON array." };

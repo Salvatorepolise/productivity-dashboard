@@ -240,9 +240,6 @@ const goalEl = document.getElementById("goal-minutes");
 const statusEl = document.getElementById("goal-status");
 const progressBar = document.getElementById("progress-bar");
 
-const savedMinutes = localStorage.getItem("todayMinutes");
-if (savedMinutes !== null) todayInput.value = savedMinutes;
-
 function updateCodingGoal() {
   const todayMinutes = Number(todayInput.value) || 0;
   goalEl.textContent = goalMinutes;
@@ -308,7 +305,12 @@ loadPreferences();
 syncSettingsUI();
 
 initHabits();
-checkAndResetForNewDay(); // Day 31 — after load, before render
+checkAndResetForNewDay(); // habits + coding minutes if new local day
+
+// Sync coding input AFTER possible new-day reset
+const savedMinutes = localStorage.getItem("todayMinutes");
+todayInput.value = savedMinutes !== null ? savedMinutes : "0";
+
 renderHabits();
 updateProgress();
 updateCodingGoal();

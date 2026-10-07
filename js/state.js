@@ -19,6 +19,15 @@ export function setStatusFilter(value) {
 let recentlyDeletedHabit = null;
 let undoTimeoutId = null;
 
+/** Local calendar day (not UTC) */
+function getTodayKey() {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export function initHabits() {
   const saved = loadHabitsFromStorage();
   if (saved) {
@@ -27,19 +36,28 @@ export function initHabits() {
 }
 
 /**
- * Day 31 — if calendar day changed, reset completed flags only.
- * Habits list is kept; only daily progress resets.
+ * Day 31–32 — single new-day rule for all daily state:
+ * - habits.completed → false
+ * - todayMinutes → 0
+ * One lastActiveDate only. Returns true if a reset happened.
  */
 export function checkAndResetForNewDay() {
-  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const today = getTodayKey();
   const last = localStorage.getItem("lastActiveDate");
+  const isNewDay = Boolean(last && last !== today);
 
-  if (last && last !== today) {
-    habitsData = habitsData.map((h) => ({ ...h, completed: false }));
+  if (isNewDay) {
+    habitsData = habitsData.map((habit) => ({
+      ...habit,
+      completed: false,
+    }));
     saveHabitsToStorage(habitsData);
+
+    localStorage.setItem("todayMinutes", "0");
   }
 
   localStorage.setItem("lastActiveDate", today);
+  return isNewDay;
 }
 
 export function setSearchText(value) {

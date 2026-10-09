@@ -7,210 +7,196 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>Productivity Dashboard</h1>
+    <div class="app">
+      <header class="app-header">
+        <h1>Productivity Dashboard</h1>
+        <p class="app-subtitle">Focus. Track. Ship.</p>
+      </header>
 
-    <!-- OVERVIEW -->
-    <section>
-      <h2>Today's Overview</h2>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <span class="stat-label">Total</span>
-          <strong id="total-habits" class="stat-value">0</strong>
+      <!-- OVERVIEW -->
+      <section class="card">
+        <h2>Today's Overview</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-label">Total</span>
+            <strong id="total-habits" class="stat-value">0</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Completed</span>
+            <strong id="completed-habits" class="stat-value">0</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Remaining</span>
+            <strong id="remaining-habits" class="stat-value">0</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Progress</span>
+            <strong id="progress-percentage" class="stat-value">0%</strong>
+          </div>
         </div>
-        <div class="stat-card">
-          <span class="stat-label">Completed</span>
-          <strong id="completed-habits" class="stat-value">0</strong>
+
+        <div class="insight-box">
+          <span class="insight-label">Insight</span>
+          <p id="habit-insight">Start your first habit today.</p>
         </div>
-        <div class="stat-card">
-          <span class="stat-label">Remaining</span>
-          <strong id="remaining-habits" class="stat-value">0</strong>
+
+        <div class="quote-box">
+          <span class="quote-label">Quote of the day</span>
+          <p id="daily-quote">Loading quote...</p>
+          <p id="quote-author" class="quote-author"></p>
         </div>
-        <div class="stat-card">
-          <span class="stat-label">Progress</span>
-          <strong id="progress-percentage" class="stat-value">0%</strong>
+      </section>
+
+      <!-- WEATHER -->
+      <section class="card">
+        <h2>Weather</h2>
+        <p id="weather-temp" class="weather-temp">Loading weather...</p>
+        <p id="weather-desc" class="weather-desc"></p>
+      </section>
+
+      <!-- GOALS -->
+      <section class="card">
+        <h2>Today's Goals</h2>
+        <div class="row-input">
+          <input
+            type="text"
+            id="new-goal-input"
+            placeholder="Write a new goal..."
+          />
+          <button type="button" id="add-goal-btn" class="btn btn-primary">
+            Add Goal
+          </button>
         </div>
-      </div>
+        <ul id="goals-list"></ul>
+      </section>
 
-      <div class="insight-box">
-        <span class="insight-label">Insight</span>
-        <p id="habit-insight">Start your first habit today.</p>
-      </div>
+      <!-- HABITS -->
+      <section class="card">
+        <h2>Habit Tracker</h2>
 
-      <div class="quote-box">
-        <span class="quote-label">Quote of the day</span>
-        <p id="daily-quote">Loading quote...</p>
-        <p id="quote-author"></p>
-      </div>
-    </section>
+        <div class="habits-controls">
+          <input
+            type="text"
+            id="search-habit-input"
+            placeholder="Search habits..."
+          />
+          <select id="habit-status-filter">
+            <option value="all">All</option>
+            <option value="completed">Completed</option>
+            <option value="remaining">Remaining</option>
+          </select>
+          <select id="sort-habits">
+            <option value="default">Default</option>
+            <option value="az">A → Z</option>
+            <option value="completed">Completed first</option>
+            <option value="remaining">Remaining first</option>
+          </select>
+        </div>
 
-    <!-- WEATHER -->
-    <section>
-      <h2>Weather</h2>
-      <p id="weather-temp" class="weather-temp">Loading weather...</p>
-      <p id="weather-desc" class="weather-desc"></p>
-    </section>
+        <div class="row-input">
+          <input
+            type="text"
+            id="new-habit-input"
+            placeholder="Enter a new habit..."
+          />
+          <button type="button" id="add-habit-btn" class="btn btn-primary">
+            Add Habit
+          </button>
+        </div>
 
-    <!-- GOALS -->
-    <section>
-      <h2>Today's Goals</h2>
-      <div style="margin-bottom: 12px">
-        <input
-          type="text"
-          id="new-goal-input"
-          placeholder="Write a new goal..."
-        />
-        <button id="add-goal-btn">Add Goal</button>
-      </div>
-      <ul id="goals-list"></ul>
-    </section>
+        <div id="habits"></div>
 
-    <!-- HABITS -->
-    <section>
-      <h2>Habit Tracker</h2>
+        <p id="progress-text" class="meta-text">Progress: 0/4 completed</p>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="habits-progress-bar"></div>
+        </div>
 
-      <div class="habits-controls">
-        <input
-          type="text"
-          id="search-habit-input"
-          placeholder="Search habits..."
-        />
-        <select id="habit-status-filter">
-          <option value="all">All</option>
-          <option value="completed">Completed</option>
-          <option value="remaining">Remaining</option>
-        </select>
-        <select id="sort-habits">
-          <option value="default">Default</option>
-          <option value="az">A → Z</option>
-          <option value="completed">Completed first</option>
-          <option value="remaining">Remaining first</option>
-        </select>
-      </div>
-        <select id="sort-habits">
-          <option value="default">Default</option>
-          <option value="az">A → Z</option>
-          <option value="completed">Completed first</option>
-          <option value="remaining">Remaining first</option>
-        </select>
-      </div>
+        <div id="habit-analytics" class="habit-analytics">
+          <p>Completed: <strong id="completed-count">0</strong></p>
+          <p>Remaining: <strong id="remaining-count">0</strong></p>
+          <p id="habit-message" class="habit-message">Let's get started 🚀</p>
+        </div>
 
-      <div style="margin-bottom: 14px">
-        <input
-          type="text"
-          id="new-habit-input"
-          placeholder="Enter a new habit..."
-        />
-        <button id="add-habit-btn">Add Habit</button>
-      </div>
+        <button type="button" id="reset-habits-btn" class="btn btn-danger">
+          Reset Today's Habits
+        </button>
+      </section>
 
-      <div id="habits"></div>
-
-      <p id="progress-text">Progress: 0/4 completed</p>
-
-      <div class="progress-bar-container">
-        <div class="progress-bar" id="habits-progress-bar"></div>
-      </div>
-
-      <div id="habit-analytics" style="margin-top: 12px; font-size: 0.95rem">
-        <p>Completed: <strong id="completed-count">0</strong></p>
-        <p>Remaining: <strong id="remaining-count">4</strong></p>
-        <p id="habit-message" style="margin-top: 8px; font-weight: 500">
-          Let's get started 🚀
+      <!-- CODING -->
+      <section class="card">
+        <h2>Daily Coding</h2>
+        <p class="meta-text">
+          Goal: <strong id="goal-minutes">60</strong> minutes
         </p>
-      </div>
+        <p class="coding-row">
+          Today:
+          <input type="number" id="today-input" value="0" min="0" />
+          minutes
+        </p>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <p id="goal-status" class="meta-text">Not completed yet</p>
+      </section>
 
-      <button id="reset-habits-btn">Reset Today's Habits</button>
-    </section>
+      <!-- NOTES -->
+      <section class="card">
+        <h2>Notes</h2>
+        <textarea
+          id="notes"
+          rows="4"
+          placeholder="What did I learn today?"
+        ></textarea>
+      </section>
 
-    <!-- CODING -->
-    <section>
-      <h2>Daily Coding</h2>
-      <p>Goal: <strong id="goal-minutes">60</strong> minutes</p>
-      <p>
-        Today:
-        <input
-          type="number"
-          id="today-input"
-          value="0"
-          min="0"
-          style="width: 70px"
-        />
-        minutes
-      </p>
-      <div class="progress-bar-container">
-        <div class="progress-bar" id="progress-bar"></div>
-      </div>
-      <p id="goal-status">Not completed yet</p>
-    </section>
+      <!-- SETTINGS -->
+      <section class="card">
+        <h2>Settings</h2>
 
-    <!-- NOTES -->
-    <section>
-      <h2>Notes</h2>
-      <textarea
-        id="notes"
-        rows="4"
-        placeholder="What did I learn today?"
-      ></textarea>
-    </section>
+        <div class="settings-row">
+          <label for="temp-unit">Temperature</label>
+          <select id="temp-unit">
+            <option value="celsius">°C</option>
+            <option value="fahrenheit">°F</option>
+          </select>
+        </div>
 
-    <!-- SETTINGS -->
-          <section>
-      <h2>Settings</h2>
+        <label class="check-row">
+          <input type="checkbox" id="compact-mode" />
+          Compact mode
+        </label>
 
-      <div style="margin-bottom: 10px">
-        <label for="temp-unit">Temperature unit</label>
-        <select id="temp-unit" style="margin-left: 8px">
-          <option value="celsius">°C</option>
-          <option value="fahrenheit">°F</option>
-        </select>
-      </div>
+        <label class="check-row">
+          <input type="checkbox" id="dark-mode" />
+          Dark mode
+        </label>
 
-      <label style="display: block; margin-bottom: 8px">
-        <input type="checkbox" id="compact-mode" />
-        Compact mode
-      </label>
+        <div class="row-input settings-actions">
+          <button type="button" id="export-habits-btn" class="btn btn-primary">
+            Export habits
+          </button>
+          <button type="button" id="import-habits-btn" class="btn btn-secondary">
+            Import habits
+          </button>
+          <input
+            type="file"
+            id="import-habits-input"
+            accept="application/json,.json"
+            hidden
+          />
+        </div>
+      </section>
 
-      <label style="display: block; margin-bottom: 12px">
-        <input type="checkbox" id="dark-mode" />
-        Dark mode
-      </label>
+      <footer class="app-footer">
+        Day 34 · October 10, 2026 · MRR: $0
+      </footer>
+    </div>
 
-      <div style="display: flex; gap: 8px; flex-wrap: wrap">
-        <button type="button" id="export-habits-btn">Export habits</button>
-        <button type="button" id="import-habits-btn">Import habits</button>
-        <input
-          type="file"
-          id="import-habits-input"
-          accept="application/json,.json"
-          hidden
-        />
-      </div>
-    </section>
-
-      <!-- Day 29 -->
-      <div style="display: flex; gap: 8px; flex-wrap: wrap">
-        <button type="button" id="export-habits-btn">Export habits</button>
-        <button type="button" id="import-habits-btn">Import habits</button>
-        <input
-          type="file"
-          id="import-habits-input"
-          accept="application/json,.json"
-          hidden
-        />
-      </div>
-    </section>
-
-    <!-- FOOTER -->
-    <section>
-      <p style="margin: 0; color: #71717a; font-size: 0.9rem">
-        Day 33 · October 9, 2026 · MRR: $0
-      </p>
-    </section>
-
-    <!-- UNDO TOAST -->
     <div id="undo-toast" class="undo-toast" hidden>
       <span>Habit deleted.</span>
-      <button type="button" id="undo-delete-btn">Undo</button>
+      <button type="button" id="undo-delete-btn" class="btn btn-primary btn-sm">
+        Undo
+      </button>
     </div>
 
     <script type="module" src="js/main.js"></script>

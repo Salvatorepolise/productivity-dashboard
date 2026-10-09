@@ -17,6 +17,7 @@ Simple and focused personal productivity dashboard built during my public challe
 - Today's Goals (dynamic list + add new goals)
 - Habit Tracker with full CRUD
 - Search + Status filter + Sort (derived view, source state untouched)
+- Clean UI layout (Day 34 restyle)
 - Duplicate validation
 - Event delegation
 - Progress bar + analytics
@@ -80,6 +81,7 @@ Open with a local server (Live Server / `npx serve`) or view the live version:
 - **Day 31** (7 October 2026): Auto-reset completed habits on new calendar day
 - **Day 32** (8 October 2026): Extended daily state reset to coding minutes (local date)
 - **Day 33** (9 October 2026): Habit streaks with per-day completion rules
+- **Day 34** (10 October 2026): Full UI restyle + HTML cleanup (no new features)
 - MRR: $0
 
 ---

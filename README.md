@@ -12,7 +12,8 @@ Simple and focused personal productivity dashboard built during my public challe
 - Undo delete (temporary state + 5s toast)
 - Keyboard shortcuts (Ctrl/Cmd+K search, N new habit, Esc clear search)
 - Export / Import habits (JSON backup + validation)
-- Daily state reset on new local calendar day (habit completions + coding minutes)
+- Daily state reset on new local calendar day (completions + coding minutes)
+- Habit streaks (consecutive days, max +1 per day)
 - Today's Goals (dynamic list + add new goals)
 - Habit Tracker with full CRUD
 - Search + Status filter + Sort (derived view, source state untouched)
@@ -34,7 +35,7 @@ Simple and focused personal productivity dashboard built during my public challe
 
 js/
 ├── main.js # app entry + events + settings + keyboard + export/import
-├── state.js # habits state + CRUD + filters + undo + import/export + daily reset
+├── state.js # habits state + CRUD + filters + undo + daily reset + streaks
 ├── storage.js # localStorage (habits)
 ├── ui.js # render + DOM updates
 ├── habits-logic.js # pure habit calculations (no DOM)
@@ -78,6 +79,7 @@ Open with a local server (Live Server / `npx serve`) or view the live version:
 - **Day 30** (6 October 2026): Dark mode preference + UI contrast fixes
 - **Day 31** (7 October 2026): Auto-reset completed habits on new calendar day
 - **Day 32** (8 October 2026): Extended daily state reset to coding minutes (local date)
+- **Day 33** (9 October 2026): Habit streaks with per-day completion rules
 - MRR: $0
 
 ---

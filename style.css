@@ -649,3 +649,13 @@ body.dark select option {
   background-color: #27272a;
   color: #fafafa;
 }
+.habit-streak {
+  margin-left: 6px;
+  font-size: 0.85rem;
+  color: #ea580c;
+  font-weight: 500;
+}
+
+body.dark .habit-streak {
+  color: #fb923c;
+}

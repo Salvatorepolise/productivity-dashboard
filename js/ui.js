@@ -36,6 +36,14 @@ export function renderHabits() {
     label.appendChild(checkbox);
     label.appendChild(document.createTextNode(" " + habit.name));
 
+    // Day 33 — streak
+    if (habit.streak > 0) {
+      const streakSpan = document.createElement("span");
+      streakSpan.className = "habit-streak";
+      streakSpan.textContent = ` 🔥 ${habit.streak}`;
+      label.appendChild(streakSpan);
+    }
+
     const editBtn = document.createElement("button");
     editBtn.textContent = "Edit";
     editBtn.className = "edit-habit-btn";

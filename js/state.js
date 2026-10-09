@@ -1,21 +1,44 @@
 import { loadHabitsFromStorage, saveHabitsToStorage } from "./storage.js";
 
 export let habitsData = [
-  { id: "english", name: "English", completed: false },
-  { id: "coding", name: "Coding", completed: false },
-  { id: "reading", name: "Reading", completed: false },
-  { id: "exercise", name: "Exercise", completed: false },
+  {
+    id: "english",
+    name: "English",
+    completed: false,
+    streak: 0,
+    lastCompletedDate: null,
+  },
+  {
+    id: "coding",
+    name: "Coding",
+    completed: false,
+    streak: 0,
+    lastCompletedDate: null,
+  },
+  {
+    id: "reading",
+    name: "Reading",
+    completed: false,
+    streak: 0,
+    lastCompletedDate: null,
+  },
+  {
+    id: "exercise",
+    name: "Exercise",
+    completed: false,
+    streak: 0,
+    lastCompletedDate: null,
+  },
 ];
 
 export let searchText = "";
 export let sortOption = "default";
-export let statusFilter = "all"; // "all" | "completed" | "remaining"
+export let statusFilter = "all";
 
 export function setStatusFilter(value) {
   statusFilter = value;
 }
 
-/** Temporary state — last deleted habit only (not in localStorage) */
 let recentlyDeletedHabit = null;
 let undoTimeoutId = null;
 
@@ -28,18 +51,69 @@ function getTodayKey() {
   return `${year}-${month}-${day}`;
 }
 
+function getYesterdayKey() {
+  const date = new Date();
+  date.setDate(date.getDate() - 1);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+/** Retrocompatible habits (pre–Day 33 / old JSON) */
+function normalizeHabit(h) {
+  return {
+    id: h.id,
+    name: h.name,
+    completed: Boolean(h.completed),
+    streak: typeof h.streak === "number" && h.streak >= 0 ? h.streak : 0,
+    lastCompletedDate:
+      typeof h.lastCompletedDate === "string" ? h.lastCompletedDate : null,
+  };
+}
+
+/**
+ * Complete transition: streak increases at most once per local day.
+ * Uncheck today does not decrease streak.
+ */
+function applyCompletionTransition(habit, markingComplete) {
+  const today = getTodayKey();
+  const yesterday = getYesterdayKey();
+
+  if (!markingComplete) {
+    return { ...habit, completed: false };
+  }
+
+  // Already counted for today → only ensure completed
+  if (habit.lastCompletedDate === today) {
+    return { ...habit, completed: true };
+  }
+
+  let streak = 1;
+  if (habit.lastCompletedDate === yesterday) {
+    streak = (habit.streak || 0) + 1;
+  }
+
+  return {
+    ...habit,
+    completed: true,
+    streak,
+    lastCompletedDate: today,
+  };
+}
+
 export function initHabits() {
   const saved = loadHabitsFromStorage();
-  if (saved) {
-    habitsData = saved;
+  if (saved && Array.isArray(saved)) {
+    habitsData = saved.map(normalizeHabit);
+  } else {
+    habitsData = habitsData.map(normalizeHabit);
   }
 }
 
 /**
- * Day 31–32 — single new-day rule for all daily state:
- * - habits.completed → false
- * - todayMinutes → 0
- * One lastActiveDate only. Returns true if a reset happened.
+ * New day: reset daily completed + coding minutes.
+ * Does NOT reset streak / lastCompletedDate.
  */
 export function checkAndResetForNewDay() {
   const today = getTodayKey();
@@ -52,7 +126,6 @@ export function checkAndResetForNewDay() {
       completed: false,
     }));
     saveHabitsToStorage(habitsData);
-
     localStorage.setItem("todayMinutes", "0");
   }
 
@@ -114,7 +187,16 @@ export function addHabit(name) {
     return false;
   }
 
-  habitsData = [...habitsData, { id, name: trimmed, completed: false }];
+  habitsData = [
+    ...habitsData,
+    {
+      id,
+      name: trimmed,
+      completed: false,
+      streak: 0,
+      lastCompletedDate: null,
+    },
+  ];
   saveHabitsToStorage(habitsData);
   return true;
 }
@@ -150,7 +232,7 @@ export function undoDelete() {
     undoTimeoutId = null;
   }
 
-  const restored = recentlyDeletedHabit;
+  const restored = normalizeHabit(recentlyDeletedHabit);
   recentlyDeletedHabit = null;
 
   const exists = habitsData.some((h) => h.id === restored.id);
@@ -199,10 +281,12 @@ export function editHabit(id) {
   saveHabitsToStorage(habitsData);
 }
 
+/** Toggle complete + streak rules (Day 33) */
 export function updateHabit(id) {
   habitsData = habitsData.map((h) => {
-    if (h.id === id) return { ...h, completed: !h.completed };
-    return h;
+    if (h.id !== id) return h;
+    const markingComplete = !h.completed;
+    return applyCompletionTransition(h, markingComplete);
   });
 
   saveHabitsToStorage(habitsData);
@@ -218,6 +302,8 @@ export function getHabitsForExport() {
     id: h.id,
     name: h.name,
     completed: h.completed,
+    streak: h.streak ?? 0,
+    lastCompletedDate: h.lastCompletedDate ?? null,
   }));
 }
 
@@ -241,12 +327,7 @@ export function importHabitsFromData(data) {
     }
   }
 
-  habitsData = data.map((h) => ({
-    id: h.id,
-    name: h.name,
-    completed: h.completed,
-  }));
-
+  habitsData = data.map(normalizeHabit);
   saveHabitsToStorage(habitsData);
   return { ok: true };
 }

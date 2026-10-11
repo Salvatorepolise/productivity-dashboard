@@ -171,7 +171,7 @@ function handleKeyboardShortcuts(event) {
 
 document.addEventListener("keydown", handleKeyboardShortcuts);
 
-// ===== EXPORT / IMPORT =====
+// ===== EXPORT / IMPORT (Day 35: confirm before replace) =====
 function exportHabits() {
   const data = getHabitsForExport();
   const json = JSON.stringify(data, null, 2);
@@ -222,6 +222,10 @@ document
   .addEventListener("click", exportHabits);
 
 document.getElementById("import-habits-btn").addEventListener("click", () => {
+  const ok = confirm(
+    "Import will replace all current habits with the file data. Continue?",
+  );
+  if (!ok) return;
   document.getElementById("import-habits-input").click();
 });
 
@@ -305,9 +309,8 @@ loadPreferences();
 syncSettingsUI();
 
 initHabits();
-checkAndResetForNewDay(); // habits + coding minutes if new local day
+checkAndResetForNewDay();
 
-// Sync coding input AFTER possible new-day reset
 const savedMinutes = localStorage.getItem("todayMinutes");
 todayInput.value = savedMinutes !== null ? savedMinutes : "0";
 

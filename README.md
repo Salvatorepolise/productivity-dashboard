@@ -11,7 +11,7 @@ Simple and focused personal productivity dashboard built during my public challe
 - User preferences (°C/°F, compact mode, dark mode — persisted)
 - Undo delete (temporary state + 5s toast)
 - Keyboard shortcuts (Ctrl/Cmd+K search, N new habit, Esc clear search)
-- Export / Import habits (JSON backup + validation)
+- Export / Import habits (JSON backup + validation + confirm before replace)
 - Daily state reset on new local calendar day (completions + coding minutes)
 - Habit streaks (consecutive days, max +1 per day)
 - Today's Goals (dynamic list + add new goals)
@@ -81,7 +81,8 @@ Open with a local server (Live Server / `npx serve`) or view the live version:
 - **Day 31** (7 October 2026): Auto-reset completed habits on new calendar day
 - **Day 32** (8 October 2026): Extended daily state reset to coding minutes (local date)
 - **Day 33** (9 October 2026): Habit streaks with per-day completion rules
-- **Day 34** (10 October 2026): Full UI restyle + HTML cleanup (no new features)
+- **Day 34** (10 October 2026): Full UI restyle + HTML cleanup
+- **Day 35** (12 October 2026): Reliability pass + import confirmation
 - MRR: $0
 
 ---

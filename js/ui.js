@@ -1,4 +1,4 @@
-import { habitsData, getVisibleHabits } from "./state.js";
+import { habitsData, getVisibleHabits, getCurrentStreak } from "./state.js";
 import { getHabitStats, getHabitInsightMessage } from "./habits-logic.js";
 
 export function renderHabits() {
@@ -36,11 +36,12 @@ export function renderHabits() {
     label.appendChild(checkbox);
     label.appendChild(document.createTextNode(" " + habit.name));
 
-    // Day 33 — streak
-    if (habit.streak > 0) {
+    // Day 33 — streak (Day 36: hide broken streaks)
+    const streak = getCurrentStreak(habit);
+    if (streak > 0) {
       const streakSpan = document.createElement("span");
       streakSpan.className = "habit-streak";
-      streakSpan.textContent = ` 🔥 ${habit.streak}`;
+      streakSpan.textContent = ` 🔥 ${streak}`;
       label.appendChild(streakSpan);
     }
 

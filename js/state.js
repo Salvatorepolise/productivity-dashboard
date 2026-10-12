@@ -60,6 +60,40 @@ function getYesterdayKey() {
   return `${year}-${month}-${day}`;
 }
 
+/** Day 36: ids are no longer derived from the name (rename + add could collide) */
+function createHabitId() {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return `habit-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+/** Repairs data saved before Day 36 that may contain duplicate ids */
+function ensureUniqueIds(habits) {
+  const seen = new Set();
+  return habits.map((habit) => {
+    if (!habit.id || seen.has(habit.id)) {
+      const fixed = { ...habit, id: createHabitId() };
+      seen.add(fixed.id);
+      return fixed;
+    }
+    seen.add(habit.id);
+    return habit;
+  });
+}
+
+/**
+ * Streak to display: a streak is broken if the habit was not
+ * completed today or yesterday (stored value may be stale).
+ */
+export function getCurrentStreak(habit) {
+  const last = habit.lastCompletedDate;
+  if (last === getTodayKey() || last === getYesterdayKey()) {
+    return habit.streak || 0;
+  }
+  return 0;
+}
+
 /** Retrocompatible habits (pre–Day 33 / old JSON) */
 function normalizeHabit(h) {
   return {
@@ -74,14 +108,25 @@ function normalizeHabit(h) {
 
 /**
  * Complete transition: streak increases at most once per local day.
- * Uncheck today does not decrease streak.
+ * Day 36: unchecking today undoes today's +1, so a check/uncheck
+ * does not count as a completed day.
  */
 function applyCompletionTransition(habit, markingComplete) {
   const today = getTodayKey();
   const yesterday = getYesterdayKey();
 
   if (!markingComplete) {
-    return { ...habit, completed: false };
+    if (habit.lastCompletedDate !== today) {
+      return { ...habit, completed: false };
+    }
+    // streak > 1 means the previous completion was yesterday
+    const streak = Math.max((habit.streak || 0) - 1, 0);
+    return {
+      ...habit,
+      completed: false,
+      streak,
+      lastCompletedDate: streak > 0 ? yesterday : null,
+    };
   }
 
   // Already counted for today → only ensure completed
@@ -105,7 +150,7 @@ function applyCompletionTransition(habit, markingComplete) {
 export function initHabits() {
   const saved = loadHabitsFromStorage();
   if (saved && Array.isArray(saved)) {
-    habitsData = saved.map(normalizeHabit);
+    habitsData = ensureUniqueIds(saved.map(normalizeHabit));
   } else {
     habitsData = habitsData.map(normalizeHabit);
   }
@@ -177,7 +222,7 @@ export function addHabit(name) {
   const trimmed = name.trim();
   if (!trimmed) return false;
 
-  const id = trimmed.toLowerCase().replace(/\s+/g, "-");
+  const id = createHabitId();
 
   const exists = habitsData.some(
     (h) => h.name.toLowerCase() === trimmed.toLowerCase(),
@@ -327,7 +372,7 @@ export function importHabitsFromData(data) {
     }
   }
 
-  habitsData = data.map(normalizeHabit);
+  habitsData = ensureUniqueIds(data.map(normalizeHabit));
   saveHabitsToStorage(habitsData);
   return { ok: true };
 }

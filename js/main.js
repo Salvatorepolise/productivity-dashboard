@@ -15,6 +15,7 @@ import {
 } from "./state.js";
 
 import { renderHabits, updateProgress, renderGoals } from "./ui.js";
+import { loadGoalsFromStorage, saveGoalsToStorage } from "./storage.js";
 import { loadDailyQuote, loadWeather, refreshWeatherDisplay } from "./api.js";
 import {
   loadPreferences,
@@ -23,12 +24,13 @@ import {
   applyPreferencesToUI,
 } from "./preferences.js";
 
-// ===== GOALS =====
-const goals = [
+// ===== GOALS (Day 36: persisted) =====
+const defaultGoals = [
   "Practice English for 1 hour",
   "Study JavaScript fundamentals",
   "Build the productivity dashboard",
 ];
+const goals = loadGoalsFromStorage() ?? [...defaultGoals];
 
 const goalsList = document.getElementById("goals-list");
 const newGoalInput = document.getElementById("new-goal-input");
@@ -38,6 +40,7 @@ function handleAddGoal() {
   const text = newGoalInput.value.trim();
   if (!text) return;
   goals.push(text);
+  saveGoalsToStorage(goals);
   renderGoals(goals, goalsList);
   newGoalInput.value = "";
 }

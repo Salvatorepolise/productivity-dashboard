@@ -1,30 +1,44 @@
 # Productivity Dashboard
 
-Simple and focused personal productivity dashboard built during my public challenge.
+**v1.0** — Personal productivity dashboard built in public (36-day challenge).
+
+## What this is
+
+A **local-first** web app to track:
+
+- Daily habits (with streaks)
+- Coding time
+- Goals and notes
+- Light weather + daily quote
+
+Data is stored in your browser (`localStorage`).  
+Live demo: [https://salvatorepolise.github.io/productivity-dashboard/](https://salvatorepolise.github.io/productivity-dashboard/)
+
+## What this is not
+
+- Not a cloud app (no login, no multi-device sync)
+- Not a native mobile app
+- Not a full project/task manager
+
+For one browser / one device, it is designed to be used every day.
 
 ## Features
 
 - Today's Overview (Total / Completed / Remaining / Progress %)
-- Habit Insights (dynamic motivational message)
-- Quote of the day (external API + async/await)
-- Weather (Open-Meteo — loading / success / error)
-- User preferences (°C/°F, compact mode, dark mode — persisted)
-- Undo delete (temporary state + 5s toast)
-- Keyboard shortcuts (Ctrl/Cmd+K search, N new habit, Esc clear search)
-- Export / Import habits (JSON backup + validation + confirm before replace)
-- Daily state reset on new local calendar day (completions + coding minutes)
-- Habit streaks (consecutive days, max +1 per day)
-- Today's Goals (dynamic list + add new goals)
-- Habit Tracker with full CRUD
-- Search + Status filter + Sort (derived view, source state untouched)
-- Clean UI layout (Day 34 restyle)
-- Duplicate validation
-- Event delegation
-- Progress bar + analytics
-- Reset Habits button
-- Persistent data with localStorage
+- Habit Insights
+- Quote of the day (API)
+- Weather (Open-Meteo)
+- Habit Tracker — full CRUD
+- Search + status filter + sort (derived view)
+- Habit streaks (max +1 per local day)
+- Daily reset on new local calendar day (completions + coding minutes)
+- Undo delete (5s toast)
+- Keyboard shortcuts (Ctrl/Cmd+K, N, Esc)
+- Export / Import JSON (with confirmation before replace)
+- Preferences: °C/°F, compact mode, dark mode
 - Daily Coding tracker
 - Notes with auto-save
+- Clean UI (Day 34 restyle)
 
 ## Tech Stack
 
@@ -34,56 +48,60 @@ Simple and focused personal productivity dashboard built during my public challe
 
 ## Project structure
 
+```
 js/
-├── main.js # app entry + events + settings + keyboard + export/import
-├── state.js # habits state + CRUD + filters + undo + daily reset + streaks
-├── storage.js # localStorage (habits)
-├── ui.js # render + DOM updates
-├── habits-logic.js # pure habit calculations (no DOM)
-├── api.js # quote + weather (API layer + display)
-└── preferences.js # user preferences + persistence (theme, compact, °C/°F)
+├── main.js           # entry, events, settings, keyboard, export/import
+├── state.js          # habits, filters, undo, daily reset, streaks
+├── storage.js        # localStorage (habits, goals)
+├── ui.js             # render + DOM
+├── habits-logic.js   # pure stats / insight helpers
+├── api.js            # quote + weather
+└── preferences.js    # theme, compact, temperature unit
+```
 
 ## How to run
 
-Open with a local server (Live Server / `npx serve`) or view the live version:  
-[https://salvatorepolise.github.io/productivity-dashboard/](https://salvatorepolise.github.io/productivity-dashboard/)
+```bash
+# local server (required for ES modules)
+npx serve
+# or Live Server in VS Code
+```
 
-## Progress
+Or open the live version on GitHub Pages (link above).
 
-- **Day 1** (1 September 2026): First version completed
-- **Day 2** (2 September 2026): Added Progress Tracker + editable Coding Goal
-- **Day 3** (3 September 2026): Added interactive Daily Coding Tracker
-- **Day 4** (4 September 2026): Added ability to dynamically create new goals
-- **Day 5** (7 September 2026): Made Habit Tracker fully dynamic (array → DOM)
-- **Day 6** (8 September 2026): Improved state management + persistent habits with JSON
-- **Day 7** (9 September 2026): Refactored code into clear functions + Reset feature
-- **Day 8** (10 September 2026): Simplified dashboard + Habit Analytics
-- **Day 9** (11 September 2026): Added Create & Delete habits
-- **Day 10** (12 September 2026): Added Edit Habit → full CRUD completed
-- **Day 11** (14 September 2026): Refactored events with event delegation
-- **Day 12** (15 September 2026): Habit search with filter + stronger validation
-- **Day 13** (16 September 2026): Habit sorting + search/sort pipeline
-- **Day 14** (17 September 2026): Today's Overview statistics connected to state
-- **Day 15** (18 September 2026): Habit Insights + immutable updates with spread
-- **Day 16** (19 September 2026): Practiced find/some/every, kept UI minimal
-- **Day 17** (21 September 2026): Connected external API for daily quote
-- **Day 18** (22 September 2026): Refactored into ES Modules (state/ui/storage/api)
-- **Day 19–21**: TypeScript data model + typed habit layer (separate practice)
-- **Day 22** (28 September 2026): Extracted pure habit logic from UI (`habits-logic.js`)
-- **Day 23** (29 September 2026): Integrated Open-Meteo weather API
-- **Day 24** (30 September 2026): Separated weather API logic from UI
-- **Day 25** (1 October 2026): Persistent user preferences (°C/°F + compact mode)
-- **Day 26** (2 October 2026): Undo delete with temporary state + toast
-- **Day 27** (3 October 2026): Status filter on derived view (search + filter + sort)
-- **Day 28** (4 October 2026): Keyboard shortcuts (Ctrl/Cmd+K, N, Esc)
-- **Day 29** (5 October 2026): Export / Import habits as JSON
-- **Day 30** (6 October 2026): Dark mode preference + UI contrast fixes
-- **Day 31** (7 October 2026): Auto-reset completed habits on new calendar day
-- **Day 32** (8 October 2026): Extended daily state reset to coding minutes (local date)
-- **Day 33** (9 October 2026): Habit streaks with per-day completion rules
-- **Day 34** (10 October 2026): Full UI restyle + HTML cleanup
-- **Day 35** (12 October 2026): Reliability pass + import confirmation
+## Keyboard shortcuts
+
+| Shortcut       | Action                                       |
+| -------------- | -------------------------------------------- |
+| `Ctrl/Cmd + K` | Focus search                                 |
+| `N`            | Focus new habit (when not typing in a field) |
+| `Esc`          | Clear search                                 |
+
+## Data & privacy
+
+- Habits, goals, notes, coding minutes, and preferences stay in **your browser**
+- Export downloads a JSON backup you control
+- No analytics backend in this project
+
+## Progress (challenge log)
+
+- **Day 1–10**: Fundamentals → CRUD habits
+- **Day 11–18**: Events, modules, external quote API
+- **Day 19–22**: TypeScript practice + logic extraction
+- **Day 23–24**: Weather API + API/UI separation
+- **Day 25–30**: Preferences, undo, filters, shortcuts, export/import, dark mode
+- **Day 31–32**: Daily state reset (habits + coding, local date)
+- **Day 33**: Habit streaks
+- **Day 34**: UI restyle + HTML cleanup
+- **Day 35**: Reliability pass + import confirmation
+- **Day 36** (13 October 2026): Code audit (5 bug fixes) + **v1.0 release**
 - MRR: $0
+
+## What's next
+
+- Use it daily and only add features that real use demands
+- Continue structured learning (Web Developer Bootcamp)
+- Move toward TypeScript + React for larger products / SaaS
 
 ---
 

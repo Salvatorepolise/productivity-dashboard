@@ -3,7 +3,7 @@ import {
   checkAndResetForNewDay,
   addHabit,
   deleteHabit,
-  editHabit,
+  renameHabit,
   updateHabit,
   resetHabits,
   setSearchText,
@@ -14,7 +14,14 @@ import {
   importHabitsFromData,
 } from "./state.js";
 
-import { renderHabits, updateProgress, renderGoals } from "./ui.js";
+import {
+  renderHabits,
+  updateProgress,
+  renderGoals,
+  startEditingHabit,
+  stopEditingHabit,
+  showMessage,
+} from "./ui.js";
 import { loadGoalsFromStorage, saveGoalsToStorage } from "./storage.js";
 import { loadDailyQuote, loadWeather, refreshWeatherDisplay } from "./api.js";
 import {
@@ -51,15 +58,42 @@ newGoalInput.addEventListener("keypress", (e) => {
 });
 
 // ===== HABIT EVENTS =====
+function saveHabitEdit(id) {
+  const input = document.querySelector(".habit-edit-input");
+  if (!input) return;
+
+  const result = renameHabit(id, input.value);
+  if (!result.ok) {
+    if (result.error) showMessage(result.error);
+    input.focus();
+    return;
+  }
+
+  stopEditingHabit();
+  renderHabits();
+  updateProgress();
+}
+
+function cancelHabitEdit() {
+  stopEditingHabit();
+  renderHabits();
+}
+
 document.getElementById("habits").addEventListener("click", (event) => {
   const target = event.target;
   const id = target.dataset.id;
   if (!id) return;
 
   if (target.classList.contains("edit-habit-btn")) {
-    editHabit(id);
-    renderHabits();
-    updateProgress();
+    startEditingHabit(id);
+  }
+
+  if (target.classList.contains("save-habit-btn")) {
+    saveHabitEdit(id);
+  }
+
+  if (target.classList.contains("cancel-edit-btn")) {
+    cancelHabitEdit();
   }
 
   if (target.classList.contains("delete-habit-btn")) {
@@ -81,6 +115,18 @@ document.getElementById("habits").addEventListener("change", (event) => {
   }
 });
 
+document.getElementById("habits").addEventListener("keydown", (event) => {
+  const target = event.target;
+  if (!target.classList.contains("habit-edit-input")) return;
+
+  if (event.key === "Enter") {
+    saveHabitEdit(target.dataset.id);
+  }
+  if (event.key === "Escape") {
+    cancelHabitEdit();
+  }
+});
+
 document.getElementById("search-habit-input").addEventListener("input", (e) => {
   setSearchText(e.target.value);
   renderHabits();
@@ -98,26 +144,24 @@ document.getElementById("sort-habits").addEventListener("change", (e) => {
   renderHabits();
 });
 
-document.getElementById("add-habit-btn").addEventListener("click", () => {
+function handleAddHabit() {
   const input = document.getElementById("new-habit-input");
-  const ok = addHabit(input.value);
-  if (ok) {
-    input.value = "";
-    renderHabits();
-    updateProgress();
+  const result = addHabit(input.value);
+  if (!result.ok) {
+    if (result.error) showMessage(result.error);
+    return;
   }
-});
+  input.value = "";
+  renderHabits();
+  updateProgress();
+}
+
+document
+  .getElementById("add-habit-btn")
+  .addEventListener("click", handleAddHabit);
 
 document.getElementById("new-habit-input").addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
-    const input = document.getElementById("new-habit-input");
-    const ok = addHabit(input.value);
-    if (ok) {
-      input.value = "";
-      renderHabits();
-      updateProgress();
-    }
-  }
+  if (e.key === "Enter") handleAddHabit();
 });
 
 document.getElementById("reset-habits-btn").addEventListener("click", () => {
@@ -156,6 +200,9 @@ function handleKeyboardShortcuts(event) {
   }
 
   if (event.key === "Escape") {
+    // Inline habit edit handles its own Escape (cancel)
+    if (target.classList.contains("habit-edit-input")) return;
+
     const searchInput = document.getElementById("search-habit-input");
     if (searchInput.value !== "") {
       searchInput.value = "";
@@ -201,20 +248,22 @@ function importHabitsFromFile(file) {
       const result = importHabitsFromData(parsed);
 
       if (!result.ok) {
-        alert(result.error);
+        showMessage(result.error);
         return;
       }
 
+      stopEditingHabit();
       renderHabits();
       updateProgress();
+      showMessage("Habits imported.");
     } catch (error) {
       console.error(error);
-      alert("Could not read this file. Use a valid JSON habits backup.");
+      showMessage("Could not read this file. Use a valid JSON habits backup.");
     }
   };
 
   reader.onerror = () => {
-    alert("Failed to read the file.");
+    showMessage("Failed to read the file.");
   };
 
   reader.readAsText(file);
@@ -254,13 +303,9 @@ function updateCodingGoal() {
   const percentage = Math.min((todayMinutes / goalMinutes) * 100, 100);
   progressBar.style.width = percentage + "%";
 
-  if (todayMinutes >= goalMinutes) {
-    statusEl.textContent = "Goal completed ✓";
-    statusEl.style.color = "#16a34a";
-  } else {
-    statusEl.textContent = "Not completed yet";
-    statusEl.style.color = "#a1a1aa";
-  }
+  const done = todayMinutes >= goalMinutes;
+  statusEl.textContent = done ? "Goal completed ✓" : "Not completed yet";
+  statusEl.classList.toggle("goal-done", done);
 }
 
 todayInput.addEventListener("input", () => {
@@ -323,3 +368,19 @@ updateCodingGoal();
 renderGoals(goals, goalsList);
 loadDailyQuote();
 loadWeather();
+
+// ===== NEW DAY WHILE THE TAB IS OPEN (Day 37) =====
+function refreshIfNewDay() {
+  if (!checkAndResetForNewDay()) return;
+
+  todayInput.value = "0";
+  renderHabits();
+  updateProgress();
+  updateCodingGoal();
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") refreshIfNewDay();
+});
+window.addEventListener("focus", refreshIfNewDay);
+setInterval(refreshIfNewDay, 60 * 1000);

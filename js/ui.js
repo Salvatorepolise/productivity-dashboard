@@ -1,5 +1,69 @@
-import { habitsData, getVisibleHabits, getCurrentStreak } from "./state.js";
-import { getHabitStats, getHabitInsightMessage } from "./habits-logic.js";
+import { habitsData, getVisibleHabits } from "./state.js";
+import {
+  getHabitStats,
+  getHabitInsightMessage,
+  getCurrentStreak,
+} from "./habits-logic.js";
+
+// Day 37: id of the habit being renamed inline (null = none)
+let editingHabitId = null;
+
+export function startEditingHabit(id) {
+  editingHabitId = id;
+  renderHabits();
+  const input = document.querySelector(".habit-edit-input");
+  if (input) {
+    input.focus();
+    input.select();
+  }
+}
+
+export function stopEditingHabit() {
+  editingHabitId = null;
+}
+
+// Day 37: non-blocking message instead of alert()
+let messageTimeoutId = null;
+
+export function showMessage(text) {
+  const toast = document.getElementById("message-toast");
+  if (!toast) return;
+
+  toast.textContent = text;
+  toast.hidden = false;
+
+  clearTimeout(messageTimeoutId);
+  messageTimeoutId = setTimeout(() => {
+    toast.hidden = true;
+  }, 3500);
+}
+
+function renderEditRow(habit) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "habit-row habit-row-editing";
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = habit.name;
+  input.className = "habit-edit-input";
+  input.dataset.id = habit.id;
+  input.setAttribute("aria-label", "Habit name");
+
+  const saveBtn = document.createElement("button");
+  saveBtn.textContent = "Save";
+  saveBtn.className = "save-habit-btn";
+  saveBtn.dataset.id = habit.id;
+
+  const cancelBtn = document.createElement("button");
+  cancelBtn.textContent = "Cancel";
+  cancelBtn.className = "cancel-edit-btn";
+  cancelBtn.dataset.id = habit.id;
+
+  wrapper.appendChild(input);
+  wrapper.appendChild(saveBtn);
+  wrapper.appendChild(cancelBtn);
+  return wrapper;
+}
 
 export function renderHabits() {
   const container = document.getElementById("habits");
@@ -10,22 +74,22 @@ export function renderHabits() {
   if (visibleHabits.length === 0) {
     const emptyMessage = document.createElement("p");
     emptyMessage.textContent = "No habits found";
-    emptyMessage.style.color = "#71717a";
-    emptyMessage.style.fontSize = "0.95rem";
+    emptyMessage.className = "empty-message";
     container.appendChild(emptyMessage);
     return;
   }
 
   visibleHabits.forEach((habit) => {
+    if (habit.id === editingHabitId) {
+      container.appendChild(renderEditRow(habit));
+      return;
+    }
+
     const wrapper = document.createElement("div");
-    wrapper.style.display = "flex";
-    wrapper.style.alignItems = "center";
-    wrapper.style.marginBottom = "6px";
-    wrapper.style.gap = "8px";
+    wrapper.className = "habit-row";
 
     const label = document.createElement("label");
-    label.style.flex = "1";
-    label.style.cursor = "pointer";
+    label.className = "habit-label";
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";

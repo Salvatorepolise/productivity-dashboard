@@ -21,8 +21,18 @@ import {
   startEditingHabit,
   stopEditingHabit,
   showMessage,
+  showUndoToast,
+  runUndo,
 } from "./ui.js";
-import { loadGoalsFromStorage, saveGoalsToStorage } from "./storage.js";
+import {
+  goals,
+  initGoals,
+  addGoal,
+  toggleGoal,
+  deleteGoal,
+  undoDeleteGoal,
+  resetGoalsForNewDay,
+} from "./goals.js";
 import { loadDailyQuote, loadWeather, refreshWeatherDisplay } from "./api.js";
 import {
   loadPreferences,
@@ -31,30 +41,39 @@ import {
   applyPreferencesToUI,
 } from "./preferences.js";
 
-// ===== GOALS (Day 36: persisted) =====
-const defaultGoals = [
-  "Practice English for 1 hour",
-  "Study JavaScript fundamentals",
-  "Build the productivity dashboard",
-];
-const goals = loadGoalsFromStorage() ?? [...defaultGoals];
-
-const goalsList = document.getElementById("goals-list");
+// ===== GOALS (Day 38: check off, delete with undo, daily carry-over) =====
 const newGoalInput = document.getElementById("new-goal-input");
 const addGoalBtn = document.getElementById("add-goal-btn");
 
 function handleAddGoal() {
-  const text = newGoalInput.value.trim();
-  if (!text) return;
-  goals.push(text);
-  saveGoalsToStorage(goals);
-  renderGoals(goals, goalsList);
+  if (!addGoal(newGoalInput.value)) return;
+  renderGoals(goals);
   newGoalInput.value = "";
 }
 
 addGoalBtn.addEventListener("click", handleAddGoal);
 newGoalInput.addEventListener("keypress", (e) => {
   if (e.key === "Enter") handleAddGoal();
+});
+
+document.getElementById("goals-list").addEventListener("change", (event) => {
+  const target = event.target;
+  if (target.classList.contains("goal-checkbox")) {
+    toggleGoal(target.dataset.id);
+    renderGoals(goals);
+  }
+});
+
+document.getElementById("goals-list").addEventListener("click", (event) => {
+  const target = event.target;
+  if (!target.classList.contains("delete-goal-btn")) return;
+
+  if (deleteGoal(target.dataset.id)) {
+    renderGoals(goals);
+    showUndoToast("Goal deleted.", () => {
+      if (undoDeleteGoal()) renderGoals(goals);
+    });
+  }
 });
 
 // ===== HABIT EVENTS =====
@@ -97,9 +116,15 @@ document.getElementById("habits").addEventListener("click", (event) => {
   }
 
   if (target.classList.contains("delete-habit-btn")) {
-    deleteHabit(id);
+    if (!deleteHabit(id)) return;
     renderHabits();
     updateProgress();
+    showUndoToast("Habit deleted.", () => {
+      if (undoDelete()) {
+        renderHabits();
+        updateProgress();
+      }
+    });
   }
 });
 
@@ -170,14 +195,8 @@ document.getElementById("reset-habits-btn").addEventListener("click", () => {
   updateProgress();
 });
 
-// ===== UNDO DELETE =====
-document.getElementById("undo-delete-btn").addEventListener("click", () => {
-  const restored = undoDelete();
-  if (restored) {
-    renderHabits();
-    updateProgress();
-  }
-});
+// ===== UNDO DELETE (habits + goals) =====
+document.getElementById("undo-delete-btn").addEventListener("click", runUndo);
 
 // ===== KEYBOARD SHORTCUTS =====
 function isTypingInField(target) {
@@ -289,16 +308,15 @@ document
     e.target.value = "";
   });
 
-// ===== CODING =====
-const goalMinutes = 60;
+// ===== CODING (Day 38: editable goal, saved in preferences) =====
 const todayInput = document.getElementById("today-input");
-const goalEl = document.getElementById("goal-minutes");
+const goalInput = document.getElementById("goal-minutes-input");
 const statusEl = document.getElementById("goal-status");
 const progressBar = document.getElementById("progress-bar");
 
 function updateCodingGoal() {
   const todayMinutes = Number(todayInput.value) || 0;
-  goalEl.textContent = goalMinutes;
+  const goalMinutes = getPreferences().codingGoalMinutes;
 
   const percentage = Math.min((todayMinutes / goalMinutes) * 100, 100);
   progressBar.style.width = percentage + "%";
@@ -310,6 +328,17 @@ function updateCodingGoal() {
 
 todayInput.addEventListener("input", () => {
   localStorage.setItem("todayMinutes", todayInput.value);
+  updateCodingGoal();
+});
+
+goalInput.addEventListener("change", () => {
+  const value = Number(goalInput.value);
+  if (!Number.isInteger(value) || value < 1 || value > 600) {
+    showMessage("Coding goal must be between 1 and 600 minutes.");
+    goalInput.value = getPreferences().codingGoalMinutes;
+    return;
+  }
+  savePreferences({ codingGoalMinutes: value });
   updateCodingGoal();
 });
 
@@ -332,6 +361,7 @@ function syncSettingsUI() {
   tempUnitSelect.value = prefs.temperatureUnit;
   compactModeCheckbox.checked = prefs.compactMode;
   darkModeCheckbox.checked = prefs.theme === "dark";
+  goalInput.value = prefs.codingGoalMinutes;
   applyPreferencesToUI();
 }
 
@@ -357,7 +387,8 @@ loadPreferences();
 syncSettingsUI();
 
 initHabits();
-checkAndResetForNewDay();
+initGoals();
+if (checkAndResetForNewDay()) resetGoalsForNewDay();
 
 const savedMinutes = localStorage.getItem("todayMinutes");
 todayInput.value = savedMinutes !== null ? savedMinutes : "0";
@@ -365,7 +396,7 @@ todayInput.value = savedMinutes !== null ? savedMinutes : "0";
 renderHabits();
 updateProgress();
 updateCodingGoal();
-renderGoals(goals, goalsList);
+renderGoals(goals);
 loadDailyQuote();
 loadWeather();
 
@@ -373,10 +404,12 @@ loadWeather();
 function refreshIfNewDay() {
   if (!checkAndResetForNewDay()) return;
 
+  resetGoalsForNewDay();
   todayInput.value = "0";
   renderHabits();
   updateProgress();
   updateCodingGoal();
+  renderGoals(goals);
 }
 
 document.addEventListener("visibilitychange", () => {

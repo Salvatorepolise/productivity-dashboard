@@ -220,6 +220,26 @@ textarea {
   border-bottom: none;
 }
 
+/* Goal rows (Day 38) */
+.goal-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.goal-label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.goal-completed .goal-text {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
 /* Buttons */
 .btn {
   font: inherit;
@@ -293,7 +313,8 @@ textarea {
 .save-habit-btn,
 .cancel-edit-btn,
 .edit-habit-btn,
-.delete-habit-btn {
+.delete-habit-btn,
+.delete-goal-btn {
   padding: 0.3rem 0.65rem;
   font-size: 0.75rem;
   font-weight: 500;
@@ -310,7 +331,8 @@ textarea {
   background: #eff6ff;
 }
 
-.delete-habit-btn:hover {
+.delete-habit-btn:hover,
+.delete-goal-btn:hover {
   border-color: #fca5a5;
   color: #dc2626;
   background: #fef2f2;
@@ -509,7 +531,8 @@ body.dark .undo-toast {
 
 body.dark .cancel-edit-btn,
 body.dark .edit-habit-btn,
-body.dark .delete-habit-btn {
+body.dark .delete-habit-btn,
+body.dark .delete-goal-btn {
   background: #1f2937;
   border-color: #334155;
   color: var(--muted);

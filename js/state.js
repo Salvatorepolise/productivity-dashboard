@@ -1,4 +1,5 @@
 import { loadHabitsFromStorage, saveHabitsToStorage } from "./storage.js";
+import { createId } from "./ids.js";
 import {
   toDateKey,
   applyCompletionTransition,
@@ -45,15 +46,6 @@ export function setStatusFilter(value) {
 }
 
 let recentlyDeletedHabit = null;
-let undoTimeoutId = null;
-
-/** Day 36: ids are no longer derived from the name (rename + add could collide) */
-function createHabitId() {
-  if (typeof crypto !== "undefined" && crypto.randomUUID) {
-    return crypto.randomUUID();
-  }
-  return `habit-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-}
 
 /** Retrocompatible habits (pre–Day 33 / old JSON) */
 function normalizeHabit(h) {
@@ -70,7 +62,7 @@ function normalizeHabit(h) {
 export function initHabits() {
   const saved = loadHabitsFromStorage();
   if (saved && Array.isArray(saved)) {
-    habitsData = ensureUniqueIds(saved.map(normalizeHabit), createHabitId);
+    habitsData = ensureUniqueIds(saved.map(normalizeHabit), createId);
   } else {
     habitsData = habitsData.map(normalizeHabit);
   }
@@ -143,7 +135,7 @@ export function addHabit(name) {
   const trimmed = name.trim();
   if (!trimmed) return { ok: false, error: null };
 
-  const id = createHabitId();
+  const id = createId();
 
   const exists = habitsData.some(
     (h) => h.name.toLowerCase() === trimmed.toLowerCase(),
@@ -170,32 +162,15 @@ export function deleteHabit(id) {
   const habit = habitsData.find((h) => h.id === id);
   if (!habit) return false;
 
-  if (undoTimeoutId !== null) {
-    clearTimeout(undoTimeoutId);
-    undoTimeoutId = null;
-  }
-
+  // Day 38: the undo toast (and its 5s timer) lives in ui.js
   recentlyDeletedHabit = { ...habit };
   habitsData = habitsData.filter((h) => h.id !== id);
   saveHabitsToStorage(habitsData);
-
-  undoTimeoutId = setTimeout(() => {
-    recentlyDeletedHabit = null;
-    undoTimeoutId = null;
-    hideUndoToast();
-  }, 5000);
-
-  showUndoToast();
   return true;
 }
 
 export function undoDelete() {
   if (!recentlyDeletedHabit) return false;
-
-  if (undoTimeoutId !== null) {
-    clearTimeout(undoTimeoutId);
-    undoTimeoutId = null;
-  }
 
   const restored = normalizeHabit(recentlyDeletedHabit);
   recentlyDeletedHabit = null;
@@ -206,18 +181,7 @@ export function undoDelete() {
     saveHabitsToStorage(habitsData);
   }
 
-  hideUndoToast();
   return true;
-}
-
-function showUndoToast() {
-  const toast = document.getElementById("undo-toast");
-  if (toast) toast.hidden = false;
-}
-
-function hideUndoToast() {
-  const toast = document.getElementById("undo-toast");
-  if (toast) toast.hidden = true;
 }
 
 /** Day 37: inline rename (no prompt), returns { ok, error } */
@@ -292,7 +256,7 @@ export function importHabitsFromData(data) {
     }
   }
 
-  habitsData = ensureUniqueIds(data.map(normalizeHabit), createHabitId);
+  habitsData = ensureUniqueIds(data.map(normalizeHabit), createId);
   saveHabitsToStorage(habitsData);
   return { ok: true };
 }

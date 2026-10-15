@@ -68,6 +68,7 @@
           </button>
         </div>
         <ul id="goals-list"></ul>
+        <p id="goals-progress" class="meta-text"></p>
       </section>
 
       <!-- HABITS -->
@@ -125,8 +126,16 @@
       <!-- CODING -->
       <section class="card">
         <h2>Daily Coding</h2>
-        <p class="meta-text">
-          Goal: <strong id="goal-minutes">60</strong> minutes
+        <p class="meta-text coding-row">
+          <label for="goal-minutes-input">Goal:</label>
+          <input
+            type="number"
+            id="goal-minutes-input"
+            value="60"
+            min="1"
+            max="600"
+          />
+          minutes
         </p>
         <p class="coding-row">
           Today:
@@ -192,12 +201,12 @@
       </section>
 
       <footer class="app-footer">
-        v1.0 · Day 37 · October 14, 2026 · MRR: $0
+        v1.0 · Day 38 · October 15, 2026 · MRR: $0
       </footer>
     </div>
 
     <div id="undo-toast" class="undo-toast" hidden>
-      <span>Habit deleted.</span>
+      <span id="undo-message">Habit deleted.</span>
       <button type="button" id="undo-delete-btn" class="btn btn-primary btn-sm">
         Undo
       </button>

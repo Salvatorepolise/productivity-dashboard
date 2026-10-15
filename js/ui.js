@@ -4,6 +4,7 @@ import {
   getHabitInsightMessage,
   getCurrentStreak,
 } from "./habits-logic.js";
+import { getGoalStats } from "./goals-logic.js";
 
 // Day 37: id of the habit being renamed inline (null = none)
 let editingHabitId = null;
@@ -36,6 +37,35 @@ export function showMessage(text) {
   messageTimeoutId = setTimeout(() => {
     toast.hidden = true;
   }, 3500);
+}
+
+// Day 38: one undo toast for habits and goals
+let undoAction = null;
+let undoTimeoutId = null;
+
+export function showUndoToast(message, onUndo) {
+  const toast = document.getElementById("undo-toast");
+  if (!toast) return;
+
+  document.getElementById("undo-message").textContent = message;
+  undoAction = onUndo;
+  toast.hidden = false;
+
+  clearTimeout(undoTimeoutId);
+  undoTimeoutId = setTimeout(hideUndoToast, 5000);
+}
+
+export function hideUndoToast() {
+  const toast = document.getElementById("undo-toast");
+  if (toast) toast.hidden = true;
+  undoAction = null;
+  clearTimeout(undoTimeoutId);
+}
+
+export function runUndo() {
+  const action = undoAction;
+  hideUndoToast();
+  if (action) action();
 }
 
 function renderEditRow(habit) {
@@ -171,11 +201,50 @@ export function updateProgress() {
   updateInsight();
 }
 
-export function renderGoals(goals, goalsList) {
+/** Day 38: goals can be checked off and deleted */
+export function renderGoals(goals) {
+  const goalsList = document.getElementById("goals-list");
   goalsList.innerHTML = "";
-  goals.forEach((goal, index) => {
+
+  if (goals.length === 0) {
+    const empty = document.createElement("li");
+    empty.className = "empty-message";
+    empty.textContent = "No goals for today yet";
+    goalsList.appendChild(empty);
+  }
+
+  goals.forEach((goal) => {
     const li = document.createElement("li");
-    li.textContent = `${index + 1}. ${goal}`;
+    li.className = goal.completed ? "goal-row goal-completed" : "goal-row";
+
+    const label = document.createElement("label");
+    label.className = "goal-label";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = goal.completed;
+    checkbox.className = "goal-checkbox";
+    checkbox.dataset.id = goal.id;
+
+    const text = document.createElement("span");
+    text.className = "goal-text";
+    text.textContent = goal.text;
+
+    label.appendChild(checkbox);
+    label.appendChild(text);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Delete";
+    deleteBtn.className = "delete-goal-btn";
+    deleteBtn.dataset.id = goal.id;
+    deleteBtn.setAttribute("aria-label", `Delete goal: ${goal.text}`);
+
+    li.appendChild(label);
+    li.appendChild(deleteBtn);
     goalsList.appendChild(li);
   });
+
+  const { total, completed } = getGoalStats(goals);
+  document.getElementById("goals-progress").textContent =
+    total === 0 ? "" : `${completed}/${total} done`;
 }

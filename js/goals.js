@@ -1,0 +1,64 @@
+import { loadGoalsFromStorage, saveGoalsToStorage } from "./storage.js";
+import { createId } from "./ids.js";
+import {
+  normalizeGoals,
+  carryOverGoals,
+  toggleGoalById,
+  restoreGoalAt,
+} from "./goals-logic.js";
+
+const defaultGoals = [
+  "Practice English for 1 hour",
+  "Study JavaScript fundamentals",
+  "Build the productivity dashboard",
+];
+
+export let goals = [];
+
+let recentlyDeleted = null; // { goal, index }
+
+export function initGoals() {
+  const saved = loadGoalsFromStorage();
+  goals = normalizeGoals(saved ?? defaultGoals, createId);
+  saveGoalsToStorage(goals);
+}
+
+export function addGoal(text) {
+  const trimmed = text.trim();
+  if (!trimmed) return false;
+
+  goals = [...goals, { id: createId(), text: trimmed, completed: false }];
+  saveGoalsToStorage(goals);
+  return true;
+}
+
+export function toggleGoal(id) {
+  goals = toggleGoalById(goals, id);
+  saveGoalsToStorage(goals);
+}
+
+export function deleteGoal(id) {
+  const index = goals.findIndex((goal) => goal.id === id);
+  if (index === -1) return false;
+
+  recentlyDeleted = { goal: goals[index], index };
+  goals = goals.filter((goal) => goal.id !== id);
+  saveGoalsToStorage(goals);
+  return true;
+}
+
+export function undoDeleteGoal() {
+  if (!recentlyDeleted) return false;
+
+  goals = restoreGoalAt(goals, recentlyDeleted.goal, recentlyDeleted.index);
+  recentlyDeleted = null;
+  saveGoalsToStorage(goals);
+  return true;
+}
+
+/** Called when a new local day starts */
+export function resetGoalsForNewDay() {
+  goals = carryOverGoals(goals);
+  recentlyDeleted = null;
+  saveGoalsToStorage(goals);
+}

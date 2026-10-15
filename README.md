@@ -33,11 +33,12 @@ For one browser / one device, it is designed to be used every day.
 - Habit streaks (max +1 per local day)
 - Daily reset on new local calendar day (completions + coding minutes), also while the tab stays open
 - Non-blocking messages (toasts instead of alerts)
-- Undo delete (5s toast)
+- Today's Goals: check off, delete, unfinished goals carry over to the next day
+- Undo delete for habits and goals (5s toast)
 - Keyboard shortcuts (Ctrl/Cmd+K, N, Esc)
 - Export / Import JSON (with confirmation before replace)
 - Preferences: °C/°F, compact mode, dark mode
-- Daily Coding tracker
+- Daily Coding tracker with editable goal (minutes)
 - Notes with auto-save
 - Clean UI (Day 34 restyle)
 
@@ -54,13 +55,17 @@ For one browser / one device, it is designed to be used every day.
 js/
 ├── main.js           # entry, events, settings, keyboard, export/import
 ├── state.js          # habits, filters, undo, daily reset, streaks
+├── goals.js          # goals state, undo, daily carry-over
 ├── storage.js        # localStorage (habits, goals)
 ├── ui.js             # render + DOM
 ├── habits-logic.js   # pure logic: stats, insights, dates, streaks
+├── goals-logic.js    # pure goal logic: migration, carry-over, undo
+├── ids.js            # unique ids
 ├── api.js            # quote + weather
 └── preferences.js    # theme, compact, temperature unit
 tests/
-└── habits-logic.test.js
+├── habits-logic.test.js
+└── goals-logic.test.js
 ```
 
 ## How to run
@@ -79,7 +84,7 @@ Or open the live version on GitHub Pages (link above).
 npm test
 ```
 
-Runs the pure habit logic tests (streaks, dates, ids, stats) with Node 18+.
+Runs the pure logic tests (streaks, dates, ids, stats, goals) with Node 18+.
 
 ## Keyboard shortcuts
 
@@ -108,6 +113,7 @@ Runs the pure habit logic tests (streaks, dates, ids, stats) with Node 18+.
 - **Day 35**: Reliability pass + import confirmation
 - **Day 36** (13 October 2026): Code audit (5 bug fixes) + **v1.0 release**
 - **Day 37** (14 October 2026): New-day reset with open tab, inline rename, toasts, first tests
+- **Day 38** (15 October 2026): Real daily goals (check off, delete + undo, carry-over), editable coding goal
 - MRR: $0
 
 ## What's next

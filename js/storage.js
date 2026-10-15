@@ -19,10 +19,10 @@ export function saveHabitsToStorage(data) {
   localStorage.setItem("habitsData", JSON.stringify(data));
 }
 
+/** Raw saved goals (validated by normalizeGoals in goals-logic.js) */
 export function loadGoalsFromStorage() {
   const saved = loadJSON("goalsData");
-  if (!Array.isArray(saved)) return null;
-  return saved.filter((goal) => typeof goal === "string");
+  return Array.isArray(saved) ? saved : null;
 }
 
 export function saveGoalsToStorage(goals) {

@@ -3,7 +3,8 @@
  * {
  *   temperatureUnit: "celsius" | "fahrenheit",
  *   compactMode: boolean,
- *   theme: "light" | "dark"
+ *   theme: "light" | "dark",
+ *   codingGoalMinutes: number (Day 38)
  * }
  */
 
@@ -11,6 +12,7 @@ export const defaultPreferences = {
   temperatureUnit: "celsius",
   compactMode: false,
   theme: "light",
+  codingGoalMinutes: 60,
 };
 
 let preferences = { ...defaultPreferences };
@@ -33,6 +35,11 @@ export function loadPreferences() {
       ...defaultPreferences,
       ...parsed,
     };
+
+    const goal = preferences.codingGoalMinutes;
+    if (!Number.isInteger(goal) || goal < 1 || goal > 600) {
+      preferences.codingGoalMinutes = defaultPreferences.codingGoalMinutes;
+    }
   } catch (error) {
     console.error("Failed to load preferences:", error);
     preferences = { ...defaultPreferences };

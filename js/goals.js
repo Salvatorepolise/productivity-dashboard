@@ -1,10 +1,10 @@
 import { loadGoalsFromStorage, saveGoalsToStorage } from "./storage.js";
 import { createId } from "./ids.js";
+import { restoreAt } from "./list-utils.js";
 import {
   normalizeGoals,
   carryOverGoals,
   toggleGoalById,
-  restoreGoalAt,
 } from "./goals-logic.js";
 
 const defaultGoals = [
@@ -50,10 +50,17 @@ export function deleteGoal(id) {
 export function undoDeleteGoal() {
   if (!recentlyDeleted) return false;
 
-  goals = restoreGoalAt(goals, recentlyDeleted.goal, recentlyDeleted.index);
+  goals = restoreAt(goals, recentlyDeleted.goal, recentlyDeleted.index);
   recentlyDeleted = null;
   saveGoalsToStorage(goals);
   return true;
+}
+
+/** Day 39: backup import (raw data is validated by normalizeGoals) */
+export function replaceGoals(raw) {
+  goals = normalizeGoals(raw, createId);
+  recentlyDeleted = null;
+  saveGoalsToStorage(goals);
 }
 
 /** Called when a new local day starts */

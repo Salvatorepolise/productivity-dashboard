@@ -11,7 +11,7 @@ import {
   setStatusFilter,
   undoDelete,
   getHabitsForExport,
-  importHabitsFromData,
+  replaceHabits,
 } from "./state.js";
 
 import {
@@ -22,6 +22,7 @@ import {
   stopEditingHabit,
   showMessage,
   showUndoToast,
+  hideUndoToast,
   runUndo,
 } from "./ui.js";
 import {
@@ -32,12 +33,15 @@ import {
   deleteGoal,
   undoDeleteGoal,
   resetGoalsForNewDay,
+  replaceGoals,
 } from "./goals.js";
+import { createBackup, parseBackup } from "./backup-logic.js";
 import { loadDailyQuote, loadWeather, refreshWeatherDisplay } from "./api.js";
 import {
   loadPreferences,
   savePreferences,
   getPreferences,
+  replacePreferences,
   applyPreferencesToUI,
 } from "./preferences.js";
 
@@ -240,9 +244,17 @@ function handleKeyboardShortcuts(event) {
 
 document.addEventListener("keydown", handleKeyboardShortcuts);
 
-// ===== EXPORT / IMPORT (Day 35: confirm before replace) =====
-function exportHabits() {
-  const data = getHabitsForExport();
+// ===== BACKUP EXPORT / IMPORT (Day 39: everything, not only habits) =====
+function exportBackup() {
+  const data = createBackup(
+    {
+      habits: getHabitsForExport(),
+      goals,
+      notes: notesTextarea.value,
+      preferences: getPreferences(),
+    },
+    new Date(),
+  );
   const json = JSON.stringify(data, null, 2);
   const blob = new Blob([json], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -250,35 +262,64 @@ function exportHabits() {
   const date = new Date().toISOString().slice(0, 10);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `habits-backup-${date}.json`;
+  a.download = `dashboard-backup-${date}.json`;
   a.click();
 
   URL.revokeObjectURL(url);
 }
 
-function importHabitsFromFile(file) {
+/** Validate the whole file first, then replace each section it contains */
+function applyBackup(backup) {
+  replaceHabits(backup.habits);
+  stopEditingHabit();
+  hideUndoToast();
+
+  if (backup.goals) replaceGoals(backup.goals);
+
+  if (backup.notes !== null) {
+    notesTextarea.value = backup.notes;
+    localStorage.setItem("notes", backup.notes);
+  }
+
+  if (backup.preferences) {
+    replacePreferences(backup.preferences);
+    syncSettingsUI();
+    refreshWeatherDisplay();
+  }
+
+  renderHabits();
+  updateProgress();
+  renderGoals(goals);
+  updateCodingGoal();
+}
+
+function importBackupFromFile(file) {
   if (!file) return;
 
   const reader = new FileReader();
 
   reader.onload = () => {
+    let parsed;
     try {
-      const parsed = JSON.parse(reader.result);
-      const result = importHabitsFromData(parsed);
-
-      if (!result.ok) {
-        showMessage(result.error);
-        return;
-      }
-
-      stopEditingHabit();
-      renderHabits();
-      updateProgress();
-      showMessage("Habits imported.");
+      parsed = JSON.parse(reader.result);
     } catch (error) {
       console.error(error);
-      showMessage("Could not read this file. Use a valid JSON habits backup.");
+      showMessage("Could not read this file. Use a valid JSON backup.");
+      return;
     }
+
+    const result = parseBackup(parsed);
+    if (!result.ok) {
+      showMessage(result.error);
+      return;
+    }
+
+    applyBackup(result.backup);
+    showMessage(
+      result.backup.goals === null
+        ? "Habits imported (old backup format)."
+        : "Backup imported.",
+    );
   };
 
   reader.onerror = () => {
@@ -289,22 +330,22 @@ function importHabitsFromFile(file) {
 }
 
 document
-  .getElementById("export-habits-btn")
-  .addEventListener("click", exportHabits);
+  .getElementById("export-backup-btn")
+  .addEventListener("click", exportBackup);
 
-document.getElementById("import-habits-btn").addEventListener("click", () => {
+document.getElementById("import-backup-btn").addEventListener("click", () => {
   const ok = confirm(
-    "Import will replace all current habits with the file data. Continue?",
+    "Import will replace your current data with the data in the file. Continue?",
   );
   if (!ok) return;
-  document.getElementById("import-habits-input").click();
+  document.getElementById("import-backup-input").click();
 });
 
 document
-  .getElementById("import-habits-input")
+  .getElementById("import-backup-input")
   .addEventListener("change", (e) => {
     const file = e.target.files[0];
-    importHabitsFromFile(file);
+    importBackupFromFile(file);
     e.target.value = "";
   });
 

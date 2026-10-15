@@ -5,9 +5,9 @@ import {
   normalizeGoals,
   carryOverGoals,
   toggleGoalById,
-  restoreGoalAt,
   getGoalStats,
 } from "../js/goals-logic.js";
+import { restoreAt } from "../js/list-utils.js";
 
 function idFactory() {
   let n = 0;
@@ -90,22 +90,22 @@ test("toggleGoalById flips only the matching goal", () => {
   assert.equal(goals[1].completed, false);
 });
 
-test("restoreGoalAt puts a goal back at its original position", () => {
+test("restoreAt puts a goal back at its original position", () => {
   const goals = [goal("a", "A"), goal("c", "C")];
-  const result = restoreGoalAt(goals, goal("b", "B"), 1);
+  const result = restoreAt(goals, goal("b", "B"), 1);
   assert.deepEqual(
     result.map((g) => g.id),
     ["a", "b", "c"],
   );
 });
 
-test("restoreGoalAt clamps the index and ignores duplicates", () => {
+test("restoreAt clamps the index and ignores duplicates", () => {
   const goals = [goal("a", "A")];
   assert.deepEqual(
-    restoreGoalAt(goals, goal("b", "B"), 99).map((g) => g.id),
+    restoreAt(goals, goal("b", "B"), 99).map((g) => g.id),
     ["a", "b"],
   );
-  assert.equal(restoreGoalAt(goals, goal("a", "A"), 0), goals);
+  assert.equal(restoreAt(goals, goal("a", "A"), 0), goals);
 });
 
 test("getGoalStats counts completed goals", () => {

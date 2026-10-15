@@ -36,7 +36,7 @@ For one browser / one device, it is designed to be used every day.
 - Today's Goals: check off, delete, unfinished goals carry over to the next day
 - Undo delete for habits and goals (5s toast)
 - Keyboard shortcuts (Ctrl/Cmd+K, N, Esc)
-- Export / Import JSON (with confirmation before replace)
+- Full backup: export / import habits, goals, notes and settings as JSON (old habits-only backups still import)
 - Preferences: °C/°F, compact mode, dark mode
 - Daily Coding tracker with editable goal (minutes)
 - Notes with auto-save
@@ -60,12 +60,15 @@ js/
 ├── ui.js             # render + DOM
 ├── habits-logic.js   # pure logic: stats, insights, dates, streaks
 ├── goals-logic.js    # pure goal logic: migration, carry-over, undo
+├── backup-logic.js   # pure backup format: create, validate, migrate
+├── list-utils.js     # restore an item at its position (undo)
 ├── ids.js            # unique ids
 ├── api.js            # quote + weather
 └── preferences.js    # theme, compact, temperature unit
 tests/
 ├── habits-logic.test.js
-└── goals-logic.test.js
+├── goals-logic.test.js
+└── backup-logic.test.js
 ```
 
 ## How to run
@@ -84,7 +87,7 @@ Or open the live version on GitHub Pages (link above).
 npm test
 ```
 
-Runs the pure logic tests (streaks, dates, ids, stats, goals) with Node 18+.
+Runs the pure logic tests (streaks, dates, ids, stats, goals, backup) with Node 18+.
 
 ## Keyboard shortcuts
 
@@ -97,7 +100,7 @@ Runs the pure logic tests (streaks, dates, ids, stats, goals) with Node 18+.
 ## Data & privacy
 
 - Habits, goals, notes, coding minutes, and preferences stay in **your browser**
-- Export downloads a JSON backup you control
+- Export downloads a full JSON backup you control (habits, goals, notes, settings)
 - No analytics backend in this project
 
 ## Progress (challenge log)
@@ -114,6 +117,7 @@ Runs the pure logic tests (streaks, dates, ids, stats, goals) with Node 18+.
 - **Day 36** (13 October 2026): Code audit (5 bug fixes) + **v1.0 release**
 - **Day 37** (14 October 2026): New-day reset with open tab, inline rename, toasts, first tests
 - **Day 38** (15 October 2026): Real daily goals (check off, delete + undo, carry-over), editable coding goal
+- **Day 39** (15 October 2026): Full backup (habits, goals, notes, settings) + undo restores position
 - MRR: $0
 
 ## What's next

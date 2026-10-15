@@ -1,5 +1,6 @@
 import { loadHabitsFromStorage, saveHabitsToStorage } from "./storage.js";
 import { createId } from "./ids.js";
+import { restoreAt } from "./list-utils.js";
 import {
   toDateKey,
   applyCompletionTransition,
@@ -159,11 +160,11 @@ export function addHabit(name) {
 }
 
 export function deleteHabit(id) {
-  const habit = habitsData.find((h) => h.id === id);
-  if (!habit) return false;
+  const index = habitsData.findIndex((h) => h.id === id);
+  if (index === -1) return false;
 
   // Day 38: the undo toast (and its 5s timer) lives in ui.js
-  recentlyDeletedHabit = { ...habit };
+  recentlyDeletedHabit = { habit: { ...habitsData[index] }, index };
   habitsData = habitsData.filter((h) => h.id !== id);
   saveHabitsToStorage(habitsData);
   return true;
@@ -172,15 +173,12 @@ export function deleteHabit(id) {
 export function undoDelete() {
   if (!recentlyDeletedHabit) return false;
 
-  const restored = normalizeHabit(recentlyDeletedHabit);
+  // Day 39: back at its original position (not at the end)
+  const { habit, index } = recentlyDeletedHabit;
   recentlyDeletedHabit = null;
 
-  const exists = habitsData.some((h) => h.id === restored.id);
-  if (!exists) {
-    habitsData = [...habitsData, restored];
-    saveHabitsToStorage(habitsData);
-  }
-
+  habitsData = restoreAt(habitsData, normalizeHabit(habit), index);
+  saveHabitsToStorage(habitsData);
   return true;
 }
 
@@ -226,6 +224,7 @@ export function resetHabits() {
   saveHabitsToStorage(habitsData);
 }
 
+/** Habits in the backup format */
 export function getHabitsForExport() {
   return habitsData.map((h) => ({
     id: h.id,
@@ -236,27 +235,9 @@ export function getHabitsForExport() {
   }));
 }
 
-export function importHabitsFromData(data) {
-  if (!Array.isArray(data)) {
-    return { ok: false, error: "File must contain a JSON array." };
-  }
-
-  for (const item of data) {
-    if (
-      !item ||
-      typeof item.id !== "string" ||
-      typeof item.name !== "string" ||
-      typeof item.completed !== "boolean"
-    ) {
-      return {
-        ok: false,
-        error:
-          "Each habit needs id (string), name (string), completed (boolean).",
-      };
-    }
-  }
-
+/** Day 39: data is validated by parseBackup (backup-logic.js) first */
+export function replaceHabits(data) {
   habitsData = ensureUniqueIds(data.map(normalizeHabit), createId);
+  recentlyDeletedHabit = null;
   saveHabitsToStorage(habitsData);
-  return { ok: true };
 }

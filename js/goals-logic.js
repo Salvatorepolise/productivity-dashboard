@@ -45,13 +45,6 @@ export function toggleGoalById(goals, id) {
   );
 }
 
-/** Puts a deleted goal back at its original position */
-export function restoreGoalAt(goals, goal, index) {
-  if (goals.some((g) => g.id === goal.id)) return goals;
-  const position = Math.min(Math.max(index, 0), goals.length);
-  return [...goals.slice(0, position), goal, ...goals.slice(position)];
-}
-
 export function getGoalStats(goals) {
   const completed = goals.filter((goal) => goal.completed).length;
   return { total: goals.length, completed };

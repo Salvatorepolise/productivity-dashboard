@@ -1,5 +1,7 @@
 # Productivity Dashboard
 
+[![Tests](https://github.com/Salvatorepolise/productivity-dashboard/actions/workflows/test.yml/badge.svg)](https://github.com/Salvatorepolise/productivity-dashboard/actions/workflows/test.yml)
+
 **v1.0** — Personal productivity dashboard built in public (36-day challenge).
 
 ## What this is
@@ -27,7 +29,7 @@ For one browser / one device, it is designed to be used every day.
 - Today's Overview (Total / Completed / Remaining / Progress %)
 - Habit Insights
 - Quote of the day (API)
-- Weather (Open-Meteo)
+- Weather (Open-Meteo, Rome)
 - Habit Tracker — full CRUD with inline rename
 - Search + status filter + sort (derived view)
 - Habit streaks (max +1 per local day)
@@ -48,6 +50,7 @@ For one browser / one device, it is designed to be used every day.
 - CSS
 - Vanilla JavaScript (ES Modules)
 - Node's built-in test runner (no dependencies)
+- GitHub Actions: tests run on every push
 
 ## Project structure
 
@@ -63,12 +66,13 @@ js/
 ├── backup-logic.js   # pure backup format: create, validate, migrate
 ├── list-utils.js     # restore an item at its position (undo)
 ├── ids.js            # unique ids
-├── api.js            # quote + weather
+├── api.js            # quote + weather (timeout + response checks)
 └── preferences.js    # theme, compact, temperature unit
 tests/
 ├── habits-logic.test.js
 ├── goals-logic.test.js
-└── backup-logic.test.js
+├── backup-logic.test.js
+└── api.test.js
 ```
 
 ## How to run
@@ -87,7 +91,8 @@ Or open the live version on GitHub Pages (link above).
 npm test
 ```
 
-Runs the pure logic tests (streaks, dates, ids, stats, goals, backup) with Node 18+.
+Runs the pure logic tests (streaks, dates, ids, stats, goals, backup, API parsing) with Node 18+.
+The same tests run on GitHub Actions on every push.
 
 ## Keyboard shortcuts
 
@@ -118,6 +123,7 @@ Runs the pure logic tests (streaks, dates, ids, stats, goals, backup) with Node 
 - **Day 37** (14 October 2026): New-day reset with open tab, inline rename, toasts, first tests
 - **Day 38** (15 October 2026): Real daily goals (check off, delete + undo, carry-over), editable coding goal
 - **Day 39** (15 October 2026): Full backup (habits, goals, notes, settings) + undo restores position
+- **Day 40** (16 October 2026): Tests on every push (GitHub Actions) + API timeouts and response checks
 - MRR: $0
 
 ## What's next

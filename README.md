@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/Salvatorepolise/productivity-dashboard/actions/workflows/test.yml/badge.svg)](https://github.com/Salvatorepolise/productivity-dashboard/actions/workflows/test.yml)
 
-**v1.0** — Personal productivity dashboard built in public (36-day challenge).
+**v1.0** — Personal productivity dashboard built in public, one day at a time.
 
 ## What this is
 

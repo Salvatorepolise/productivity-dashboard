@@ -36,7 +36,12 @@ import {
   replaceGoals,
 } from "./goals.js";
 import { createBackup, parseBackup } from "./backup-logic.js";
-import { loadDailyQuote, loadWeather, refreshWeatherDisplay } from "./api.js";
+import {
+  loadDailyQuote,
+  loadWeather,
+  refreshWeatherDisplay,
+  searchCity,
+} from "./api.js";
 import {
   loadPreferences,
   savePreferences,
@@ -284,7 +289,7 @@ function applyBackup(backup) {
   if (backup.preferences) {
     replacePreferences(backup.preferences);
     syncSettingsUI();
-    refreshWeatherDisplay();
+    loadWeather(); // the backup may use a different city
   }
 
   renderHabits();
@@ -403,8 +408,41 @@ function syncSettingsUI() {
   compactModeCheckbox.checked = prefs.compactMode;
   darkModeCheckbox.checked = prefs.theme === "dark";
   goalInput.value = prefs.codingGoalMinutes;
+  cityInput.value = prefs.weatherLocation.name;
   applyPreferencesToUI();
 }
+
+// ===== WEATHER CITY (Day 41) =====
+const cityInput = document.getElementById("weather-city-input");
+const cityBtn = document.getElementById("weather-city-btn");
+
+async function handleSetCity() {
+  const query = cityInput.value.trim();
+  if (!query || cityBtn.disabled) return;
+
+  cityBtn.disabled = true;
+  try {
+    const location = await searchCity(query);
+    if (!location) {
+      showMessage(`No city found for "${query}".`);
+      return;
+    }
+    savePreferences({ weatherLocation: location });
+    cityInput.value = location.name;
+    showMessage(`Weather city set to ${location.name}.`);
+    loadWeather();
+  } catch (error) {
+    console.error("City search failed:", error);
+    showMessage("Could not search for the city. Try again later.");
+  } finally {
+    cityBtn.disabled = false;
+  }
+}
+
+cityBtn.addEventListener("click", handleSetCity);
+cityInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") handleSetCity();
+});
 
 tempUnitSelect.addEventListener("change", () => {
   savePreferences({ temperatureUnit: tempUnitSelect.value });

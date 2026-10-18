@@ -29,7 +29,7 @@ For one browser / one device, it is designed to be used every day.
 - Today's Overview (Total / Completed / Remaining / Progress %)
 - Habit Insights
 - Quote of the day (API)
-- Weather (Open-Meteo, Rome)
+- Weather (Open-Meteo) for any city you choose (default: Rome)
 - Habit Tracker — full CRUD with inline rename
 - Search + status filter + sort (derived view)
 - Habit streaks (max +1 per local day)
@@ -39,7 +39,7 @@ For one browser / one device, it is designed to be used every day.
 - Undo delete for habits and goals (5s toast)
 - Keyboard shortcuts (Ctrl/Cmd+K, N, Esc)
 - Full backup: export / import habits, goals, notes and settings as JSON (old habits-only backups still import)
-- Preferences: °C/°F, compact mode, dark mode
+- Preferences: °C/°F, weather city, compact mode, dark mode
 - Daily Coding tracker with editable goal (minutes)
 - Notes with auto-save
 - Clean UI (Day 34 restyle)
@@ -66,8 +66,8 @@ js/
 ├── backup-logic.js   # pure backup format: create, validate, migrate
 ├── list-utils.js     # restore an item at its position (undo)
 ├── ids.js            # unique ids
-├── api.js            # quote + weather (timeout + response checks)
-└── preferences.js    # theme, compact, temperature unit
+├── api.js            # quote, weather, city search (timeout + response checks)
+└── preferences.js    # theme, compact, temperature unit, coding goal, city
 tests/
 ├── habits-logic.test.js
 ├── goals-logic.test.js
@@ -91,7 +91,7 @@ Or open the live version on GitHub Pages (link above).
 npm test
 ```
 
-Runs the pure logic tests (streaks, dates, ids, stats, goals, backup, API parsing) with Node 18+.
+Runs the pure logic tests (streaks, dates, ids, stats, goals, backup, API parsing, city search) with Node 18+.
 The same tests run on GitHub Actions on every push.
 
 ## Keyboard shortcuts
@@ -124,6 +124,7 @@ The same tests run on GitHub Actions on every push.
 - **Day 38** (15 October 2026): Real daily goals (check off, delete + undo, carry-over), editable coding goal
 - **Day 39** (15 October 2026): Full backup (habits, goals, notes, settings) + undo restores position
 - **Day 40** (16 October 2026): Tests on every push (GitHub Actions) + API timeouts and response checks
+- **Day 41** (18 October 2026): Choose your weather city (Open-Meteo geocoding), saved in settings and backups
 - MRR: $0
 
 ## What's next

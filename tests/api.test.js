@@ -6,6 +6,7 @@ import {
   parseWeather,
   getWeatherDescription,
   convertTemperature,
+  parseGeocoding,
 } from "../js/api.js";
 
 // ===== Quote =====
@@ -71,4 +72,43 @@ test("convertTemperature rounds and converts to °F", () => {
   assert.equal(convertTemperature(0, "fahrenheit"), 32);
   assert.equal(convertTemperature(100, "fahrenheit"), 212);
   assert.equal(convertTemperature(-40, "fahrenheit"), -40);
+});
+
+// ===== City search (Day 41) =====
+
+test("parseGeocoding returns the first result with its country", () => {
+  const data = {
+    results: [
+      { name: "Milan", country: "Italy", latitude: 45.46, longitude: 9.19 },
+      { name: "Milan", country: "United States", latitude: 42.08, longitude: -83.68 },
+    ],
+  };
+  assert.deepEqual(parseGeocoding(data), {
+    name: "Milan, Italy",
+    latitude: 45.46,
+    longitude: 9.19,
+  });
+});
+
+test("parseGeocoding works without a country", () => {
+  const data = { results: [{ name: "Atlantis", latitude: 0, longitude: 0 }] };
+  assert.equal(parseGeocoding(data).name, "Atlantis");
+});
+
+test("parseGeocoding returns null when the city is not found", () => {
+  // Open-Meteo omits "results" when nothing matches
+  assert.equal(parseGeocoding({ generationtime_ms: 0.5 }), null);
+  assert.equal(parseGeocoding({ results: [] }), null);
+});
+
+test("parseGeocoding rejects broken responses", () => {
+  assert.throws(() => parseGeocoding(null), /Unexpected geocoding response/);
+  assert.throws(
+    () => parseGeocoding({ results: [{ name: "X", latitude: "45", longitude: 9 }] }),
+    /Unexpected geocoding response/,
+  );
+  assert.throws(
+    () => parseGeocoding({ results: [{ name: "X", latitude: 200, longitude: 9 }] }),
+    /Unexpected geocoding response/,
+  );
 });

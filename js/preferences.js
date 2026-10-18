@@ -4,7 +4,8 @@
  *   temperatureUnit: "celsius" | "fahrenheit",
  *   compactMode: boolean,
  *   theme: "light" | "dark",
- *   codingGoalMinutes: number (Day 38)
+ *   codingGoalMinutes: number (Day 38),
+ *   weatherLocation: { name, latitude, longitude } (Day 41)
  * }
  */
 
@@ -13,7 +14,26 @@ export const defaultPreferences = {
   compactMode: false,
   theme: "light",
   codingGoalMinutes: 60,
+  weatherLocation: { name: "Rome", latitude: 41.9, longitude: 12.5 },
 };
+
+/** Returns a clean { name, latitude, longitude } or null if invalid */
+export function sanitizeLocation(raw) {
+  if (!raw || typeof raw !== "object") return null;
+
+  const { name, latitude, longitude } = raw;
+  if (typeof name !== "string" || !name.trim() || name.length > 100) {
+    return null;
+  }
+  if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
+    return null;
+  }
+  if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+    return null;
+  }
+
+  return { name: name.trim(), latitude, longitude };
+}
 
 /** Keeps only known preference keys with valid values */
 export function sanitizePreferences(raw) {
@@ -35,6 +55,10 @@ export function sanitizePreferences(raw) {
     raw.codingGoalMinutes <= 600
   ) {
     prefs.codingGoalMinutes = raw.codingGoalMinutes;
+  }
+  const location = sanitizeLocation(raw.weatherLocation);
+  if (location) {
+    prefs.weatherLocation = location;
   }
 
   return prefs;

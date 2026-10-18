@@ -127,3 +127,37 @@ test("sanitizePreferences returns defaults for non-objects", () => {
   assert.deepEqual(sanitizePreferences(null), defaultPreferences);
   assert.deepEqual(sanitizePreferences("dark"), defaultPreferences);
 });
+
+// ===== Weather city (Day 41) =====
+
+test("sanitizePreferences keeps a valid weather city", () => {
+  const city = { name: "Milan, Italy", latitude: 45.46, longitude: 9.19 };
+  assert.deepEqual(sanitizePreferences({ weatherLocation: city }).weatherLocation, city);
+});
+
+test("sanitizePreferences falls back to Rome for an invalid city", () => {
+  const bad = [
+    "Milan",
+    { name: "", latitude: 45, longitude: 9 },
+    { name: "X", latitude: 91, longitude: 9 },
+    { name: "X", latitude: 45, longitude: -181 },
+    { name: "X", latitude: "45", longitude: 9 },
+    { name: "X".repeat(101), latitude: 45, longitude: 9 },
+  ];
+  for (const weatherLocation of bad) {
+    assert.deepEqual(
+      sanitizePreferences({ weatherLocation }).weatherLocation,
+      defaultPreferences.weatherLocation,
+    );
+  }
+});
+
+test("a backup with a weather city round-trips", () => {
+  const preferences = {
+    ...defaultPreferences,
+    weatherLocation: { name: "Oslo, Norway", latitude: 59.91, longitude: 10.75 },
+  };
+  const backup = createBackup({ habits, goals, notes: "", preferences }, new Date());
+  const result = parseBackup(JSON.parse(JSON.stringify(backup)));
+  assert.deepEqual(result.backup.preferences, preferences);
+});

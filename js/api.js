@@ -1,4 +1,4 @@
-import { getPreferences } from "./preferences.js";
+import { getPreferences, sanitizeLocation } from "./preferences.js";
 
 // Day 40: never wait forever on a slow API
 const REQUEST_TIMEOUT_MS = 8000;
@@ -52,7 +52,7 @@ export async function loadDailyQuote() {
 
 /**
  * Weather model (always stored in Celsius from API):
- * { temperature: number, weatherCode: number, description: string }
+ * { temperature: number, weatherCode: number, description: string, locationName: string }
  */
 
 let cachedWeather = null;
@@ -95,21 +95,46 @@ export function convertTemperature(celsius, unit) {
   return Math.round(celsius);
 }
 
-/** API layer only — no DOM */
-const WEATHER_LOCATION = { name: "Rome", latitude: 41.9, longitude: 12.5 };
+/**
+ * Day 41: first result of Open-Meteo geocoding as { name, latitude, longitude },
+ * or null when the city was not found.
+ */
+export function parseGeocoding(data) {
+  if (!data || typeof data !== "object") {
+    throw new Error("Unexpected geocoding response");
+  }
 
-export async function getWeather() {
-  const { latitude, longitude } = WEATHER_LOCATION;
+  const first = Array.isArray(data.results) ? data.results[0] : undefined;
+  if (!first) return null;
+
+  const location = sanitizeLocation({
+    name: first.country ? `${first.name}, ${first.country}` : first.name,
+    latitude: first.latitude,
+    longitude: first.longitude,
+  });
+  if (!location) throw new Error("Unexpected geocoding response");
+  return location;
+}
+
+/** API layer only — no DOM */
+export async function searchCity(query) {
+  const url =
+    `https://geocoding-api.open-meteo.com/v1/search` +
+    `?name=${encodeURIComponent(query)}&count=1&language=en&format=json`;
+
+  return parseGeocoding(await fetchJSON(url));
+}
+
+/** API layer only — no DOM */
+export async function getWeather(location) {
+  const { latitude, longitude } = location;
 
   const url =
     `https://api.open-meteo.com/v1/forecast` +
     `?latitude=${latitude}&longitude=${longitude}` +
     `&current=temperature_2m,weather_code`;
 
-  const weather = parseWeather(await fetchJSON(url));
-
-  cachedWeather = weather;
-  return weather;
+  return { ...parseWeather(await fetchJSON(url)), locationName: location.name };
 }
 
 function renderWeatherLoading() {
@@ -131,7 +156,7 @@ function renderWeather(weather) {
   const symbol = temperatureUnit === "fahrenheit" ? "°F" : "°C";
 
   tempEl.textContent = `${value}${symbol}`;
-  descEl.textContent = `${weather.description} · ${WEATHER_LOCATION.name}`;
+  descEl.textContent = `${weather.description} · ${weather.locationName}`;
 }
 
 function renderWeatherError() {
@@ -150,13 +175,21 @@ export function refreshWeatherDisplay() {
   }
 }
 
+// Day 41: only the latest request may update the UI (city can change mid-request)
+let latestWeatherRequest = 0;
+
 export async function loadWeather() {
+  const requestId = ++latestWeatherRequest;
+  cachedWeather = null;
   renderWeatherLoading();
 
   try {
-    const weather = await getWeather();
+    const weather = await getWeather(getPreferences().weatherLocation);
+    if (requestId !== latestWeatherRequest) return;
+    cachedWeather = weather;
     renderWeather(weather);
   } catch (error) {
+    if (requestId !== latestWeatherRequest) return;
     console.error("Weather fetch failed:", error);
     renderWeatherError();
   }

@@ -305,6 +305,29 @@ textarea {
   padding: 0.3rem 0.6rem;
 }
 
+/* Last 7 days (Day 42) */
+.habit-week {
+  display: inline-flex;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.day-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--border);
+}
+
+.day-dot.done {
+  background: #22c55e;
+}
+
+.day-dot.today {
+  outline: 1.5px solid var(--muted);
+  outline-offset: 1px;
+}
+
 .empty-message {
   color: var(--muted);
   font-size: 0.95rem;
@@ -525,6 +548,14 @@ body.dark .btn-secondary {
   color: var(--text);
 }
 
+body.dark .day-dot {
+  background: #334155;
+}
+
+body.dark .day-dot.done {
+  background: #22c55e;
+}
+
 body.dark .goal-done {
   color: #4ade80;
 }
@@ -568,5 +599,17 @@ body.dark {
 
   .habits-controls select {
     width: 100%;
+  }
+
+  .habit-row {
+    flex-wrap: wrap;
+  }
+
+  .habit-label {
+    flex-basis: 100%;
+  }
+
+  .habit-week {
+    margin-right: auto;
   }
 }

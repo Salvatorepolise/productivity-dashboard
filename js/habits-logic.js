@@ -1,6 +1,7 @@
 /**
  * Pure habit logic — no DOM, no localStorage.
- * Habit shape: { id, name, completed, streak, lastCompletedDate }
+ * Habit shape: { id, name, completed, streak, lastCompletedDate, history }
+ * history: completed days as "YYYY-MM-DD", last HISTORY_DAYS days (Day 42)
  * Contract aligned with day-19-typescript/types.ts
  */
 
@@ -57,9 +58,78 @@ export function toDateKey(date) {
 }
 
 export function getPreviousDateKey(now) {
-  const date = new Date(now);
-  date.setDate(date.getDate() - 1);
-  return toDateKey(date);
+  return toDateKey(addDays(now, -1));
+}
+
+export function addDays(date, days) {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+/** "YYYY-MM-DD" → local Date at midnight */
+export function fromDateKey(key) {
+  const [year, month, day] = key.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+export function isValidDateKey(key) {
+  if (typeof key !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(key)) {
+    return false;
+  }
+  // Rejects impossible dates like 2026-02-31
+  return toDateKey(fromDateKey(key)) === key;
+}
+
+// ===== HISTORY (Day 42) =====
+
+/** Completed days are kept for this many days (today included) */
+export const HISTORY_DAYS = 30;
+
+/** Unique, sorted, only days inside the history window */
+export function trimHistory(history, now) {
+  const today = toDateKey(now);
+  const oldest = toDateKey(addDays(now, -(HISTORY_DAYS - 1)));
+  return [...new Set(history)]
+    .filter((key) => key >= oldest && key <= today)
+    .sort();
+}
+
+/**
+ * Data saved before Day 42 has no history, but the streak tells us
+ * that the last `streak` days up to lastCompletedDate were completed.
+ */
+export function deriveHistoryFromStreak(habit) {
+  if (!isValidDateKey(habit.lastCompletedDate)) return [];
+
+  const last = fromDateKey(habit.lastCompletedDate);
+  const days = Math.min(Math.max(habit.streak || 0, 1), HISTORY_DAYS);
+
+  const history = [];
+  for (let i = days - 1; i >= 0; i--) {
+    history.push(toDateKey(addDays(last, -i)));
+  }
+  return history;
+}
+
+export function normalizeHistory(habit, now = new Date()) {
+  const raw = Array.isArray(habit.history)
+    ? habit.history.filter(isValidDateKey)
+    : deriveHistoryFromStreak(habit);
+  return trimHistory(raw, now);
+}
+
+/** Last `days` days, oldest first: [{ dateKey, done, isToday }] */
+export function getLastDays(habit, now = new Date(), days = 7) {
+  const done = new Set(habit.history || []);
+  const today = toDateKey(now);
+
+  const result = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const dateKey = toDateKey(addDays(now, -i));
+    result.push({ dateKey, done: done.has(dateKey), isToday: dateKey === today });
+  }
+  return result;
 }
 
 /**
@@ -86,6 +156,7 @@ export function applyCompletionTransition(
 ) {
   const today = toDateKey(now);
   const yesterday = getPreviousDateKey(now);
+  const history = habit.history || [];
 
   if (!markingComplete) {
     if (habit.lastCompletedDate !== today) {
@@ -98,12 +169,16 @@ export function applyCompletionTransition(
       completed: false,
       streak,
       lastCompletedDate: streak > 0 ? yesterday : null,
+      history: history.filter((key) => key !== today),
     };
   }
 
+  // Day 42: today goes into the history (at most once)
+  const nextHistory = trimHistory([...history, today], now);
+
   // Already counted for today → only ensure completed
   if (habit.lastCompletedDate === today) {
-    return { ...habit, completed: true };
+    return { ...habit, completed: true, history: nextHistory };
   }
 
   let streak = 1;
@@ -116,6 +191,7 @@ export function applyCompletionTransition(
     completed: true,
     streak,
     lastCompletedDate: today,
+    history: nextHistory,
   };
 }
 

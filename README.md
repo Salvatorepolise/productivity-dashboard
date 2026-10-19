@@ -33,6 +33,7 @@ For one browser / one device, it is designed to be used every day.
 - Habit Tracker — full CRUD with inline rename
 - Search + status filter + sort (derived view)
 - Habit streaks (max +1 per local day)
+- Last 7 days per habit (30-day history, rebuilt from streaks for older data)
 - Daily reset on new local calendar day (completions + coding minutes), also while the tab stays open
 - Non-blocking messages (toasts instead of alerts)
 - Today's Goals: check off, delete, unfinished goals carry over to the next day
@@ -61,7 +62,7 @@ js/
 ├── goals.js          # goals state, undo, daily carry-over
 ├── storage.js        # localStorage (habits, goals)
 ├── ui.js             # render + DOM
-├── habits-logic.js   # pure logic: stats, insights, dates, streaks
+├── habits-logic.js   # pure logic: stats, insights, dates, streaks, history
 ├── goals-logic.js    # pure goal logic: migration, carry-over, undo
 ├── backup-logic.js   # pure backup format: create, validate, migrate
 ├── list-utils.js     # restore an item at its position (undo)
@@ -91,7 +92,7 @@ Or open the live version on GitHub Pages (link above).
 npm test
 ```
 
-Runs the pure logic tests (streaks, dates, ids, stats, goals, backup, API parsing, city search) with Node 18+.
+Runs the pure logic tests (streaks, history, dates, ids, stats, goals, backup, API parsing, city search) with Node 18+.
 The same tests run on GitHub Actions on every push.
 
 ## Keyboard shortcuts
@@ -125,6 +126,7 @@ The same tests run on GitHub Actions on every push.
 - **Day 39** (15 October 2026): Full backup (habits, goals, notes, settings) + undo restores position
 - **Day 40** (16 October 2026): Tests on every push (GitHub Actions) + API timeouts and response checks
 - **Day 41** (18 October 2026): Choose your weather city (Open-Meteo geocoding), saved in settings and backups
+- **Day 42** (20 October 2026): Last 7 days per habit, 30-day history (included in backups)
 - MRR: $0
 
 ## What's next

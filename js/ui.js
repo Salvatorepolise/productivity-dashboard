@@ -3,6 +3,7 @@ import {
   getHabitStats,
   getHabitInsightMessage,
   getCurrentStreak,
+  getLastDays,
 } from "./habits-logic.js";
 import { getGoalStats } from "./goals-logic.js";
 
@@ -95,6 +96,31 @@ function renderEditRow(habit) {
   return wrapper;
 }
 
+/** Day 42: last 7 days as dots, oldest on the left */
+function renderWeek(habit) {
+  const days = getLastDays(habit);
+  const doneCount = days.filter((day) => day.done).length;
+
+  const week = document.createElement("span");
+  week.className = "habit-week";
+  week.setAttribute("role", "img");
+  week.setAttribute(
+    "aria-label",
+    `${habit.name}: done ${doneCount} of the last 7 days`,
+  );
+
+  days.forEach((day) => {
+    const dot = document.createElement("span");
+    dot.className = "day-dot";
+    if (day.done) dot.classList.add("done");
+    if (day.isToday) dot.classList.add("today");
+    dot.title = `${day.dateKey}: ${day.done ? "done" : "not done"}`;
+    week.appendChild(dot);
+  });
+
+  return week;
+}
+
 export function renderHabits() {
   const container = document.getElementById("habits");
   container.innerHTML = "";
@@ -143,13 +169,16 @@ export function renderHabits() {
     editBtn.textContent = "Edit";
     editBtn.className = "edit-habit-btn";
     editBtn.dataset.id = habit.id;
+    editBtn.setAttribute("aria-label", `Edit habit: ${habit.name}`);
 
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "Delete";
     deleteBtn.className = "delete-habit-btn";
     deleteBtn.dataset.id = habit.id;
+    deleteBtn.setAttribute("aria-label", `Delete habit: ${habit.name}`);
 
     wrapper.appendChild(label);
+    wrapper.appendChild(renderWeek(habit));
     wrapper.appendChild(editBtn);
     wrapper.appendChild(deleteBtn);
     container.appendChild(wrapper);

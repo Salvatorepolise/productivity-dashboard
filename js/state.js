@@ -5,6 +5,7 @@ import {
   toDateKey,
   applyCompletionTransition,
   ensureUniqueIds,
+  normalizeHistory,
 } from "./habits-logic.js";
 
 export let habitsData = [
@@ -57,6 +58,8 @@ function normalizeHabit(h) {
     streak: typeof h.streak === "number" && h.streak >= 0 ? h.streak : 0,
     lastCompletedDate:
       typeof h.lastCompletedDate === "string" ? h.lastCompletedDate : null,
+    // Day 42: older data gets a history rebuilt from its streak
+    history: normalizeHistory(h),
   };
 }
 
@@ -153,6 +156,7 @@ export function addHabit(name) {
       completed: false,
       streak: 0,
       lastCompletedDate: null,
+      history: [],
     },
   ];
   saveHabitsToStorage(habitsData);
@@ -232,6 +236,7 @@ export function getHabitsForExport() {
     completed: h.completed,
     streak: h.streak ?? 0,
     lastCompletedDate: h.lastCompletedDate ?? null,
+    history: h.history ?? [],
   }));
 }
 

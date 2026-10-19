@@ -8,6 +8,13 @@ import {
   getCurrentStreak,
   applyCompletionTransition,
   ensureUniqueIds,
+  addDays,
+  isValidDateKey,
+  trimHistory,
+  deriveHistoryFromStreak,
+  normalizeHistory,
+  getLastDays,
+  HISTORY_DAYS,
 } from "../js/habits-logic.js";
 
 // Fixed "now" so tests do not depend on the real date
@@ -155,4 +162,94 @@ test("getHabitStats counts and rounds the percentage", () => {
 
 test("getHabitStats handles an empty list", () => {
   assert.equal(getHabitStats([]).percentage, 0);
+});
+
+// ===== History (Day 42) =====
+
+test("isValidDateKey rejects bad formats and impossible dates", () => {
+  assert.equal(isValidDateKey("2026-10-14"), true);
+  assert.equal(isValidDateKey("2026-02-31"), false);
+  assert.equal(isValidDateKey("2026-1-5"), false);
+  assert.equal(isValidDateKey(20261014), false);
+  assert.equal(isValidDateKey(null), false);
+});
+
+test("completing a habit adds today to its history once", () => {
+  let h = applyCompletionTransition(habit({ history: ["2026-10-10"] }), true, now);
+  assert.deepEqual(h.history, ["2026-10-10", TODAY]);
+
+  // check → uncheck → check: still one entry for today
+  h = applyCompletionTransition(h, false, now);
+  h = applyCompletionTransition(h, true, now);
+  assert.deepEqual(h.history, ["2026-10-10", TODAY]);
+});
+
+test("unchecking today removes today from the history", () => {
+  const checked = applyCompletionTransition(
+    habit({ streak: 1, lastCompletedDate: YESTERDAY, history: [YESTERDAY] }),
+    true,
+    now,
+  );
+  const unchecked = applyCompletionTransition(checked, false, now);
+  assert.deepEqual(unchecked.history, [YESTERDAY]);
+});
+
+test("history keeps only the last 30 days", () => {
+  const old = toDateKey(addDays(now, -HISTORY_DAYS)); // 31 days ago
+  const edge = toDateKey(addDays(now, -(HISTORY_DAYS - 1))); // 30 days ago, kept
+  const result = applyCompletionTransition(habit({ history: [old, edge] }), true, now);
+  assert.deepEqual(result.history, [edge, TODAY]);
+});
+
+test("trimHistory dedupes, sorts and drops future days", () => {
+  assert.deepEqual(
+    trimHistory([TODAY, YESTERDAY, TODAY, "2026-10-20"], now),
+    [YESTERDAY, TODAY],
+  );
+});
+
+test("old data gets a history rebuilt from its streak", () => {
+  assert.deepEqual(
+    deriveHistoryFromStreak(habit({ streak: 3, lastCompletedDate: YESTERDAY })),
+    ["2026-10-11", "2026-10-12", YESTERDAY],
+  );
+  assert.deepEqual(deriveHistoryFromStreak(habit()), []);
+});
+
+test("rebuilt history crosses month boundaries", () => {
+  assert.deepEqual(
+    deriveHistoryFromStreak(habit({ streak: 3, lastCompletedDate: "2026-10-01" })),
+    ["2026-09-29", "2026-09-30", "2026-10-01"],
+  );
+});
+
+test("normalizeHistory keeps saved history and filters invalid entries", () => {
+  const h = habit({
+    streak: 9,
+    lastCompletedDate: TODAY,
+    history: [TODAY, "nope", "2026-02-31", 42, YESTERDAY],
+  });
+  // saved history wins over the streak
+  assert.deepEqual(normalizeHistory(h, now), [YESTERDAY, TODAY]);
+});
+
+test("normalizeHistory derives history when there is none", () => {
+  const h = habit({ streak: 2, lastCompletedDate: TODAY });
+  assert.deepEqual(normalizeHistory(h, now), [YESTERDAY, TODAY]);
+});
+
+test("getLastDays returns 7 days, oldest first, marking today", () => {
+  const days = getLastDays(habit({ history: ["2026-10-08", YESTERDAY] }), now);
+
+  assert.equal(days.length, 7);
+  assert.equal(days[0].dateKey, "2026-10-08");
+  assert.equal(days[6].dateKey, TODAY);
+  assert.deepEqual(
+    days.map((d) => d.done),
+    [true, false, false, false, false, true, false],
+  );
+  assert.deepEqual(
+    days.map((d) => d.isToday),
+    [false, false, false, false, false, false, true],
+  );
 });

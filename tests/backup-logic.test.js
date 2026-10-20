@@ -35,8 +35,9 @@ test("createBackup includes every section and a version", () => {
 });
 
 test("export → JSON → import round-trips all data", () => {
+  const coding = { "2026-10-14": 45, "2026-10-15": 90 };
   const backup = createBackup(
-    { habits, goals, notes: "line 1\nline 2", preferences: prefs },
+    { habits, goals, notes: "line 1\nline 2", preferences: prefs, coding },
     new Date(),
   );
   const result = parseBackup(JSON.parse(JSON.stringify(backup)));
@@ -47,7 +48,21 @@ test("export → JSON → import round-trips all data", () => {
     goals,
     notes: "line 1\nline 2",
     preferences: prefs,
+    coding,
   });
+});
+
+test("backups without a coding log (Day 39–42) still import", () => {
+  const result = parseBackup({ app: BACKUP_APP, version: 2, habits: [] });
+  assert.equal(result.ok, true);
+  assert.equal(result.backup.coding, null);
+});
+
+test("parseBackup rejects a coding log that is not an object", () => {
+  const base = { app: BACKUP_APP, version: 2, habits: [] };
+  for (const coding of [null, [], "60", 60]) {
+    assert.equal(parseBackup({ ...base, coding }).ok, false);
+  }
 });
 
 // ===== Import: legacy format =====
@@ -60,6 +75,7 @@ test("parseBackup accepts the old habits-only array (Day 29–38)", () => {
     goals: null,
     notes: null,
     preferences: null,
+    coding: null,
   });
 });
 

@@ -39,9 +39,9 @@ For one browser / one device, it is designed to be used every day.
 - Today's Goals: check off, delete, unfinished goals carry over to the next day
 - Undo delete for habits and goals (5s toast)
 - Keyboard shortcuts (Ctrl/Cmd+K, N, Esc)
-- Full backup: export / import habits, goals, notes and settings as JSON (old habits-only backups still import)
+- Full backup: export / import habits, goals, notes, coding log and settings as JSON (older backups still import)
 - Preferences: °C/°F, weather city, compact mode, dark mode
-- Daily Coding tracker with editable goal (minutes)
+- Daily Coding tracker with editable goal, 30-day log and last-7-days chart
 - Notes with auto-save
 - Clean UI (Day 34 restyle)
 
@@ -60,10 +60,12 @@ js/
 ├── main.js           # entry, events, settings, keyboard, export/import
 ├── state.js          # habits, filters, undo, daily reset, streaks
 ├── goals.js          # goals state, undo, daily carry-over
-├── storage.js        # localStorage (habits, goals)
+├── coding.js         # coding minutes per day (state + migration)
+├── storage.js        # localStorage (habits, goals, coding log)
 ├── ui.js             # render + DOM
 ├── habits-logic.js   # pure logic: stats, insights, dates, streaks, history
 ├── goals-logic.js    # pure goal logic: migration, carry-over, undo
+├── coding-logic.js   # pure coding log: validation, week summary
 ├── backup-logic.js   # pure backup format: create, validate, migrate
 ├── list-utils.js     # restore an item at its position (undo)
 ├── ids.js            # unique ids
@@ -73,7 +75,8 @@ tests/
 ├── habits-logic.test.js
 ├── goals-logic.test.js
 ├── backup-logic.test.js
-└── api.test.js
+├── api.test.js
+└── coding-logic.test.js
 ```
 
 ## How to run
@@ -92,7 +95,7 @@ Or open the live version on GitHub Pages (link above).
 npm test
 ```
 
-Runs the pure logic tests (streaks, history, dates, ids, stats, goals, backup, API parsing, city search) with Node 18+.
+Runs the pure logic tests (streaks, history, dates, ids, stats, goals, coding log, backup, API parsing, city search) with Node 18+.
 The same tests run on GitHub Actions on every push.
 
 ## Keyboard shortcuts
@@ -106,7 +109,7 @@ The same tests run on GitHub Actions on every push.
 ## Data & privacy
 
 - Habits, goals, notes, coding minutes, and preferences stay in **your browser**
-- Export downloads a full JSON backup you control (habits, goals, notes, settings)
+- Export downloads a full JSON backup you control (habits, goals, notes, coding log, settings)
 - No analytics backend in this project
 
 ## Progress (challenge log)
@@ -127,6 +130,7 @@ The same tests run on GitHub Actions on every push.
 - **Day 40** (16 October 2026): Tests on every push (GitHub Actions) + API timeouts and response checks
 - **Day 41** (18 October 2026): Choose your weather city (Open-Meteo geocoding), saved in settings and backups
 - **Day 42** (20 October 2026): Last 7 days per habit, 30-day history (included in backups)
+- **Day 43** (20 October 2026): Coding minutes saved per day, last-7-days chart, input limited to 0–1440
 - MRR: $0
 
 ## What's next

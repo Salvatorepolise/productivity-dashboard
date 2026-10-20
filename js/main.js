@@ -24,6 +24,7 @@ import {
   showUndoToast,
   hideUndoToast,
   runUndo,
+  renderCodingWeek,
 } from "./ui.js";
 import {
   goals,
@@ -36,6 +37,14 @@ import {
   replaceGoals,
 } from "./goals.js";
 import { createBackup, parseBackup } from "./backup-logic.js";
+import {
+  codingLog,
+  initCoding,
+  getTodayMinutes,
+  setTodayMinutes,
+  replaceCodingLog,
+} from "./coding.js";
+import { parseMinutesInput } from "./coding-logic.js";
 import {
   loadDailyQuote,
   loadWeather,
@@ -256,6 +265,7 @@ function exportBackup() {
       habits: getHabitsForExport(),
       goals,
       notes: notesTextarea.value,
+      coding: codingLog,
       preferences: getPreferences(),
     },
     new Date(),
@@ -280,6 +290,11 @@ function applyBackup(backup) {
   hideUndoToast();
 
   if (backup.goals) replaceGoals(backup.goals);
+
+  if (backup.coding) {
+    replaceCodingLog(backup.coding);
+    todayInput.value = getTodayMinutes();
+  }
 
   if (backup.notes !== null) {
     notesTextarea.value = backup.notes;
@@ -354,14 +369,14 @@ document
     e.target.value = "";
   });
 
-// ===== CODING (Day 38: editable goal, saved in preferences) =====
+// ===== CODING (Day 38: editable goal, Day 43: daily log + week chart) =====
 const todayInput = document.getElementById("today-input");
 const goalInput = document.getElementById("goal-minutes-input");
 const statusEl = document.getElementById("goal-status");
 const progressBar = document.getElementById("progress-bar");
 
 function updateCodingGoal() {
-  const todayMinutes = Number(todayInput.value) || 0;
+  const todayMinutes = getTodayMinutes();
   const goalMinutes = getPreferences().codingGoalMinutes;
 
   const percentage = Math.min((todayMinutes / goalMinutes) * 100, 100);
@@ -370,11 +385,19 @@ function updateCodingGoal() {
   const done = todayMinutes >= goalMinutes;
   statusEl.textContent = done ? "Goal completed ✓" : "Not completed yet";
   statusEl.classList.toggle("goal-done", done);
+
+  renderCodingWeek(codingLog, goalMinutes);
 }
 
+// Day 43: minutes saved per day, limited to 0–1440
 todayInput.addEventListener("input", () => {
-  localStorage.setItem("todayMinutes", todayInput.value);
+  setTodayMinutes(parseMinutesInput(todayInput.value));
   updateCodingGoal();
+});
+
+// Show the value that was actually saved (e.g. 2000 → 1440)
+todayInput.addEventListener("change", () => {
+  todayInput.value = getTodayMinutes();
 });
 
 goalInput.addEventListener("change", () => {
@@ -467,10 +490,10 @@ syncSettingsUI();
 
 initHabits();
 initGoals();
+initCoding(); // before the daily reset: it reads lastActiveDate
 if (checkAndResetForNewDay()) resetGoalsForNewDay();
 
-const savedMinutes = localStorage.getItem("todayMinutes");
-todayInput.value = savedMinutes !== null ? savedMinutes : "0";
+todayInput.value = getTodayMinutes();
 
 renderHabits();
 updateProgress();
@@ -484,7 +507,7 @@ function refreshIfNewDay() {
   if (!checkAndResetForNewDay()) return;
 
   resetGoalsForNewDay();
-  todayInput.value = "0";
+  todayInput.value = getTodayMinutes();
   renderHabits();
   updateProgress();
   updateCodingGoal();

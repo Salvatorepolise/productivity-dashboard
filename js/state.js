@@ -73,7 +73,7 @@ export function initHabits() {
 }
 
 /**
- * New day: reset daily completed + coding minutes.
+ * New day: reset daily habit completions.
  * Does NOT reset streak / lastCompletedDate.
  */
 export function checkAndResetForNewDay() {
@@ -87,7 +87,7 @@ export function checkAndResetForNewDay() {
       completed: false,
     }));
     saveHabitsToStorage(habitsData);
-    localStorage.setItem("todayMinutes", "0");
+    // Day 43: coding minutes are stored per day, so a new day starts at 0
   }
 
   localStorage.setItem("lastActiveDate", today);

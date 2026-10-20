@@ -2,7 +2,7 @@
  * Pure backup logic — no DOM, no localStorage (Day 39).
  *
  * Backup v2:
- * { app, version: 2, exportedAt, habits, goals, notes, preferences }
+ * { app, version: 2, exportedAt, habits, goals, notes, preferences, coding? }
  *
  * Legacy (Day 29–38): a plain array of habits.
  */
@@ -12,7 +12,10 @@ import { sanitizePreferences } from "./preferences.js";
 export const BACKUP_APP = "productivity-dashboard";
 export const BACKUP_VERSION = 2;
 
-export function createBackup({ habits, goals, notes, preferences }, now) {
+export function createBackup(
+  { habits, goals, notes, preferences, coding },
+  now,
+) {
   return {
     app: BACKUP_APP,
     version: BACKUP_VERSION,
@@ -21,6 +24,7 @@ export function createBackup({ habits, goals, notes, preferences }, now) {
     goals,
     notes,
     preferences,
+    coding, // Day 43: optional, older backups do not have it
   };
 }
 
@@ -56,7 +60,13 @@ export function parseBackup(data) {
     if (error) return { ok: false, error };
     return {
       ok: true,
-      backup: { habits: data, goals: null, notes: null, preferences: null },
+      backup: {
+        habits: data,
+        goals: null,
+        notes: null,
+        preferences: null,
+        coding: null,
+      },
     };
   }
 
@@ -80,6 +90,12 @@ export function parseBackup(data) {
   if (data.notes !== undefined && typeof data.notes !== "string") {
     return { ok: false, error: "Notes must be text." };
   }
+  if (
+    data.coding !== undefined &&
+    (!data.coding || typeof data.coding !== "object" || Array.isArray(data.coding))
+  ) {
+    return { ok: false, error: "Coding log must be an object." };
+  }
 
   return {
     ok: true,
@@ -91,6 +107,7 @@ export function parseBackup(data) {
         data.preferences === undefined
           ? null
           : sanitizePreferences(data.preferences),
+      coding: data.coding ?? null,
     },
   };
 }

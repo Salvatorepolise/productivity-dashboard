@@ -139,13 +139,16 @@
         </p>
         <p class="coding-row">
           Today:
-          <input type="number" id="today-input" value="0" min="0" />
+          <input type="number" id="today-input" value="0" min="0" max="1440" />
           minutes
         </p>
         <div class="progress-bar-container">
           <div class="progress-bar" id="progress-bar"></div>
         </div>
         <p id="goal-status" class="meta-text">Not completed yet</p>
+
+        <div id="coding-week" class="coding-week" role="img"></div>
+        <p id="coding-week-summary" class="meta-text"></p>
       </section>
 
       <!-- NOTES -->
@@ -214,7 +217,7 @@
       </section>
 
       <footer class="app-footer">
-        v1.0 · Day 42 · October 20, 2026 · MRR: $0
+        v1.0 · Day 43 · October 20, 2026 · MRR: $0
       </footer>
     </div>
 

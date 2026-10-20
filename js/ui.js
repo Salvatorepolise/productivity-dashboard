@@ -6,6 +6,11 @@ import {
   getLastDays,
 } from "./habits-logic.js";
 import { getGoalStats } from "./goals-logic.js";
+import {
+  getLastDaysMinutes,
+  getWeekSummary,
+  formatMinutes,
+} from "./coding-logic.js";
 
 // Day 37: id of the habit being renamed inline (null = none)
 let editingHabitId = null;
@@ -276,4 +281,50 @@ export function renderGoals(goals) {
   const { total, completed } = getGoalStats(goals);
   document.getElementById("goals-progress").textContent =
     total === 0 ? "" : `${completed}/${total} done`;
+}
+
+/** Day 43: last 7 days of coding as bars, oldest on the left */
+export function renderCodingWeek(log, goalMinutes) {
+  const chart = document.getElementById("coding-week");
+  const summaryEl = document.getElementById("coding-week-summary");
+  if (!chart || !summaryEl) return;
+
+  const days = getLastDaysMinutes(log);
+  // Scale to the goal, or to the best day if it went above the goal
+  const scale = Math.max(goalMinutes, ...days.map((day) => day.minutes));
+
+  chart.innerHTML = "";
+  days.forEach((day) => {
+    const column = document.createElement("div");
+    column.className = "coding-day";
+    if (day.isToday) column.classList.add("today");
+
+    const track = document.createElement("div");
+    track.className = "coding-bar-track";
+
+    const bar = document.createElement("div");
+    bar.className = "coding-bar";
+    if (day.minutes >= goalMinutes) bar.classList.add("goal-met");
+    bar.style.height = `${Math.round((day.minutes / scale) * 100)}%`;
+
+    const weekday = new Date(`${day.dateKey}T12:00:00`).toLocaleDateString("en", {
+      weekday: "narrow",
+    });
+    const label = document.createElement("span");
+    label.className = "coding-day-label";
+    label.textContent = weekday;
+
+    column.title = `${day.dateKey}: ${formatMinutes(day.minutes)}`;
+    track.appendChild(bar);
+    column.appendChild(track);
+    column.appendChild(label);
+    chart.appendChild(column);
+  });
+
+  const { total, goalDays } = getWeekSummary(log, goalMinutes);
+  chart.setAttribute(
+    "aria-label",
+    `Coding last 7 days: ${formatMinutes(total)}, goal reached on ${goalDays} of 7 days`,
+  );
+  summaryEl.textContent = `Last 7 days: ${formatMinutes(total)} · goal reached ${goalDays}/7`;
 }

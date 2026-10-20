@@ -28,3 +28,12 @@ export function loadGoalsFromStorage() {
 export function saveGoalsToStorage(goals) {
   localStorage.setItem("goalsData", JSON.stringify(goals));
 }
+
+/** Day 43: { "YYYY-MM-DD": minutes } (validated by normalizeCodingLog) */
+export function loadCodingLogFromStorage() {
+  return loadJSON("codingLog");
+}
+
+export function saveCodingLogToStorage(log) {
+  localStorage.setItem("codingLog", JSON.stringify(log));
+}

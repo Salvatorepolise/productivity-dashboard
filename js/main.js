@@ -220,10 +220,16 @@ document.getElementById("new-habit-input").addEventListener("keypress", (e) => {
 });
 
 document.getElementById("reset-habits-btn").addEventListener("click", () => {
+  const ok = confirm(
+    "Reset all habit completions for today? Streaks and history stay.",
+  );
+  if (!ok) return;
+
   resetHabits();
   renderHabits();
   updateProgress();
   refreshWeekSummary();
+  showMessage("Today's habit completions were reset.");
 });
 
 // ===== UNDO =====

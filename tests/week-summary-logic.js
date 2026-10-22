@@ -76,3 +76,15 @@ test("getDashboardWeekSummary shape", () => {
   assert.equal(summary.habits.possibleSlots, 0);
   assert.equal(summary.coding.totalMinutes, 0);
 });
+
+import { getWeekAwareInsight } from "../js/week-summary-logic.js";
+
+test("getWeekAwareInsight: empty week after 2+ days", () => {
+  const wed = new Date(2026, 9, 22, 15, 0, 0);
+  const habits = [
+    { id: "a", completed: false, history: [] },
+    { id: "b", completed: false, history: [] },
+  ];
+  const msg = getWeekAwareInsight(habits, {}, 60, wed);
+  assert.match(msg, /no completed habit slots/i);
+});

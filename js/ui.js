@@ -14,9 +14,11 @@ import {
 import {
   getDashboardWeekSummary,
   formatWeekRange,
+  getWeekAwareInsight,
 } from "./week-summary-logic.js";
+import { codingLog } from "./coding.js";
+import { getPreferences } from "./preferences.js";
 
-// Day 37: id of the habit being renamed inline (null = none)
 let editingHabitId = null;
 
 export function startEditingHabit(id) {
@@ -33,7 +35,6 @@ export function stopEditingHabit() {
   editingHabitId = null;
 }
 
-// Day 37: non-blocking message instead of alert()
 let messageTimeoutId = null;
 
 export function showMessage(text) {
@@ -49,7 +50,6 @@ export function showMessage(text) {
   }, 3500);
 }
 
-// Day 38: one undo toast for habits and goals
 let undoAction = null;
 let undoTimeoutId = null;
 
@@ -105,7 +105,6 @@ function renderEditRow(habit) {
   return wrapper;
 }
 
-/** Day 42: last 7 days as dots, oldest on the left */
 function renderWeek(habit) {
   const days = getLastDays(habit);
   const doneCount = days.filter((day) => day.done).length;
@@ -207,7 +206,12 @@ function updateInsight() {
   const insightEl = document.getElementById("habit-insight");
   if (!insightEl) return;
 
-  insightEl.textContent = getHabitInsightMessage(habitsData);
+  // Day 45: week-aware when useful, else daily message
+  insightEl.textContent = getWeekAwareInsight(
+    habitsData,
+    codingLog,
+    getPreferences().codingGoalMinutes,
+  );
 }
 
 export function updateProgress() {
@@ -238,10 +242,10 @@ export function updateProgress() {
   updateInsight();
 }
 
-/** Day 44: calendar week Mon–Sun (habits slots + coding) */
+/** Day 44: calendar week Mon–Sun */
 export function renderWeekSummary(
   habits,
-  codingLog,
+  codingLogArg,
   goalMinutes,
   now = new Date(),
 ) {
@@ -250,7 +254,12 @@ export function renderWeekSummary(
   const codingEl = document.getElementById("week-summary-coding");
   if (!rangeEl || !habitsEl || !codingEl) return;
 
-  const summary = getDashboardWeekSummary(habits, codingLog, goalMinutes, now);
+  const summary = getDashboardWeekSummary(
+    habits,
+    codingLogArg,
+    goalMinutes,
+    now,
+  );
 
   rangeEl.textContent = formatWeekRange(summary.weekStart, summary.weekEnd);
 
@@ -264,7 +273,6 @@ export function renderWeekSummary(
   codingEl.textContent = `Coding: ${c.formattedTotal} · goal met ${c.goalDays}/${c.daysElapsed} days`;
 }
 
-/** Day 38: goals can be checked off and deleted */
 export function renderGoals(goals) {
   const goalsList = document.getElementById("goals-list");
   goalsList.innerHTML = "";
@@ -312,7 +320,6 @@ export function renderGoals(goals) {
     total === 0 ? "" : `${completed}/${total} done`;
 }
 
-/** Day 43: last 7 days of coding as bars, oldest on the left */
 export function renderCodingWeek(log, goalMinutes) {
   const chart = document.getElementById("coding-week");
   const summaryEl = document.getElementById("coding-week-summary");

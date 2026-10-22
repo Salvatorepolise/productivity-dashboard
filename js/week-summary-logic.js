@@ -3,7 +3,13 @@
  * Uses habit.history date keys + coding log { "YYYY-MM-DD": minutes }.
  */
 
-import { toDateKey, addDays, fromDateKey } from "./habits-logic.js";
+import {
+  toDateKey,
+  addDays,
+  fromDateKey,
+  getHabitStats,
+  getHabitInsightMessage,
+} from "./habits-logic.js";
 import { formatMinutes } from "./coding-logic.js";
 
 /** Monday 00:00 local of the week that contains `now` */
@@ -106,4 +112,42 @@ export function formatWeekRange(weekStart, weekEnd) {
   const end = fromDateKey(weekEnd);
   const opts = { month: "short", day: "numeric" };
   return `${start.toLocaleDateString("en", opts)} – ${end.toLocaleDateString("en", opts)}`;
+}
+
+/**
+ * Day 45: insight that can use this week's numbers.
+ * Falls back to the normal daily insight when week context doesn't apply.
+ */
+export function getWeekAwareInsight(
+  habits,
+  codingLog,
+  goalMinutes,
+  now = new Date(),
+) {
+  const list = Array.isArray(habits) ? habits : [];
+  if (list.length === 0) {
+    return "Add your first habit to get started.";
+  }
+
+  const { percentage } = getHabitStats(list);
+  if (percentage === 100) {
+    return "All habits completed today. Great work!";
+  }
+
+  const week = getDashboardWeekSummary(list, codingLog, goalMinutes, now);
+  const h = week.habits;
+
+  if (h.possibleSlots > 0 && h.percentage === 0 && h.daysElapsed >= 2) {
+    return "This week still has no completed habit slots. One check-in counts.";
+  }
+
+  if (h.possibleSlots > 0 && h.percentage >= 70 && percentage < 100) {
+    return "Strong week so far — finish today's remaining habits.";
+  }
+
+  if (h.possibleSlots > 0 && h.percentage < 30 && h.daysElapsed >= 3) {
+    return "This week's habit rate is low. A small win today helps.";
+  }
+
+  return getHabitInsightMessage(list);
 }

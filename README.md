@@ -34,6 +34,7 @@ For one browser / one device, it is designed to be used every day.
 - Search + status filter + sort (derived view)
 - Habit streaks (max +1 per local day)
 - Last 7 days per habit (30-day history, rebuilt from streaks for older data)
+- calendar week (Mon–Sun): habit slots + coding minutes (Day 44)
 - Daily reset on new local calendar day (completions + coding minutes), also while the tab stays open
 - Non-blocking messages (toasts instead of alerts)
 - Today's Goals: check off, delete, unfinished goals carry over to the next day
@@ -131,6 +132,7 @@ The same tests run on GitHub Actions on every push.
 - **Day 41** (18 October 2026): Choose your weather city (Open-Meteo geocoding), saved in settings and backups
 - **Day 42** (20 October 2026): Last 7 days per habit, 30-day history (included in backups)
 - **Day 43** (20 October 2026): Coding minutes saved per day, last-7-days chart, input limited to 0–1440
+- **Day 44** (22 October 2026): Calendar week summary (Mon–Sun) for habits + coding
 - MRR: $0
 
 ## What's next

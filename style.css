@@ -672,3 +672,36 @@ body.dark {
     margin-right: auto;
   }
 }
+.week-summary {
+  margin-top: 0.85rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  background: var(--bg, #f1f5f9);
+  border: 1px solid var(--border, #e2e8f0);
+}
+
+.week-summary-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted, #64748b);
+  margin-bottom: 0.25rem;
+}
+
+.week-summary-range {
+  font-size: 0.85rem;
+  color: var(--muted, #64748b);
+  margin-bottom: 0.4rem;
+}
+
+.week-summary-line {
+  font-size: 0.95rem;
+  margin: 0.15rem 0;
+}
+
+body.dark .week-summary {
+  background: #0b1220;
+  border-color: #1f2937;
+}

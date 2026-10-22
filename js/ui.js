@@ -11,6 +11,10 @@ import {
   getWeekSummary,
   formatMinutes,
 } from "./coding-logic.js";
+import {
+  getDashboardWeekSummary,
+  formatWeekRange,
+} from "./week-summary-logic.js";
 
 // Day 37: id of the habit being renamed inline (null = none)
 let editingHabitId = null;
@@ -161,7 +165,6 @@ export function renderHabits() {
     label.appendChild(checkbox);
     label.appendChild(document.createTextNode(" " + habit.name));
 
-    // Day 33 — streak (Day 36: hide broken streaks)
     const streak = getCurrentStreak(habit);
     if (streak > 0) {
       const streakSpan = document.createElement("span");
@@ -235,6 +238,32 @@ export function updateProgress() {
   updateInsight();
 }
 
+/** Day 44: calendar week Mon–Sun (habits slots + coding) */
+export function renderWeekSummary(
+  habits,
+  codingLog,
+  goalMinutes,
+  now = new Date(),
+) {
+  const rangeEl = document.getElementById("week-summary-range");
+  const habitsEl = document.getElementById("week-summary-habits");
+  const codingEl = document.getElementById("week-summary-coding");
+  if (!rangeEl || !habitsEl || !codingEl) return;
+
+  const summary = getDashboardWeekSummary(habits, codingLog, goalMinutes, now);
+
+  rangeEl.textContent = formatWeekRange(summary.weekStart, summary.weekEnd);
+
+  const h = summary.habits;
+  habitsEl.textContent =
+    h.possibleSlots === 0
+      ? "Habits: no habits yet"
+      : `Habits: ${h.completedSlots}/${h.possibleSlots} slots (${h.percentage}%)`;
+
+  const c = summary.coding;
+  codingEl.textContent = `Coding: ${c.formattedTotal} · goal met ${c.goalDays}/${c.daysElapsed} days`;
+}
+
 /** Day 38: goals can be checked off and deleted */
 export function renderGoals(goals) {
   const goalsList = document.getElementById("goals-list");
@@ -290,8 +319,7 @@ export function renderCodingWeek(log, goalMinutes) {
   if (!chart || !summaryEl) return;
 
   const days = getLastDaysMinutes(log);
-  // Scale to the goal, or to the best day if it went above the goal
-  const scale = Math.max(goalMinutes, ...days.map((day) => day.minutes));
+  const scale = Math.max(goalMinutes, ...days.map((day) => day.minutes), 1);
 
   chart.innerHTML = "";
   days.forEach((day) => {
@@ -307,9 +335,10 @@ export function renderCodingWeek(log, goalMinutes) {
     if (day.minutes >= goalMinutes) bar.classList.add("goal-met");
     bar.style.height = `${Math.round((day.minutes / scale) * 100)}%`;
 
-    const weekday = new Date(`${day.dateKey}T12:00:00`).toLocaleDateString("en", {
-      weekday: "narrow",
-    });
+    const weekday = new Date(`${day.dateKey}T12:00:00`).toLocaleDateString(
+      "en",
+      { weekday: "narrow" },
+    );
     const label = document.createElement("span");
     label.className = "coding-day-label";
     label.textContent = weekday;

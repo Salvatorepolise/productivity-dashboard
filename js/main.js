@@ -1,4 +1,5 @@
 import {
+  habitsData,
   initHabits,
   checkAndResetForNewDay,
   addHabit,
@@ -25,6 +26,7 @@ import {
   hideUndoToast,
   runUndo,
   renderCodingWeek,
+  renderWeekSummary,
 } from "./ui.js";
 import {
   goals,
@@ -59,7 +61,12 @@ import {
   applyPreferencesToUI,
 } from "./preferences.js";
 
-// ===== GOALS (Day 38: check off, delete with undo, daily carry-over) =====
+// Day 44
+function refreshWeekSummary() {
+  renderWeekSummary(habitsData, codingLog, getPreferences().codingGoalMinutes);
+}
+
+// ===== GOALS =====
 const newGoalInput = document.getElementById("new-goal-input");
 const addGoalBtn = document.getElementById("add-goal-btn");
 
@@ -109,6 +116,7 @@ function saveHabitEdit(id) {
   stopEditingHabit();
   renderHabits();
   updateProgress();
+  refreshWeekSummary();
 }
 
 function cancelHabitEdit() {
@@ -137,10 +145,12 @@ document.getElementById("habits").addEventListener("click", (event) => {
     if (!deleteHabit(id)) return;
     renderHabits();
     updateProgress();
+    refreshWeekSummary();
     showUndoToast("Habit deleted.", () => {
       if (undoDelete()) {
         renderHabits();
         updateProgress();
+        refreshWeekSummary();
       }
     });
   }
@@ -154,6 +164,7 @@ document.getElementById("habits").addEventListener("change", (event) => {
       updateHabit(id);
       updateProgress();
       renderHabits();
+      refreshWeekSummary();
     }
   }
 });
@@ -197,6 +208,7 @@ function handleAddHabit() {
   input.value = "";
   renderHabits();
   updateProgress();
+  refreshWeekSummary();
 }
 
 document
@@ -211,9 +223,10 @@ document.getElementById("reset-habits-btn").addEventListener("click", () => {
   resetHabits();
   renderHabits();
   updateProgress();
+  refreshWeekSummary();
 });
 
-// ===== UNDO DELETE (habits + goals) =====
+// ===== UNDO =====
 document.getElementById("undo-delete-btn").addEventListener("click", runUndo);
 
 // ===== KEYBOARD SHORTCUTS =====
@@ -237,7 +250,6 @@ function handleKeyboardShortcuts(event) {
   }
 
   if (event.key === "Escape") {
-    // Inline habit edit handles its own Escape (cancel)
     if (target.classList.contains("habit-edit-input")) return;
 
     const searchInput = document.getElementById("search-habit-input");
@@ -258,7 +270,7 @@ function handleKeyboardShortcuts(event) {
 
 document.addEventListener("keydown", handleKeyboardShortcuts);
 
-// ===== BACKUP EXPORT / IMPORT (Day 39: everything, not only habits) =====
+// ===== BACKUP =====
 function exportBackup() {
   const data = createBackup(
     {
@@ -283,7 +295,6 @@ function exportBackup() {
   URL.revokeObjectURL(url);
 }
 
-/** Validate the whole file first, then replace each section it contains */
 function applyBackup(backup) {
   replaceHabits(backup.habits);
   stopEditingHabit();
@@ -304,13 +315,14 @@ function applyBackup(backup) {
   if (backup.preferences) {
     replacePreferences(backup.preferences);
     syncSettingsUI();
-    loadWeather(); // the backup may use a different city
+    loadWeather();
   }
 
   renderHabits();
   updateProgress();
   renderGoals(goals);
   updateCodingGoal();
+  refreshWeekSummary();
 }
 
 function importBackupFromFile(file) {
@@ -369,7 +381,7 @@ document
     e.target.value = "";
   });
 
-// ===== CODING (Day 38: editable goal, Day 43: daily log + week chart) =====
+// ===== CODING =====
 const todayInput = document.getElementById("today-input");
 const goalInput = document.getElementById("goal-minutes-input");
 const statusEl = document.getElementById("goal-status");
@@ -387,15 +399,14 @@ function updateCodingGoal() {
   statusEl.classList.toggle("goal-done", done);
 
   renderCodingWeek(codingLog, goalMinutes);
+  refreshWeekSummary();
 }
 
-// Day 43: minutes saved per day, limited to 0–1440
 todayInput.addEventListener("input", () => {
   setTodayMinutes(parseMinutesInput(todayInput.value));
   updateCodingGoal();
 });
 
-// Show the value that was actually saved (e.g. 2000 → 1440)
 todayInput.addEventListener("change", () => {
   todayInput.value = getTodayMinutes();
 });
@@ -435,7 +446,7 @@ function syncSettingsUI() {
   applyPreferencesToUI();
 }
 
-// ===== WEATHER CITY (Day 41) =====
+// ===== WEATHER CITY =====
 const cityInput = document.getElementById("weather-city-input");
 const cityBtn = document.getElementById("weather-city-btn");
 
@@ -490,19 +501,20 @@ syncSettingsUI();
 
 initHabits();
 initGoals();
-initCoding(); // before the daily reset: it reads lastActiveDate
+initCoding();
 if (checkAndResetForNewDay()) resetGoalsForNewDay();
 
 todayInput.value = getTodayMinutes();
 
 renderHabits();
 updateProgress();
-updateCodingGoal();
+updateCodingGoal(); // includes refreshWeekSummary
 renderGoals(goals);
+refreshWeekSummary();
 loadDailyQuote();
 loadWeather();
 
-// ===== NEW DAY WHILE THE TAB IS OPEN (Day 37) =====
+// ===== NEW DAY WHILE TAB OPEN =====
 function refreshIfNewDay() {
   if (!checkAndResetForNewDay()) return;
 
@@ -512,6 +524,7 @@ function refreshIfNewDay() {
   updateProgress();
   updateCodingGoal();
   renderGoals(goals);
+  refreshWeekSummary();
 }
 
 document.addEventListener("visibilitychange", () => {

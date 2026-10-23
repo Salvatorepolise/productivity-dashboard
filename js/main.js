@@ -61,7 +61,6 @@ import {
   applyPreferencesToUI,
 } from "./preferences.js";
 
-// Day 44
 function refreshWeekSummary() {
   renderWeekSummary(habitsData, codingLog, getPreferences().codingGoalMinutes);
 }
@@ -186,15 +185,18 @@ document.getElementById("search-habit-input").addEventListener("input", (e) => {
   renderHabits();
 });
 
+// Day 46: persist status filter + sort
 document
   .getElementById("habit-status-filter")
   .addEventListener("change", (e) => {
     setStatusFilter(e.target.value);
+    savePreferences({ habitStatusFilter: e.target.value });
     renderHabits();
   });
 
 document.getElementById("sort-habits").addEventListener("change", (e) => {
   setSortOption(e.target.value);
+  savePreferences({ habitSortOption: e.target.value });
   renderHabits();
 });
 
@@ -232,7 +234,6 @@ document.getElementById("reset-habits-btn").addEventListener("click", () => {
   showMessage("Today's habit completions were reset.");
 });
 
-// ===== UNDO =====
 document.getElementById("undo-delete-btn").addEventListener("click", runUndo);
 
 // ===== KEYBOARD SHORTCUTS =====
@@ -323,6 +324,10 @@ function applyBackup(backup) {
     syncSettingsUI();
     loadWeather();
   }
+
+  const prefs = getPreferences();
+  setStatusFilter(prefs.habitStatusFilter);
+  setSortOption(prefs.habitSortOption);
 
   renderHabits();
   updateProgress();
@@ -449,10 +454,15 @@ function syncSettingsUI() {
   darkModeCheckbox.checked = prefs.theme === "dark";
   goalInput.value = prefs.codingGoalMinutes;
   cityInput.value = prefs.weatherLocation.name;
+
+  // Day 46
+  document.getElementById("habit-status-filter").value =
+    prefs.habitStatusFilter;
+  document.getElementById("sort-habits").value = prefs.habitSortOption;
+
   applyPreferencesToUI();
 }
 
-// ===== WEATHER CITY =====
 const cityInput = document.getElementById("weather-city-input");
 const cityBtn = document.getElementById("weather-city-btn");
 
@@ -510,17 +520,22 @@ initGoals();
 initCoding();
 if (checkAndResetForNewDay()) resetGoalsForNewDay();
 
+{
+  const prefs = getPreferences();
+  setStatusFilter(prefs.habitStatusFilter);
+  setSortOption(prefs.habitSortOption);
+}
+
 todayInput.value = getTodayMinutes();
 
 renderHabits();
 updateProgress();
-updateCodingGoal(); // includes refreshWeekSummary
+updateCodingGoal();
 renderGoals(goals);
 refreshWeekSummary();
 loadDailyQuote();
 loadWeather();
 
-// ===== NEW DAY WHILE TAB OPEN =====
 function refreshIfNewDay() {
   if (!checkAndResetForNewDay()) return;
 

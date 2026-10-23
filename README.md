@@ -134,6 +134,7 @@ The same tests run on GitHub Actions on every push.
 - **Day 43** (20 October 2026): Coding minutes saved per day, last-7-days chart, input limited to 0–1440
 - **Day 44** (22 October 2026): Calendar week summary (Mon–Sun) for habits + coding
 - **Day 45** (23 October 2026): Confirm before habit reset + week-aware insights
+- **Day 46** (23 October 2026): Persist habit status filter and sort in preferences
 - MRR: $0
 
 ## What's next

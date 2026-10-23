@@ -94,7 +94,7 @@ export function sanitizePreferences(raw) {
   const src = raw && typeof raw === "object" ? raw : {};
   return {
     temperatureUnit: normalizeTemperatureUnit(src.temperatureUnit),
-    compactMode: src.compactMode === true,,
+    compactMode: src.compactMode === true,
     theme: normalizeTheme(src.theme),
     codingGoalMinutes: normalizeCodingGoal(src.codingGoalMinutes),
     weatherLocation: normalizeWeatherLocation(src.weatherLocation),

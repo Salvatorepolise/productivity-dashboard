@@ -229,6 +229,7 @@ textarea {
 
 .goal-label {
   flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -238,6 +239,19 @@ textarea {
 .goal-completed .goal-text {
   text-decoration: line-through;
   color: var(--muted);
+}
+
+.goal-text {
+  overflow-wrap: anywhere;
+}
+
+input.goal-edit-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.goal-row button {
+  flex-shrink: 0;
 }
 
 /* Buttons */

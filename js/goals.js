@@ -37,6 +37,20 @@ export function toggleGoal(id) {
   saveGoalsToStorage(goals);
 }
 
+export function renameGoal(id, text) {
+  if (!goals.some((goal) => goal.id === id)) {
+    return { ok: false, error: "This goal no longer exists." };
+  }
+  const trimmed = typeof text === "string" ? text.trim() : "";
+  if (!trimmed) return { ok: false, error: "Goal text cannot be empty." };
+
+  goals = goals.map((goal) =>
+    goal.id === id ? { ...goal, text: trimmed } : goal,
+  );
+  saveGoalsToStorage(goals);
+  return { ok: true };
+}
+
 export function deleteGoal(id) {
   const index = goals.findIndex((goal) => goal.id === id);
   if (index === -1) return false;

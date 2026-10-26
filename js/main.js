@@ -32,6 +32,7 @@ import {
   goals,
   initGoals,
   addGoal,
+  renameGoal,
   toggleGoal,
   deleteGoal,
   undoDeleteGoal,
@@ -88,8 +89,49 @@ document.getElementById("goals-list").addEventListener("change", (event) => {
   }
 });
 
+function finishGoalEdit(id) {
+  renderGoals(goals);
+  const button = [...document.querySelectorAll(".edit-goal-btn")].find(
+    (element) => element.dataset.id === id,
+  );
+  button?.focus();
+}
+
+function saveGoalEdit(id) {
+  const input = document.querySelector(".goal-edit-input");
+  if (!input || input.dataset.id !== id) return;
+  const result = renameGoal(id, input.value);
+  if (!result.ok) {
+    showMessage(result.error);
+    input.setAttribute("aria-invalid", "true");
+    input.focus();
+    return;
+  }
+  finishGoalEdit(id);
+}
+
+document.getElementById("goals-list").addEventListener("keydown", (event) => {
+  if (!event.target.classList.contains("goal-edit-input") || event.isComposing) return;
+  if (event.key === "Enter" || event.key === "Escape") {
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.key === "Enter") saveGoalEdit(event.target.dataset.id);
+    else finishGoalEdit(event.target.dataset.id);
+  }
+});
+
 document.getElementById("goals-list").addEventListener("click", (event) => {
   const target = event.target;
+  const id = target.dataset.id;
+  if (target.classList.contains("edit-goal-btn")) {
+    renderGoals(goals, id);
+    const input = document.querySelector(".goal-edit-input");
+    input?.focus();
+    input?.select();
+    return;
+  }
+  if (target.classList.contains("save-goal-btn")) return saveGoalEdit(id);
+  if (target.classList.contains("cancel-goal-btn")) return finishGoalEdit(id);
   if (!target.classList.contains("delete-goal-btn")) return;
 
   if (deleteGoal(target.dataset.id)) {

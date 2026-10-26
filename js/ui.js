@@ -273,7 +273,7 @@ export function renderWeekSummary(
   codingEl.textContent = `Coding: ${c.formattedTotal} · goal met ${c.goalDays}/${c.daysElapsed} days`;
 }
 
-export function renderGoals(goals) {
+export function renderGoals(goals, editingId = null) {
   const goalsList = document.getElementById("goals-list");
   goalsList.innerHTML = "";
 
@@ -287,6 +287,27 @@ export function renderGoals(goals) {
   goals.forEach((goal) => {
     const li = document.createElement("li");
     li.className = goal.completed ? "goal-row goal-completed" : "goal-row";
+
+    if (goal.id === editingId) {
+      li.className = "goal-row goal-row-editing";
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = goal.text;
+      input.className = "goal-edit-input";
+      input.dataset.id = goal.id;
+      input.setAttribute("aria-label", "Goal text");
+      li.appendChild(input);
+      for (const action of ["Save", "Cancel"]) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = action;
+        button.className = `${action.toLowerCase()}-goal-btn btn btn-secondary btn-sm`;
+        button.dataset.id = goal.id;
+        li.appendChild(button);
+      }
+      goalsList.appendChild(li);
+      return;
+    }
 
     const label = document.createElement("label");
     label.className = "goal-label";
@@ -310,7 +331,15 @@ export function renderGoals(goals) {
     deleteBtn.dataset.id = goal.id;
     deleteBtn.setAttribute("aria-label", `Delete goal: ${goal.text}`);
 
+    const editBtn = document.createElement("button");
+    editBtn.type = "button";
+    editBtn.textContent = "Edit";
+    editBtn.className = "edit-goal-btn btn btn-secondary btn-sm";
+    editBtn.dataset.id = goal.id;
+    editBtn.setAttribute("aria-label", `Edit goal: ${goal.text}`);
+
     li.appendChild(label);
+    li.appendChild(editBtn);
     li.appendChild(deleteBtn);
     goalsList.appendChild(li);
   });

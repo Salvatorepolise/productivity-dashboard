@@ -5,7 +5,7 @@ import {
   getCurrentStreak,
   getLastDays,
 } from "./habits-logic.js";
-import { getGoalStats } from "./goals-logic.js";
+import { getGoalStats, filterGoals } from "./goals-logic.js";
 import {
   getLastDaysMinutes,
   getWeekSummary,
@@ -276,15 +276,20 @@ export function renderWeekSummary(
 export function renderGoals(goals, editingId = null) {
   const goalsList = document.getElementById("goals-list");
   goalsList.innerHTML = "";
+  const status = getPreferences().goalStatusFilter;
+  document.getElementById("goal-status-filter").value = status;
+  const visibleGoals = filterGoals(goals, status);
 
-  if (goals.length === 0) {
+  if (visibleGoals.length === 0) {
     const empty = document.createElement("li");
     empty.className = "empty-message";
-    empty.textContent = "No goals for today yet";
+    empty.textContent = goals.length === 0
+      ? "No goals for today yet"
+      : status === "completed" ? "No completed goals yet" : "No active goals left";
     goalsList.appendChild(empty);
   }
 
-  goals.forEach((goal) => {
+  visibleGoals.forEach((goal) => {
     const li = document.createElement("li");
     li.className = goal.completed ? "goal-row goal-completed" : "goal-row";
 

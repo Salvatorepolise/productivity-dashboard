@@ -210,6 +210,14 @@ textarea {
   list-style: none;
 }
 
+.goals-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0.75rem 0;
+}
+
 #goals-list li {
   padding: 0.5rem 0;
   border-bottom: 1px solid var(--border);

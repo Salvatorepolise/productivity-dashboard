@@ -49,3 +49,12 @@ export function getGoalStats(goals) {
   const completed = goals.filter((goal) => goal.completed).length;
   return { total: goals.length, completed };
 }
+
+/** Filter the view without changing the saved list or its order. */
+export function filterGoals(goals, status = "all") {
+  return goals.filter((goal) => {
+    if (status === "completed") return goal.completed;
+    if (status === "remaining") return !goal.completed;
+    return true;
+  });
+}

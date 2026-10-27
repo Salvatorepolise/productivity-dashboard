@@ -70,8 +70,17 @@ function refreshWeekSummary() {
 const newGoalInput = document.getElementById("new-goal-input");
 const addGoalBtn = document.getElementById("add-goal-btn");
 
+document.getElementById("goal-status-filter").addEventListener("change", (event) => {
+  savePreferences({ goalStatusFilter: event.target.value });
+  renderGoals(goals);
+});
+
 function handleAddGoal() {
   if (!addGoal(newGoalInput.value)) return;
+  // A newly added goal is active: keep it visible after adding it.
+  if (getPreferences().goalStatusFilter === "completed") {
+    savePreferences({ goalStatusFilter: "remaining" });
+  }
   renderGoals(goals);
   newGoalInput.value = "";
 }

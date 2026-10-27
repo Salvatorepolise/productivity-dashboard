@@ -38,6 +38,7 @@ For one browser / one device, it is designed to be used every day.
 - Daily reset on new local calendar day (completions + coding minutes), also while the tab stays open
 - Non-blocking messages (toasts instead of alerts)
 - Today's Goals: check off, edit inline (Enter to save, Esc to cancel), delete, unfinished goals carry over to the next day
+- Goal filters: All / Active / Completed, remembered across reloads and included in backups; progress always counts all goals
 - Undo delete for habits and goals (5s toast)
 - Keyboard shortcuts (Ctrl/Cmd+K, N, Esc)
 - Full backup: export / import habits, goals, notes, coding log and settings as JSON (older backups still import)
@@ -136,6 +137,7 @@ The same tests run on GitHub Actions on every push.
 - **Day 45** (23 October 2026): Confirm before habit reset + week-aware insights
 - **Day 46** (23 October 2026): Persist habit status filter and sort in preferences
 - **Day 47** (26 October 2026): Inline goal editing with Save/Cancel, keyboard shortcuts, empty-text validation and persistent updates
+- **Day 48** (27 October 2026): Persistent All / Active / Completed goal filters, helpful empty states and full-list progress
 - MRR: $0
 
 ## What's next

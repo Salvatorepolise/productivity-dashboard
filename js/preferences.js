@@ -19,6 +19,7 @@ export const defaultPreferences = {
     longitude: 12.5,
   },
   habitStatusFilter: "all",
+  goalStatusFilter: "all",
   habitSortOption: "default",
 };
 
@@ -99,6 +100,7 @@ export function sanitizePreferences(raw) {
     codingGoalMinutes: normalizeCodingGoal(src.codingGoalMinutes),
     weatherLocation: normalizeWeatherLocation(src.weatherLocation),
     habitStatusFilter: normalizeStatusFilter(src.habitStatusFilter),
+    goalStatusFilter: normalizeStatusFilter(src.goalStatusFilter),
     habitSortOption: normalizeSortOption(src.habitSortOption),
   };
 }

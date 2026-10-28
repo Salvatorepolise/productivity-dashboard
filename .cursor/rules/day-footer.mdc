@@ -1,0 +1,12 @@
+---
+description: Keep the dashboard footer aligned with each building-in-public day commit.
+alwaysApply: true
+---
+
+Before committing work for Day N, update the `.app-footer` in `index.html`
+with that Day number and its date, including month, day of month and year.
+Use the date specified by the user, otherwise the current Europe/Rome date.
+Keep the existing English format, for example:
+`v1.0 · Day 50 · October 28, 2026`.
+Verify the footer matches the Day and date in the README challenge log.
+Include the footer update in the same commit as the day's changes.

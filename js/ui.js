@@ -353,6 +353,9 @@ export function renderGoals(goals, editingId = null) {
   });
 
   const { total, completed } = getGoalStats(goals);
+  const clearCompletedButton = document.getElementById("clear-completed-goals-btn");
+  clearCompletedButton.disabled = completed === 0;
+  clearCompletedButton.textContent = `Clear all completed (${completed})`;
   document.getElementById("goals-progress").textContent =
     total === 0 ? "" : `${completed}/${total} done` +
       (searchText.trim() || status !== "all" ? ` · ${visibleGoals.length} shown` : "");

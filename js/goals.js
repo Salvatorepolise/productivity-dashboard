@@ -15,7 +15,7 @@ const defaultGoals = [
 
 export let goals = [];
 
-let recentlyDeleted = null; // { goal, index }
+let recentlyDeleted = null; // Array of { goal, index }, for the latest deletion
 
 export function initGoals() {
   const saved = loadGoalsFromStorage();
@@ -55,7 +55,7 @@ export function deleteGoal(id) {
   const index = goals.findIndex((goal) => goal.id === id);
   if (index === -1) return false;
 
-  recentlyDeleted = { goal: goals[index], index };
+  recentlyDeleted = [{ goal: goals[index], index }];
   goals = goals.filter((goal) => goal.id !== id);
   saveGoalsToStorage(goals);
   return true;
@@ -64,10 +64,24 @@ export function deleteGoal(id) {
 export function undoDeleteGoal() {
   if (!recentlyDeleted) return false;
 
-  goals = restoreAt(goals, recentlyDeleted.goal, recentlyDeleted.index);
+  for (const { goal, index } of recentlyDeleted) {
+    goals = restoreAt(goals, goal, index);
+  }
   recentlyDeleted = null;
   saveGoalsToStorage(goals);
   return true;
+}
+
+/** Clear all completed goals, including those hidden by search or filters. */
+export function clearCompletedGoals() {
+  const removed = goals.flatMap((goal, index) =>
+    goal.completed ? [{ goal, index }] : [],
+  );
+  if (removed.length === 0) return 0;
+  recentlyDeleted = removed;
+  goals = goals.filter((goal) => !goal.completed);
+  saveGoalsToStorage(goals);
+  return removed.length;
 }
 
 /** Day 39: backup import (raw data is validated by normalizeGoals) */

@@ -35,6 +35,7 @@ import {
   renameGoal,
   toggleGoal,
   deleteGoal,
+  clearCompletedGoals,
   undoDeleteGoal,
   resetGoalsForNewDay,
   replaceGoals,
@@ -70,6 +71,16 @@ function refreshWeekSummary() {
 const newGoalInput = document.getElementById("new-goal-input");
 const addGoalBtn = document.getElementById("add-goal-btn");
 const goalSearchInput = document.getElementById("search-goal-input");
+
+document.getElementById("clear-completed-goals-btn").addEventListener("click", () => {
+  const count = clearCompletedGoals();
+  if (!count) return;
+  renderGoals(goals);
+  goalSearchInput.focus();
+  showUndoToast(`${count} completed goal${count === 1 ? "" : "s"} cleared.`, () => {
+    if (undoDeleteGoal()) renderGoals(goals);
+  });
+});
 
 goalSearchInput.addEventListener("input", () => renderGoals(goals));
 

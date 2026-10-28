@@ -141,7 +141,7 @@ The same tests run on GitHub Actions on every push.
 - **Day 47** (26 October 2026): Inline goal editing with Save/Cancel, keyboard shortcuts, empty-text validation and persistent updates
 - **Day 48** (27 October 2026): Persistent All / Active / Completed goal filters, helpful empty states and full-list progress
 - **Day 49** (28 October 2026): Session-only goal search combined with status filters, Clear/Esc controls and visible result counts
-- **Day 50** (28 October 2026): Clear all completed goals with a count, persistent removal and batch Undo restoring their positions
+- **Day 50** (29 October 2026): Clear all completed goals with a count, persistent removal and batch Undo restoring their positions
 - MRR: $0
 
 ## What's next

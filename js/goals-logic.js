@@ -51,8 +51,10 @@ export function getGoalStats(goals) {
 }
 
 /** Filter the view without changing the saved list or its order. */
-export function filterGoals(goals, status = "all") {
+export function filterGoals(goals, status = "all", searchText = "") {
+  const query = searchText.trim().toLowerCase();
   return goals.filter((goal) => {
+    if (!goal.text.toLowerCase().includes(query)) return false;
     if (status === "completed") return goal.completed;
     if (status === "remaining") return !goal.completed;
     return true;

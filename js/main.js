@@ -69,6 +69,24 @@ function refreshWeekSummary() {
 // ===== GOALS =====
 const newGoalInput = document.getElementById("new-goal-input");
 const addGoalBtn = document.getElementById("add-goal-btn");
+const goalSearchInput = document.getElementById("search-goal-input");
+
+goalSearchInput.addEventListener("input", () => renderGoals(goals));
+
+function clearGoalSearch() {
+  goalSearchInput.value = "";
+  renderGoals(goals);
+  goalSearchInput.focus();
+}
+
+document.getElementById("clear-goal-search-btn").addEventListener("click", clearGoalSearch);
+goalSearchInput.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !event.isComposing) {
+    event.preventDefault();
+    event.stopPropagation();
+    clearGoalSearch();
+  }
+});
 
 document.getElementById("goal-status-filter").addEventListener("change", (event) => {
   savePreferences({ goalStatusFilter: event.target.value });
@@ -77,6 +95,7 @@ document.getElementById("goal-status-filter").addEventListener("change", (event)
 
 function handleAddGoal() {
   if (!addGoal(newGoalInput.value)) return;
+  goalSearchInput.value = "";
   // A newly added goal is active: keep it visible after adding it.
   if (getPreferences().goalStatusFilter === "completed") {
     savePreferences({ goalStatusFilter: "remaining" });
@@ -103,7 +122,7 @@ function finishGoalEdit(id) {
   const button = [...document.querySelectorAll(".edit-goal-btn")].find(
     (element) => element.dataset.id === id,
   );
-  button?.focus();
+  (button ?? goalSearchInput).focus();
 }
 
 function saveGoalEdit(id) {

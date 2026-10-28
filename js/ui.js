@@ -278,13 +278,16 @@ export function renderGoals(goals, editingId = null) {
   goalsList.innerHTML = "";
   const status = getPreferences().goalStatusFilter;
   document.getElementById("goal-status-filter").value = status;
-  const visibleGoals = filterGoals(goals, status);
+  const searchText = document.getElementById("search-goal-input").value;
+  document.getElementById("clear-goal-search-btn").disabled = searchText.length === 0;
+  const visibleGoals = filterGoals(goals, status, searchText);
 
   if (visibleGoals.length === 0) {
     const empty = document.createElement("li");
     empty.className = "empty-message";
     empty.textContent = goals.length === 0
       ? "No goals for today yet"
+      : searchText.trim() ? "No goals match your search and filter"
       : status === "completed" ? "No completed goals yet" : "No active goals left";
     goalsList.appendChild(empty);
   }
@@ -351,7 +354,8 @@ export function renderGoals(goals, editingId = null) {
 
   const { total, completed } = getGoalStats(goals);
   document.getElementById("goals-progress").textContent =
-    total === 0 ? "" : `${completed}/${total} done`;
+    total === 0 ? "" : `${completed}/${total} done` +
+      (searchText.trim() || status !== "all" ? ` · ${visibleGoals.length} shown` : "");
 }
 
 export function renderCodingWeek(log, goalMinutes) {

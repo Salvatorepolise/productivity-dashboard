@@ -10,6 +10,29 @@ const goals = [
   { id: "c", text: "Walk", completed: false },
 ];
 
+test("goal search combines with status, ignores case and trims the query", () => {
+  const original = structuredClone(goals);
+  assert.deepEqual(filterGoals(goals, "all", "  READ  "), [goals[0]]);
+  assert.deepEqual(filterGoals(goals, "completed", "read"), []);
+  assert.deepEqual(filterGoals(goals, "remaining", "a"), [goals[0], goals[2]]);
+  assert.deepEqual(filterGoals(goals, "completed", "OD"), [goals[1]]);
+  assert.deepEqual(filterGoals(goals, "all", "   "), goals);
+  assert.deepEqual(filterGoals(goals, "all", "missing"), []);
+  assert.deepEqual(filterGoals([], "all", "read"), []);
+  assert.deepEqual(goals, original);
+  assert.deepEqual(getGoalStats(goals), { total: 3, completed: 1 });
+});
+
+test("search treats special characters as literal text", () => {
+  const items = [
+    { id: "1", text: "Learn C++ (basics)", completed: false },
+    { id: "2", text: "Read [notes]", completed: true },
+  ];
+  assert.deepEqual(filterGoals(items, "all", "C++ ("), [items[0]]);
+  assert.deepEqual(filterGoals(items, "all", "["), [items[1]]);
+  assert.deepEqual(filterGoals(items, "all", ".*"), []);
+});
+
 test("goal filters preserve source order and full-list progress", () => {
   const original = structuredClone(goals);
   assert.deepEqual(filterGoals(goals, "remaining").map((g) => g.id), ["a", "c"]);

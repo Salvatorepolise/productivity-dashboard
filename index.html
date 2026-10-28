@@ -75,6 +75,9 @@
           </button>
         </div>
         <div class="goals-controls">
+          <input type="search" id="search-goal-input" placeholder="Search goals..."
+            aria-label="Search goals" aria-controls="goals-list" autocomplete="off" />
+          <button type="button" id="clear-goal-search-btn" class="btn btn-secondary btn-sm" disabled>Clear search</button>
           <label for="goal-status-filter">Show goals:</label>
           <select id="goal-status-filter">
             <option value="all">All</option>
@@ -83,7 +86,7 @@
           </select>
         </div>
         <ul id="goals-list"></ul>
-        <p id="goals-progress" class="meta-text"></p>
+        <p id="goals-progress" class="meta-text" role="status"></p>
       </section>
 
       <!-- HABITS -->

@@ -20,6 +20,7 @@ export const defaultPreferences = {
   },
   habitStatusFilter: "all",
   goalStatusFilter: "all",
+  goalSortOption: "default",
   habitSortOption: "default",
 };
 
@@ -101,6 +102,8 @@ export function sanitizePreferences(raw) {
     weatherLocation: normalizeWeatherLocation(src.weatherLocation),
     habitStatusFilter: normalizeStatusFilter(src.habitStatusFilter),
     goalStatusFilter: normalizeStatusFilter(src.goalStatusFilter),
+    goalSortOption: ["default", "az", "remaining"].includes(src.goalSortOption)
+      ? src.goalSortOption : "default",
     habitSortOption: normalizeSortOption(src.habitSortOption),
   };
 }

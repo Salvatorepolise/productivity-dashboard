@@ -60,3 +60,14 @@ export function filterGoals(goals, status = "all", searchText = "") {
     return true;
   });
 }
+
+/** Sort a copy so the stored order remains available for Original order and Undo. */
+export function sortGoals(goals, option = "default") {
+  const sorted = [...goals];
+  if (option === "az") {
+    sorted.sort((a, b) => a.text.localeCompare(b.text, "en", { sensitivity: "base" }));
+  } else if (option === "remaining") {
+    sorted.sort((a, b) => Number(a.completed) - Number(b.completed));
+  }
+  return sorted;
+}

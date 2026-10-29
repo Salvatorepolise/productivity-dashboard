@@ -72,6 +72,11 @@ const newGoalInput = document.getElementById("new-goal-input");
 const addGoalBtn = document.getElementById("add-goal-btn");
 const goalSearchInput = document.getElementById("search-goal-input");
 
+document.getElementById("goal-sort").addEventListener("change", (event) => {
+  savePreferences({ goalSortOption: event.target.value });
+  renderGoals(goals);
+});
+
 document.getElementById("clear-completed-goals-btn").addEventListener("click", () => {
   const count = clearCompletedGoals();
   if (!count) return;

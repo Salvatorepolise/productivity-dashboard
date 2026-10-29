@@ -5,7 +5,7 @@ import {
   getCurrentStreak,
   getLastDays,
 } from "./habits-logic.js";
-import { getGoalStats, filterGoals } from "./goals-logic.js";
+import { getGoalStats, filterGoals, sortGoals } from "./goals-logic.js";
 import {
   getLastDaysMinutes,
   getWeekSummary,
@@ -276,11 +276,12 @@ export function renderWeekSummary(
 export function renderGoals(goals, editingId = null) {
   const goalsList = document.getElementById("goals-list");
   goalsList.innerHTML = "";
-  const status = getPreferences().goalStatusFilter;
+  const { goalStatusFilter: status, goalSortOption } = getPreferences();
+  document.getElementById("goal-sort").value = goalSortOption;
   document.getElementById("goal-status-filter").value = status;
   const searchText = document.getElementById("search-goal-input").value;
   document.getElementById("clear-goal-search-btn").disabled = searchText.length === 0;
-  const visibleGoals = filterGoals(goals, status, searchText);
+  const visibleGoals = sortGoals(filterGoals(goals, status, searchText), goalSortOption);
 
   if (visibleGoals.length === 0) {
     const empty = document.createElement("li");

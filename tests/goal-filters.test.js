@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { filterGoals, getGoalStats, toggleGoalById } from "../js/goals-logic.js";
+import { filterGoals, sortGoals, getGoalStats, toggleGoalById } from "../js/goals-logic.js";
 import { sanitizePreferences, savePreferences, loadPreferences } from "../js/preferences.js";
 import { createBackup, parseBackup } from "../js/backup-logic.js";
 
@@ -9,6 +9,39 @@ const goals = [
   { id: "b", text: "Code", completed: true },
   { id: "c", text: "Walk", completed: false },
 ];
+
+test("goal sorting preserves stored order and combines with search and status", () => {
+  const original = structuredClone(goals);
+  assert.deepEqual(sortGoals(goals, "az").map((g) => g.id), ["b", "a", "c"]);
+  assert.deepEqual(sortGoals(goals, "remaining").map((g) => g.id), ["a", "c", "b"]);
+  assert.deepEqual(sortGoals(goals), original);
+  assert.deepEqual(sortGoals(goals, "invalid"), original);
+  assert.deepEqual(sortGoals([], "az"), []);
+  assert.deepEqual(sortGoals(filterGoals(goals, "remaining", "a"), "az"), [goals[0], goals[2]]);
+  assert.deepEqual(goals, original);
+  const toggled = toggleGoalById(goals, "a");
+  assert.deepEqual(sortGoals(toggled, "remaining").map((g) => g.id), ["c", "a", "b"]);
+});
+
+test("alphabetical goal sorting ignores case and keeps ties in original order", () => {
+  const items = [
+    { id: "1", text: "zebra", completed: false },
+    { id: "2", text: "Apple", completed: true },
+    { id: "3", text: "apple", completed: false },
+  ];
+  assert.deepEqual(sortGoals(items, "az").map((g) => g.id), ["2", "3", "1"]);
+});
+
+test("goal sort preferences survive backups and invalid or old values use original order", () => {
+  for (const goalSortOption of ["default", "az", "remaining"]) {
+    const preferences = sanitizePreferences({ goalSortOption });
+    const backup = createBackup({ habits: [], goals, notes: "", preferences }, new Date());
+    assert.equal(parseBackup(JSON.parse(JSON.stringify(backup))).backup.preferences.goalSortOption, goalSortOption);
+  }
+  for (const goalSortOption of [undefined, null, "completed", "invalid", 1]) {
+    assert.equal(sanitizePreferences({ goalSortOption }).goalSortOption, "default");
+  }
+});
 
 test("goal search combines with status, ignores case and trims the query", () => {
   const original = structuredClone(goals);
@@ -77,8 +110,9 @@ test("goal filter reloads from storage and survives unrelated preference changes
     if (previous) Object.defineProperty(globalThis, "localStorage", previous);
     else delete globalThis.localStorage;
   });
-  savePreferences({ goalStatusFilter: "remaining" });
+  savePreferences({ goalStatusFilter: "remaining", goalSortOption: "az" });
   savePreferences({ theme: "dark" });
   assert.equal(loadPreferences().goalStatusFilter, "remaining");
+  assert.equal(loadPreferences().goalSortOption, "az");
   assert.equal(loadPreferences().theme, "dark");
 });

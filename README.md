@@ -40,6 +40,7 @@ For one browser / one device, it is designed to be used every day.
 - Today's Goals: check off, edit inline (Enter to save, Esc to cancel), delete, unfinished goals carry over to the next day
 - Goal filters: All / Active / Completed, remembered across reloads and included in backups; progress always counts all goals
 - Goal sorting: Original order / A–Z / Active first, combined with search and filters and saved in preferences and backups
+- Reset goal view: clear search, show All and restore Original order in one click, saving those view preferences without changing goals or other settings
 - Search goals together with the status filter; session-only query, Clear search / Esc, and visible result count
 - Clear all completed goals (including filtered-out ones) with a count and 5-second Undo; unfinished goals stay in place
 - Undo delete for habits and goals (5s toast)
@@ -144,6 +145,7 @@ The same tests run on GitHub Actions on every push.
 - **Day 49** (28 October 2026): Session-only goal search combined with status filters, Clear/Esc controls and visible result counts
 - **Day 50** (29 October 2026): Clear all completed goals with a count, persistent removal and batch Undo restoring their positions
 - **Day 51** (30 October 2026): Persistent goal sorting (Original order / A–Z / Active first), combined with search and filters without changing stored order
+- **Day 52** (31 October 2026): One-click goal view reset (search, status and sort), with saved view defaults and focus returned to search
 - MRR: $0
 
 ## What's next

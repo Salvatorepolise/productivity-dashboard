@@ -58,6 +58,7 @@ import {
 import {
   loadPreferences,
   savePreferences,
+  resetGoalViewPreferences,
   getPreferences,
   replacePreferences,
   applyPreferencesToUI,
@@ -71,6 +72,14 @@ function refreshWeekSummary() {
 const newGoalInput = document.getElementById("new-goal-input");
 const addGoalBtn = document.getElementById("add-goal-btn");
 const goalSearchInput = document.getElementById("search-goal-input");
+
+document.getElementById("reset-goal-view-btn").addEventListener("click", () => {
+  resetGoalViewPreferences();
+  goalSearchInput.value = "";
+  renderGoals(goals);
+  goalSearchInput.focus();
+  showMessage("Goal view reset.");
+});
 
 document.getElementById("goal-sort").addEventListener("change", (event) => {
   savePreferences({ goalSortOption: event.target.value });

@@ -153,6 +153,13 @@ export function replacePreferences(raw) {
   return getPreferences();
 }
 
+export function resetGoalViewPreferences() {
+  return savePreferences({
+    goalStatusFilter: defaultPreferences.goalStatusFilter,
+    goalSortOption: defaultPreferences.goalSortOption,
+  });
+}
+
 export function applyCompactMode() {
   document.body.classList.toggle("compact", preferences.compactMode);
 }

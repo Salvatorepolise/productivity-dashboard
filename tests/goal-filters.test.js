@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { filterGoals, sortGoals, getGoalStats, toggleGoalById } from "../js/goals-logic.js";
-import { sanitizePreferences, savePreferences, loadPreferences } from "../js/preferences.js";
+import { sanitizePreferences, savePreferences, loadPreferences, resetGoalViewPreferences } from "../js/preferences.js";
 import { createBackup, parseBackup } from "../js/backup-logic.js";
 
 const goals = [
@@ -115,4 +115,33 @@ test("goal filter reloads from storage and survives unrelated preference changes
   assert.equal(loadPreferences().goalStatusFilter, "remaining");
   assert.equal(loadPreferences().goalSortOption, "az");
   assert.equal(loadPreferences().theme, "dark");
+});
+
+test("reset goal view persists defaults while preserving other preferences and saved goals", (t) => {
+  const storage = new Map([["goalsData", JSON.stringify(goals)]]);
+  const previous = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
+  Object.defineProperty(globalThis, "localStorage", {
+    configurable: true,
+    value: {
+      getItem: (key) => storage.get(key) ?? null,
+      setItem: (key, value) => storage.set(key, value),
+    },
+  });
+  t.after(() => {
+    if (previous) Object.defineProperty(globalThis, "localStorage", previous);
+    else delete globalThis.localStorage;
+  });
+  const before = savePreferences({
+    goalStatusFilter: "completed", goalSortOption: "az",
+    habitStatusFilter: "remaining", habitSortOption: "az",
+    theme: "dark", compactMode: true, codingGoalMinutes: 90,
+    weatherLocation: { name: "Milan", latitude: 45.46, longitude: 9.19 },
+  });
+  const expected = { ...before, goalStatusFilter: "all", goalSortOption: "default" };
+  assert.deepEqual(resetGoalViewPreferences(), expected);
+  assert.deepEqual(loadPreferences(), expected);
+  assert.deepEqual(JSON.parse(storage.get("goalsData")), goals);
+  assert.deepEqual(resetGoalViewPreferences(), expected);
+  const backup = createBackup({ habits: [], goals, notes: "", preferences: loadPreferences() }, new Date());
+  assert.deepEqual(parseBackup(JSON.parse(JSON.stringify(backup))).backup.preferences, expected);
 });

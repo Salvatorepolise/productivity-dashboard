@@ -281,6 +281,8 @@ export function renderGoals(goals, editingId = null) {
   document.getElementById("goal-status-filter").value = status;
   const searchText = document.getElementById("search-goal-input").value;
   document.getElementById("clear-goal-search-btn").disabled = searchText.length === 0;
+  document.getElementById("reset-goal-view-btn").disabled =
+    searchText.length === 0 && status === "all" && goalSortOption === "default";
   const visibleGoals = sortGoals(filterGoals(goals, status, searchText), goalSortOption);
 
   if (visibleGoals.length === 0) {

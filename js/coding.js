@@ -1,6 +1,6 @@
 import { loadCodingLogFromStorage, saveCodingLogToStorage } from "./storage.js";
 import { toDateKey } from "./habits-logic.js";
-import { normalizeCodingLog, setMinutesForDay } from "./coding-logic.js";
+import { normalizeCodingLog, setMinutesForDay, parseMinutesInput } from "./coding-logic.js";
 
 export let codingLog = {};
 
@@ -32,6 +32,17 @@ export function getTodayMinutes() {
 export function setTodayMinutes(minutes) {
   codingLog = setMinutesForDay(codingLog, toDateKey(new Date()), minutes);
   saveCodingLogToStorage(codingLog);
+}
+
+/** Add to the current local day, even when the tab was left open overnight. */
+export function addTodayMinutes(minutes, now = new Date()) {
+  if (!Number.isInteger(minutes) || minutes <= 0) return 0;
+  const today = toDateKey(now);
+  const previous = codingLog[today] ?? 0;
+  const total = parseMinutesInput(previous + minutes);
+  codingLog = setMinutesForDay(codingLog, today, total, now);
+  saveCodingLogToStorage(codingLog);
+  return total - previous;
 }
 
 /** Backup import (raw data is validated by normalizeCodingLog) */

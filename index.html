@@ -168,10 +168,14 @@
           minutes
         </p>
         <p class="coding-row">
-          Today:
+          <label for="today-input">Today:</label>
           <input type="number" id="today-input" value="0" min="0" max="1440" />
           minutes
         </p>
+        <div class="row-input" role="group" aria-label="Add coding time">
+          <button type="button" class="btn btn-secondary btn-sm" data-coding-minutes="15">+15 min</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-coding-minutes="30">+30 min</button>
+        </div>
         <div class="progress-bar-container">
           <div class="progress-bar" id="progress-bar"></div>
         </div>
@@ -246,7 +250,7 @@
         </div>
       </section>
 
-      <footer class="app-footer">v1.0 · Day 52 · October 31, 2026</footer>
+      <footer class="app-footer">v1.0 · Day 53 · November 2, 2026</footer>
     </div>
 
     <div id="undo-toast" class="undo-toast" hidden>

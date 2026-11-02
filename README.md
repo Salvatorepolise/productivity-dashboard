@@ -48,6 +48,7 @@ For one browser / one device, it is designed to be used every day.
 - Full backup: export / import habits, goals, notes, coding log and settings as JSON (older backups still import)
 - Preferences: °C/°F, weather city, compact mode, dark mode
 - Daily Coding tracker with editable goal, 30-day log and last-7-days chart
+- Quick coding entries: +15 / +30 minutes, saved to today's log with immediate progress updates and a 1440-minute daily cap
 - Notes with auto-save
 - Clean UI (Day 34 restyle)
 
@@ -146,6 +147,7 @@ The same tests run on GitHub Actions on every push.
 - **Day 50** (29 October 2026): Clear all completed goals with a count, persistent removal and batch Undo restoring their positions
 - **Day 51** (30 October 2026): Persistent goal sorting (Original order / A–Z / Active first), combined with search and filters without changing stored order
 - **Day 52** (31 October 2026): One-click goal view reset (search, status and sort), with saved view defaults and focus returned to search
+- **Day 53** (2 November 2026): Quick +15 / +30 coding-minute entries, persistent daily totals, immediate chart updates and daily-limit handling
 - MRR: $0
 
 ## What's next

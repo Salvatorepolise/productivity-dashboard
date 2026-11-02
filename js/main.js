@@ -46,9 +46,10 @@ import {
   initCoding,
   getTodayMinutes,
   setTodayMinutes,
+  addTodayMinutes,
   replaceCodingLog,
 } from "./coding.js";
-import { parseMinutesInput } from "./coding-logic.js";
+import { parseMinutesInput, MAX_MINUTES_PER_DAY } from "./coding-logic.js";
 import {
   loadDailyQuote,
   loadWeather,
@@ -492,10 +493,26 @@ const todayInput = document.getElementById("today-input");
 const goalInput = document.getElementById("goal-minutes-input");
 const statusEl = document.getElementById("goal-status");
 const progressBar = document.getElementById("progress-bar");
+const quickCodingButtons = document.querySelectorAll("[data-coding-minutes]");
+
+quickCodingButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const added = addTodayMinutes(Number(button.dataset.codingMinutes));
+    todayInput.value = getTodayMinutes();
+    updateCodingGoal();
+    showMessage(added > 0
+      ? `Added ${added} coding minutes.`
+      : "Daily limit reached (1440 minutes).");
+  });
+});
 
 function updateCodingGoal() {
   const todayMinutes = getTodayMinutes();
   const goalMinutes = getPreferences().codingGoalMinutes;
+
+  quickCodingButtons.forEach((button) => {
+    button.disabled = todayMinutes >= MAX_MINUTES_PER_DAY;
+  });
 
   const percentage = Math.min((todayMinutes / goalMinutes) * 100, 100);
   progressBar.style.width = percentage + "%";

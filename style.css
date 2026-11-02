@@ -33,14 +33,14 @@ body {
 }
 
 .app {
-  max-width: 640px;
+  max-width: 1160px;
   margin: 0 auto;
   padding: 2rem 1.25rem 3rem;
 }
 
 .app-header {
   margin-bottom: 1.75rem;
-  text-align: center;
+  text-align: left;
 }
 
 .app-header h1 {
@@ -76,7 +76,7 @@ h2 {
 /* Stats */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.6rem;
   margin-bottom: 1rem;
 }
@@ -98,44 +98,6 @@ h2 {
 .stat-value {
   font-size: 1.35rem;
   font-weight: 700;
-}
-
-.insight-box,
-.quote-box {
-  background: #eff6ff;
-  border-radius: 10px;
-  padding: 0.75rem 0.9rem;
-  margin-top: 0.65rem;
-}
-
-.insight-label,
-.quote-label {
-  display: block;
-  font-size: 0.65rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #3b82f6;
-  margin-bottom: 0.25rem;
-}
-
-.quote-box {
-  background: #f8fafc;
-  border: 1px solid var(--border);
-}
-
-.quote-box .quote-label {
-  color: var(--muted);
-}
-
-#daily-quote {
-  font-size: 0.95rem;
-}
-
-.quote-author {
-  margin-top: 0.35rem;
-  font-size: 0.85rem;
-  color: var(--muted);
 }
 
 .weather-temp {
@@ -414,18 +376,6 @@ input.goal-edit-input {
   margin: 0.5rem 0;
 }
 
-.habit-analytics {
-  margin-top: 0.75rem;
-  font-size: 0.9rem;
-  color: var(--muted);
-}
-
-.habit-message {
-  margin-top: 0.4rem;
-  font-weight: 600;
-  color: var(--text);
-}
-
 .progress-bar-container {
   width: 100%;
   height: 8px;
@@ -505,7 +455,7 @@ input.goal-edit-input {
 
 .btn:disabled {
   opacity: 0.6;
-  cursor: wait;
+  cursor: not-allowed;
 }
 
 .check-row {
@@ -592,14 +542,6 @@ body.dark {
 }
 
 body.dark .stat-card {
-  background: #0b1220;
-}
-
-body.dark .insight-box {
-  background: #172554;
-}
-
-body.dark .quote-box {
   background: #0b1220;
 }
 
@@ -702,16 +644,6 @@ body.dark {
   border: 1px solid var(--border, #e2e8f0);
 }
 
-.week-summary-label {
-  display: block;
-  font-size: 0.65rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--muted, #64748b);
-  margin-bottom: 0.25rem;
-}
-
 .week-summary-range {
   font-size: 0.85rem;
   color: var(--muted, #64748b);
@@ -727,3 +659,54 @@ body.dark .week-summary {
   background: #0b1220;
   border-color: #1f2937;
 }
+
+/* Day 54: task-first workspace */
+.dashboard-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+.dashboard-grid > .card { margin: 0; min-width: 0; }
+.app-header { text-align: left; margin-bottom: 1.25rem; }
+.app-header h1 { font-size: clamp(1.5rem, 4vw, 2rem); }
+h2 { color: var(--text); text-transform: none; font-size: 1.05rem; letter-spacing: -0.01em; }
+.section-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+.section-heading h2, .section-heading .meta-text { margin: 0; }
+.stat-card { display: block; text-decoration: none; color: var(--text); text-align: left; padding: 1rem; border: 1px solid transparent; }
+.stat-card:hover { border-color: var(--primary); }
+.stat-value { display: block; }
+.weekly-card { grid-column: 1 / -1; }
+.week-summary { margin: 0; padding: 0; border: 0; background: transparent; }
+body.dark .week-summary { background: transparent; }
+.weather-card { margin-top: 1rem; }
+summary { cursor: pointer; font-weight: 600; padding: 0.3rem 0; }
+summary .meta-text { font-weight: 400; margin-left: 0.5rem; }
+.view-options { border-top: 1px solid var(--border); margin: 0.8rem 0; padding-top: 0.5rem; font-size: 0.85rem; color: var(--muted); }
+.view-options[open] > summary { margin-bottom: 0.75rem; }
+.settings-card[open] > summary, .weather-card[open] > summary { margin-bottom: 1rem; }
+.goals-controls, .habits-controls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
+.goals-controls input, .habits-controls input { grid-column: 1 / -1; width: 100%; min-width: 0; }
+.goals-controls select, .habits-controls select { width: 100%; min-width: 0; }
+.goal-row { flex-wrap: wrap; }
+.goal-label { flex-basis: 50%; }
+.habit-label { min-width: 0; overflow-wrap: anywhere; }
+.habit-row { flex-wrap: wrap; }
+.habit-week { margin-right: auto; }
+.habit-label { flex: 1 1 120px; }
+input[type=checkbox] { width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--primary); }
+button, select, summary { min-height: 36px; }
+button:focus-visible, summary:focus-visible, a:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+.skip-link { position: absolute; left: 1rem; top: -100px; padding: 0.75rem; background: var(--card); color: var(--text); z-index: 200; }
+.skip-link:focus { top: 1rem; }
+.undo-toast { max-width: calc(100% - 24px); width: max-content; }
+#notes { min-height: 180px; }
+.settings-intro { margin-bottom: 1rem; }
+@media (max-width: 740px) {
+  .app { padding: 1.25rem 0.85rem 2rem; }
+  .dashboard-grid { grid-template-columns: minmax(0, 1fr); }
+  .stats-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.35rem; }
+  .stat-card { padding: 0.65rem 0.45rem; }
+  .stat-value { font-size: 1.1rem; }
+  .card { padding: 1rem; }
+  .section-heading { align-items: start; }
+  .habit-row, .goal-row { gap: 0.5rem; }
+  .habit-label { flex-basis: 100%; }
+  .settings-row input { min-width: 0; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }

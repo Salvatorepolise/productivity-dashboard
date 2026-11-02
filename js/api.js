@@ -15,41 +15,6 @@ async function fetchJSON(url) {
   return response.json();
 }
 
-/** Day 40: check the API response before using it */
-export function parseQuote(data) {
-  if (
-    !data ||
-    typeof data.quote !== "string" ||
-    !data.quote.trim() ||
-    typeof data.author !== "string"
-  ) {
-    throw new Error("Unexpected quote response");
-  }
-  return { quote: data.quote.trim(), author: data.author.trim() };
-}
-
-export async function loadDailyQuote() {
-  const quoteEl = document.getElementById("daily-quote");
-  const authorEl = document.getElementById("quote-author");
-
-  if (!quoteEl || !authorEl) return;
-
-  quoteEl.textContent = "Loading quote...";
-  authorEl.textContent = "";
-
-  try {
-    const data = await fetchJSON("https://dummyjson.com/quotes/random");
-    const { quote, author } = parseQuote(data);
-
-    quoteEl.textContent = `"${quote}"`;
-    authorEl.textContent = author ? `— ${author}` : "";
-  } catch (error) {
-    console.error("Quote fetch failed:", error);
-    quoteEl.textContent = "Could not load quote.";
-    authorEl.textContent = "";
-  }
-}
-
 /**
  * Weather model (always stored in Celsius from API):
  * { temperature: number, weatherCode: number, description: string, locationName: string }

@@ -10,7 +10,7 @@ import {
 } from "../js/week-summary-logic.js";
 import { toDateKey } from "../js/habits-logic.js";
 
-// Wednesday 22 Oct 2026 local
+// Thursday 22 Oct 2026 local (fixed reference date).
 const WED = new Date(2026, 9, 22, 15, 0, 0);
 
 test("getWeekMonday is Monday of that week", () => {

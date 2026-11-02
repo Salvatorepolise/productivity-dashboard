@@ -2,27 +2,11 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import {
-  parseQuote,
   parseWeather,
   getWeatherDescription,
   convertTemperature,
   parseGeocoding,
 } from "../js/api.js";
-
-// ===== Quote =====
-
-test("parseQuote accepts a valid response", () => {
-  assert.deepEqual(parseQuote({ quote: " Ship it. ", author: "Me " }), {
-    quote: "Ship it.",
-    author: "Me",
-  });
-});
-
-test("parseQuote rejects unexpected responses", () => {
-  for (const data of [null, {}, { quote: "" }, { quote: "x" }, { quote: 1, author: "a" }]) {
-    assert.throws(() => parseQuote(data), /Unexpected quote response/);
-  }
-});
 
 // ===== Weather =====
 

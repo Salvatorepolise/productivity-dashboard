@@ -1,7 +1,6 @@
 import { habitsData, getVisibleHabits } from "./state.js";
 import {
   getHabitStats,
-  getHabitInsightMessage,
   getCurrentStreak,
   getLastDays,
 } from "./habits-logic.js";
@@ -134,6 +133,12 @@ export function renderHabits() {
   container.innerHTML = "";
 
   const visibleHabits = getVisibleHabits();
+  const prefs = getPreferences();
+  const customView = document.getElementById("search-habit-input").value.trim() ||
+    prefs.habitStatusFilter !== "all" || prefs.habitSortOption !== "default";
+  document.getElementById("habit-view-summary").textContent = customView
+    ? `Search & view options · ${visibleHabits.length} of ${habitsData.length} shown · custom view`
+    : "Search & view options";
 
   if (visibleHabits.length === 0) {
     const emptyMessage = document.createElement("p");
@@ -195,11 +200,7 @@ export function renderHabits() {
 function updateStatistics() {
   const stats = getHabitStats(habitsData);
 
-  document.getElementById("total-habits").textContent = stats.total;
-  document.getElementById("completed-habits").textContent = stats.completed;
-  document.getElementById("remaining-habits").textContent = stats.remaining;
-  document.getElementById("progress-percentage").textContent =
-    `${stats.percentage}%`;
+  document.getElementById("overview-habits").textContent = `${stats.completed} / ${stats.total}`;
 }
 
 function updateInsight() {
@@ -221,21 +222,10 @@ export function updateProgress() {
     `Progress: ${stats.completed}/${stats.total} completed`;
 
   const bar = document.getElementById("habits-progress-bar");
-  if (bar) bar.style.width = stats.percentage + "%";
-
-  document.getElementById("completed-count").textContent = stats.completed;
-  document.getElementById("remaining-count").textContent = stats.remaining;
-
-  const messageEl = document.getElementById("habit-message");
-
-  if (stats.total === 0) {
-    messageEl.textContent = "Add your first habit";
-  } else if (stats.completed === 0) {
-    messageEl.textContent = "Start your day! 🚀";
-  } else if (stats.completed === stats.total) {
-    messageEl.textContent = "Everything done! 🔥";
-  } else {
-    messageEl.textContent = "Good progress! 💪";
+  if (bar) {
+    bar.style.width = stats.percentage + "%";
+    bar.parentElement.setAttribute("aria-valuenow", String(stats.percentage));
+    bar.parentElement.setAttribute("aria-valuetext", `${stats.completed} of ${stats.total} habits completed`);
   }
 
   updateStatistics();
@@ -356,6 +346,11 @@ export function renderGoals(goals, editingId = null) {
   });
 
   const { total, completed } = getGoalStats(goals);
+  document.getElementById("overview-goals").textContent = `${completed} / ${total}`;
+  const activeView = searchText.trim() || status !== "all" || goalSortOption !== "default";
+  document.getElementById("goal-view-summary").textContent = activeView
+    ? `Search & view options · ${visibleGoals.length} of ${total} shown · custom view`
+    : "Search & view options";
   const clearCompletedButton = document.getElementById("clear-completed-goals-btn");
   clearCompletedButton.disabled = completed === 0;
   clearCompletedButton.textContent = `Clear all completed (${completed})`;

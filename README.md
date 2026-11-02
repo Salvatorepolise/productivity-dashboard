@@ -11,7 +11,7 @@ A **local-first** web app to track:
 - Daily habits (with streaks)
 - Coding time
 - Goals and notes
-- Light weather + daily quote
+- Optional weather, loaded only when opened
 
 Data is stored in your browser (`localStorage`).  
 Live demo: [https://salvatorepolise.github.io/productivity-dashboard/](https://salvatorepolise.github.io/productivity-dashboard/)
@@ -26,10 +26,9 @@ For one browser / one device, it is designed to be used every day.
 
 ## Features
 
-- Today's Overview (Total / Completed / Remaining / Progress %)
+- Unified today overview: goals completed, habits completed and coding time, with links to each section
 - Habit Insights
-- Quote of the day (API)
-- Weather (Open-Meteo) for any city you choose (default: Rome)
+- Optional weather panel (Open-Meteo), loaded on demand for your saved city (default: Rome)
 - Habit Tracker — full CRUD with inline rename
 - Search + status filter + sort (derived view)
 - Habit streaks (max +1 per local day)
@@ -50,7 +49,9 @@ For one browser / one device, it is designed to be used every day.
 - Daily Coding tracker with editable goal, 30-day log and last-7-days chart
 - Quick coding entries: +15 / +30 minutes, saved to today's log with immediate progress updates and a 1440-minute daily cap
 - Notes with auto-save
-- Clean UI (Day 34 restyle)
+- Responsive daily workspace: two columns on desktop, one on mobile; search, filters, history and settings in expandable panels
+- Visible custom-view indicators, keyboard focus styles, labelled inputs and a skip link
+- Notes show whether saving succeeded
 
 ## Tech Stack
 
@@ -76,13 +77,15 @@ js/
 ├── backup-logic.js   # pure backup format: create, validate, migrate
 ├── list-utils.js     # restore an item at its position (undo)
 ├── ids.js            # unique ids
-├── api.js            # quote, weather, city search (timeout + response checks)
+├── api.js            # weather, city search (timeout + response checks)
 └── preferences.js    # theme, compact, temperature unit, coding goal, city
 tests/
 ├── habits-logic.test.js
 ├── goals-logic.test.js
 ├── backup-logic.test.js
 ├── api.test.js
+├── page-contract.test.js
+├── week-summary-logic.test.js
 └── coding-logic.test.js
 ```
 
@@ -103,6 +106,7 @@ npm test
 ```
 
 Runs the pure logic tests (streaks, history, dates, ids, stats, goals, coding log, backup, API parsing, city search) with Node 18+.
+Also checks that page IDs, labels and JavaScript DOM bindings remain valid after layout changes. Calendar-week tests are included in automatic discovery.
 The same tests run on GitHub Actions on every push.
 
 ## Keyboard shortcuts
@@ -148,6 +152,7 @@ The same tests run on GitHub Actions on every push.
 - **Day 51** (30 October 2026): Persistent goal sorting (Original order / A–Z / Active first), combined with search and filters without changing stored order
 - **Day 52** (31 October 2026): One-click goal view reset (search, status and sort), with saved view defaults and focus returned to search
 - **Day 53** (2 November 2026): Quick +15 / +30 coding-minute entries, persistent daily totals, immediate chart updates and daily-limit handling
+- **Day 54** (3 November 2026): Task-first responsive redesign, unified overview, expandable controls/settings, on-demand weather, removal of quotes and duplicated counters, note save feedback and accessibility improvements
 - MRR: $0
 
 ## What's next

@@ -49,9 +49,8 @@ import {
   addTodayMinutes,
   replaceCodingLog,
 } from "./coding.js";
-import { parseMinutesInput, MAX_MINUTES_PER_DAY } from "./coding-logic.js";
+import { parseMinutesInput, MAX_MINUTES_PER_DAY, formatMinutes } from "./coding-logic.js";
 import {
-  loadDailyQuote,
   loadWeather,
   refreshWeatherDisplay,
   searchCity,
@@ -91,7 +90,7 @@ document.getElementById("clear-completed-goals-btn").addEventListener("click", (
   const count = clearCompletedGoals();
   if (!count) return;
   renderGoals(goals);
-  goalSearchInput.focus();
+  newGoalInput.focus();
   showUndoToast(`${count} completed goal${count === 1 ? "" : "s"} cleared.`, () => {
     if (undoDeleteGoal()) renderGoals(goals);
   });
@@ -148,7 +147,7 @@ function finishGoalEdit(id) {
   const button = [...document.querySelectorAll(".edit-goal-btn")].find(
     (element) => element.dataset.id === id,
   );
-  (button ?? goalSearchInput).focus();
+  (button ?? newGoalInput).focus();
 }
 
 function saveGoalEdit(id) {
@@ -348,6 +347,7 @@ function handleKeyboardShortcuts(event) {
 
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
     event.preventDefault();
+    document.getElementById("habit-view-options").open = true;
     document.getElementById("search-habit-input").focus();
     return;
   }
@@ -418,7 +418,7 @@ function applyBackup(backup) {
   if (backup.preferences) {
     replacePreferences(backup.preferences);
     syncSettingsUI();
-    loadWeather();
+    refreshOptionalWeather();
   }
 
   const prefs = getPreferences();
@@ -514,8 +514,12 @@ function updateCodingGoal() {
     button.disabled = todayMinutes >= MAX_MINUTES_PER_DAY;
   });
 
+  document.getElementById("overview-coding").textContent = formatMinutes(todayMinutes);
+  document.getElementById("overview-coding-goal").textContent = `of ${formatMinutes(goalMinutes)} goal`;
   const percentage = Math.min((todayMinutes / goalMinutes) * 100, 100);
   progressBar.style.width = percentage + "%";
+  progressBar.parentElement.setAttribute("aria-valuenow", String(Math.round(percentage)));
+  progressBar.parentElement.setAttribute("aria-valuetext", `${todayMinutes} of ${goalMinutes} coding minutes`);
 
   const done = todayMinutes >= goalMinutes;
   statusEl.textContent = done ? "Goal completed ✓" : "Not completed yet";
@@ -551,7 +555,13 @@ const savedNotes = localStorage.getItem("notes");
 if (savedNotes) notesTextarea.value = savedNotes;
 
 notesTextarea.addEventListener("input", () => {
-  localStorage.setItem("notes", notesTextarea.value);
+  const status = document.getElementById("notes-save-status");
+  try {
+    localStorage.setItem("notes", notesTextarea.value);
+    status.textContent = "Saved locally";
+  } catch {
+    status.textContent = "Could not save — copy your notes before leaving";
+  }
 });
 
 // ===== SETTINGS =====
@@ -645,13 +655,37 @@ updateProgress();
 updateCodingGoal();
 renderGoals(goals);
 refreshWeekSummary();
-loadDailyQuote();
-loadWeather();
+updateTodayDate();
+const weatherPanel = document.getElementById("weather-panel");
+let weatherRequested = false;
+weatherPanel.addEventListener("toggle", () => {
+  if (weatherPanel.open && !weatherRequested) {
+    weatherRequested = true;
+    loadWeather();
+  }
+});
+
+function refreshOptionalWeather() {
+  weatherRequested = false;
+  if (weatherPanel.open) {
+    weatherRequested = true;
+    loadWeather();
+  }
+}
+
+function updateTodayDate() {
+  document.getElementById("today-date").textContent = new Intl.DateTimeFormat("en", {
+    weekday: "long", month: "short", day: "numeric",
+  }).format(new Date());
+}
 
 function refreshIfNewDay() {
   if (!checkAndResetForNewDay()) return;
 
   resetGoalsForNewDay();
+  hideUndoToast();
+  updateTodayDate();
+  refreshOptionalWeather();
   todayInput.value = getTodayMinutes();
   renderHabits();
   updateProgress();

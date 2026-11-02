@@ -4,76 +4,41 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Productivity Dashboard</title>
+    <meta name="description" content="A local-first daily workspace for goals, habits, coding time and notes." />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to daily tasks</a>
     <div class="app">
       <header class="app-header">
         <h1>Productivity Dashboard</h1>
-        <p class="app-subtitle">Focus. Track. Ship.</p>
+        <p class="app-subtitle">A clear plan. A little progress. Every day.</p>
       </header>
 
-      <!-- OVERVIEW -->
-      <section class="card">
-        <h2>Today's Overview</h2>
+      <section class="card overview-card" aria-labelledby="today-heading">
+        <div class="section-heading"><h2 id="today-heading">Today at a glance</h2><p id="today-date" class="meta-text"></p></div>
         <div class="stats-grid">
-          <div class="stat-card">
-            <span class="stat-label">Total</span>
-            <strong id="total-habits" class="stat-value">0</strong>
-          </div>
-          <div class="stat-card">
-            <span class="stat-label">Completed</span>
-            <strong id="completed-habits" class="stat-value">0</strong>
-          </div>
-          <div class="stat-card">
-            <span class="stat-label">Remaining</span>
-            <strong id="remaining-habits" class="stat-value">0</strong>
-          </div>
-          <div class="stat-card">
-            <span class="stat-label">Progress</span>
-            <strong id="progress-percentage" class="stat-value">0%</strong>
-          </div>
+          <a class="stat-card" href="#goals-section"><span class="stat-label">Goals done</span><strong id="overview-goals" class="stat-value">0 / 0</strong></a>
+          <a class="stat-card" href="#habits-section"><span class="stat-label">Habits done</span><strong id="overview-habits" class="stat-value">0 / 0</strong></a>
+          <a class="stat-card" href="#coding-section"><span class="stat-label">Coding today</span><strong id="overview-coding" class="stat-value">0m</strong><span id="overview-coding-goal" class="stat-label"></span></a>
         </div>
-
-        <div class="insight-box">
-          <span class="insight-label">Insight</span>
-          <p id="habit-insight">Start your first habit today.</p>
-        </div>
-
-        <div class="quote-box">
-          <span class="quote-label">Quote of the day</span>
-          <p id="daily-quote">Loading quote...</p>
-          <p id="quote-author" class="quote-author"></p>
-        </div>
-
-        <div class="week-summary" id="week-summary">
-          <span class="week-summary-label">This week</span>
-          <p id="week-summary-range" class="week-summary-range"></p>
-          <p id="week-summary-habits" class="week-summary-line"></p>
-          <p id="week-summary-coding" class="week-summary-line"></p>
-        </div>
+        <p id="habit-insight" class="meta-text"></p>
       </section>
-
-      <!-- WEATHER -->
-      <section class="card">
-        <h2>Weather</h2>
-        <p id="weather-temp" class="weather-temp">Loading weather...</p>
-        <p id="weather-desc" class="weather-desc"></p>
-      </section>
-
+      <main id="main-content" class="dashboard-grid">
       <!-- GOALS -->
-      <section class="card">
+      <section class="card goals-card" id="goals-section">
         <h2>Today's Goals</h2>
         <div class="row-input">
           <input
             type="text"
-            id="new-goal-input"
+            id="new-goal-input" aria-label="New goal"
             placeholder="Write a new goal..."
           />
           <button type="button" id="add-goal-btn" class="btn btn-primary">
             Add Goal
           </button>
         </div>
+        <details id="goal-view-options" class="view-options"><summary id="goal-view-summary">Search & view options</summary>
         <div class="goals-controls">
           <input type="search" id="search-goal-input" placeholder="Search goals..."
             aria-label="Search goals" aria-controls="goals-list" autocomplete="off" />
@@ -94,6 +59,7 @@
             title="Clear the search, show all goals and restore original order. Your goals are kept."
             disabled>Reset view</button>
         </div>
+        </details>
         <ul id="goals-list"></ul>
         <p id="goals-progress" class="meta-text" role="status"></p>
         <button type="button" id="clear-completed-goals-btn" class="btn btn-secondary btn-sm"
@@ -102,32 +68,15 @@
       </section>
 
       <!-- HABITS -->
-      <section class="card">
-        <h2>Habit Tracker</h2>
+      <section class="card habits-card" id="habits-section">
+        <h2>Daily habits</h2>
 
-        <div class="habits-controls">
-          <input
-            type="text"
-            id="search-habit-input"
-            placeholder="Search habits..."
-          />
-          <select id="habit-status-filter">
-            <option value="all">All</option>
-            <option value="completed">Completed</option>
-            <option value="remaining">Remaining</option>
-          </select>
-          <select id="sort-habits">
-            <option value="default">Default</option>
-            <option value="az">A → Z</option>
-            <option value="completed">Completed first</option>
-            <option value="remaining">Remaining first</option>
-          </select>
-        </div>
+
 
         <div class="row-input">
           <input
             type="text"
-            id="new-habit-input"
+            id="new-habit-input" aria-label="New habit"
             placeholder="Enter a new habit..."
           />
           <button type="button" id="add-habit-btn" class="btn btn-primary">
@@ -135,27 +84,41 @@
           </button>
         </div>
 
+        <details id="habit-view-options" class="view-options"><summary id="habit-view-summary">Search & view options</summary>
+        <div class="habits-controls">
+          <input
+            type="text"
+            id="search-habit-input" aria-label="Search habits"
+            placeholder="Search habits..."
+          />
+          <select id="habit-status-filter" aria-label="Filter habits">
+            <option value="all">All</option>
+            <option value="completed">Completed</option>
+            <option value="remaining">Remaining</option>
+          </select>
+          <select id="sort-habits" aria-label="Sort habits">
+            <option value="default">Default</option>
+            <option value="az">A → Z</option>
+            <option value="completed">Completed first</option>
+            <option value="remaining">Remaining first</option>
+          </select>
+        </div>
+        </details>
         <div id="habits"></div>
 
-        <p id="progress-text" class="meta-text">Progress: 0/4 completed</p>
-        <div class="progress-bar-container">
+        <p id="progress-text" class="meta-text">No habits completed yet</p>
+        <div class="progress-bar-container" role="progressbar" aria-label="Habit progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
           <div class="progress-bar" id="habits-progress-bar"></div>
         </div>
 
-        <div id="habit-analytics" class="habit-analytics">
-          <p>Completed: <strong id="completed-count">0</strong></p>
-          <p>Remaining: <strong id="remaining-count">0</strong></p>
-          <p id="habit-message" class="habit-message">Let's get started 🚀</p>
-        </div>
-
-        <button type="button" id="reset-habits-btn" class="btn btn-danger">
-          Reset Today's Habits
-        </button>
+        <details class="view-options maintenance"><summary>Manage habits</summary>
+          <button type="button" id="reset-habits-btn" class="btn btn-danger">Reset today's completions</button>
+        </details>
       </section>
 
       <!-- CODING -->
-      <section class="card">
-        <h2>Daily Coding</h2>
+      <section class="card coding-card" id="coding-section">
+        <h2>Daily coding</h2>
         <p class="meta-text coding-row">
           <label for="goal-minutes-input">Goal:</label>
           <input
@@ -176,28 +139,40 @@
           <button type="button" class="btn btn-secondary btn-sm" data-coding-minutes="15">+15 min</button>
           <button type="button" class="btn btn-secondary btn-sm" data-coding-minutes="30">+30 min</button>
         </div>
-        <div class="progress-bar-container">
+        <div class="progress-bar-container" role="progressbar" aria-label="Coding progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
           <div class="progress-bar" id="progress-bar"></div>
         </div>
         <p id="goal-status" class="meta-text">Not completed yet</p>
 
+        <details class="view-options"><summary>Last 7 days</summary>
         <div id="coding-week" class="coding-week" role="img"></div>
         <p id="coding-week-summary" class="meta-text"></p>
+        </details>
       </section>
 
       <!-- NOTES -->
-      <section class="card">
-        <h2>Notes</h2>
+      <section class="card notes-card">
+        <div class="section-heading"><h2>Notes</h2><span id="notes-save-status" class="meta-text" role="status">Saved locally</span></div>
         <textarea
-          id="notes"
+          id="notes" aria-label="Daily notes"
           rows="4"
           placeholder="What did I learn today?"
         ></textarea>
       </section>
 
+      <section class="card weekly-card"><h2>This week</h2>        <div class="week-summary" id="week-summary">
+          <p id="week-summary-range" class="week-summary-range"></p>
+          <p id="week-summary-habits" class="week-summary-line"></p>
+          <p id="week-summary-coding" class="week-summary-line"></p>
+        </div></section>
+      </main>
+      <details class="card weather-card" id="weather-panel"><summary>Weather <span class="meta-text">Optional · loads when opened</span></summary>
+        <p id="weather-temp" class="weather-temp">Open to load weather</p><p id="weather-desc" class="weather-desc"></p>
+      </details>
       <!-- SETTINGS -->
-      <section class="card">
-        <h2>Settings</h2>
+      <details class="card settings-card" id="settings-panel">
+        <summary>Settings & backup</summary>
+        <p class="meta-text settings-intro">Your data stays in this browser. Export a backup to keep a separate copy.</p>
 
         <div class="settings-row">
           <label for="temp-unit">Temperature</label>
@@ -248,12 +223,12 @@
             hidden
           />
         </div>
-      </section>
+      </details>
 
-      <footer class="app-footer">v1.0 · Day 53 · November 2, 2026</footer>
+      <footer class="app-footer">v1.0 · Day 54 · November 3, 2026</footer>
     </div>
 
-    <div id="undo-toast" class="undo-toast" hidden>
+    <div id="undo-toast" class="undo-toast" role="status" hidden>
       <span id="undo-message">Habit deleted.</span>
       <button type="button" id="undo-delete-btn" class="btn btn-primary btn-sm">
         Undo

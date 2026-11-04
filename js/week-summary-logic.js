@@ -98,11 +98,23 @@ export function getDashboardWeekSummary(
   now = new Date(),
 ) {
   const keys = getWeekDateKeys(now);
+  const coding = getCodingWeekStats(codingLog, goalMinutes, now);
+  const previous = getCodingWeekStats(codingLog, goalMinutes, addDays(now, -7));
+  const weekday = now.toLocaleDateString("en", { weekday: "long" });
+  const difference = coding.totalMinutes - previous.totalMinutes;
+  let comparison = `No coding time logged through ${weekday} last week.`;
+  if (previous.daysLogged > 0) {
+    const change = difference === 0
+      ? "same total this week"
+      : `${formatMinutes(Math.abs(difference))} ${difference > 0 ? "more" : "less"} this week`;
+    comparison = `Last week through ${weekday}: ${previous.formattedTotal} · ${change}.`;
+  }
   return {
     weekStart: keys[0],
     weekEnd: keys[6],
     habits: getHabitsWeekStats(habits, now),
-    coding: getCodingWeekStats(codingLog, goalMinutes, now),
+    coding,
+    codingComparison: comparison,
   };
 }
 
@@ -134,8 +146,7 @@ export function getWeekAwareInsight(
     return "All habits completed today. Great work!";
   }
 
-  const week = getDashboardWeekSummary(list, codingLog, goalMinutes, now);
-  const h = week.habits;
+  const h = getHabitsWeekStats(list, now);
 
   if (h.possibleSlots > 0 && h.percentage === 0 && h.daysElapsed >= 2) {
     return "This week still has no completed habit slots. One check-in counts.";

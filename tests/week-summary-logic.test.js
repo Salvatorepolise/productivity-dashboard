@@ -77,6 +77,24 @@ test("getDashboardWeekSummary shape", () => {
   assert.equal(summary.coding.totalMinutes, 0);
 });
 
+test("Wednesday comparison excludes later weekdays in both weeks across a month boundary", () => {
+  const now = new Date(2026, 10, 4);
+  const log = {
+    "2026-10-26": 30, "2026-10-28": 45, "2026-10-29": 200,
+    "2026-11-02": 60, "2026-11-04": 30, "2026-11-05": 100,
+  };
+  assert.equal(getDashboardWeekSummary([], log, 60, now).codingComparison,
+    "Last week through Wednesday: 1h 15m · 15m more this week.");
+});
+
+test("Monday comparison distinguishes missing history, a tie and a decrease", () => {
+  const now = new Date(2026, 0, 5);
+  const compare = (log) => getDashboardWeekSummary([], log, 60, now).codingComparison;
+  assert.match(compare({ "2025-12-30": 50 }), /No coding time logged through Monday/);
+  assert.match(compare({ "2025-12-29": 30, "2026-01-05": 30 }), /same total this week/);
+  assert.match(compare({ "2025-12-29": 30 }), /30m less this week/);
+});
+
 import { getWeekAwareInsight } from "../js/week-summary-logic.js";
 
 test("getWeekAwareInsight: empty week after 2+ days", () => {

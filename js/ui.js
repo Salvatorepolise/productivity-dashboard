@@ -261,6 +261,7 @@ export function renderWeekSummary(
 
   const c = summary.coding;
   codingEl.textContent = `Coding: ${c.formattedTotal} · goal met ${c.goalDays}/${c.daysElapsed} days`;
+  document.getElementById("week-coding-comparison").textContent = summary.codingComparison;
 }
 
 export function renderGoals(goals, editingId = null) {

@@ -147,6 +147,15 @@
         <details class="view-options"><summary>Last 7 days</summary>
         <div id="coding-week" class="coding-week" role="img"></div>
         <p id="coding-week-summary" class="meta-text"></p>
+        <form id="coding-history-form" class="coding-history-form">
+          <p class="meta-text" id="coding-history-help">Missed a session? Set the total for any of the last 30 days. Saving replaces that day's total; use 0 to clear it.</p>
+          <label for="coding-history-date">Date</label>
+          <input type="date" id="coding-history-date" required aria-describedby="coding-history-help" />
+          <label for="coding-history-minutes">Total minutes</label>
+          <input type="number" id="coding-history-minutes" min="0" max="1440" step="1" required />
+          <button class="btn btn-secondary" type="submit">Save daily total</button>
+          <p id="coding-history-status" class="meta-text" role="status"></p>
+        </form>
         </details>
       </section>
 
@@ -226,7 +235,7 @@
         </div>
       </details>
 
-      <footer class="app-footer">v1.0 · Day 55 · November 4, 2026</footer>
+      <footer class="app-footer">v1.0 · Day 56 · November 6, 2026</footer>
     </div>
 
     <div id="undo-toast" class="undo-toast" role="status" hidden>

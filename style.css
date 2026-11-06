@@ -710,3 +710,15 @@ button:focus-visible, summary:focus-visible, a:focus-visible { outline: 3px soli
   .settings-row input { min-width: 0; width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }
+.coding-history-form {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+.coding-history-form input { width: 100%; min-width: 0; }
+.coding-history-form input[type="date"] {
+  font: inherit;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}

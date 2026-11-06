@@ -47,9 +47,11 @@ import {
   getTodayMinutes,
   setTodayMinutes,
   addTodayMinutes,
+  saveCodingDay,
   replaceCodingLog,
 } from "./coding.js";
-import { parseMinutesInput, MAX_MINUTES_PER_DAY, formatMinutes } from "./coding-logic.js";
+import { parseMinutesInput, MAX_MINUTES_PER_DAY, formatMinutes, CODING_HISTORY_DAYS } from "./coding-logic.js";
+import { toDateKey, addDays } from "./habits-logic.js";
 import {
   loadWeather,
   refreshWeatherDisplay,
@@ -494,6 +496,41 @@ const goalInput = document.getElementById("goal-minutes-input");
 const statusEl = document.getElementById("goal-status");
 const progressBar = document.getElementById("progress-bar");
 const quickCodingButtons = document.querySelectorAll("[data-coding-minutes]");
+const historyDate = document.getElementById("coding-history-date");
+const historyMinutes = document.getElementById("coding-history-minutes");
+const historyStatus = document.getElementById("coding-history-status");
+
+function refreshHistoryDates() {
+  const now = new Date();
+  historyDate.min = toDateKey(addDays(now, -(CODING_HISTORY_DAYS - 1)));
+  historyDate.max = toDateKey(now);
+  if (!historyDate.value || historyDate.value < historyDate.min || historyDate.value > historyDate.max) {
+    historyDate.value = toDateKey(addDays(now, -1));
+    historyMinutes.value = codingLog[historyDate.value] ?? 0;
+    historyStatus.textContent = "";
+  }
+}
+
+historyDate.addEventListener("change", () => {
+  historyMinutes.value = codingLog[historyDate.value] ?? 0;
+  historyStatus.textContent = "";
+});
+historyMinutes.addEventListener("input", () => { historyStatus.textContent = ""; });
+document.getElementById("coding-history-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  try {
+    if (!saveCodingDay(historyDate.value, historyMinutes.valueAsNumber)) {
+      historyStatus.textContent = "Choose a date within the last 30 days and a whole total from 0 to 1440 minutes.";
+      return;
+    }
+  } catch {
+    historyStatus.textContent = "Could not save locally. Keep your entry and try again.";
+    return;
+  }
+  todayInput.value = getTodayMinutes();
+  updateCodingGoal();
+  historyStatus.textContent = `Saved ${formatMinutes(historyMinutes.valueAsNumber)} for ${historyDate.value}.`;
+});
 
 quickCodingButtons.forEach((button) => {
   button.addEventListener("click", () => {
@@ -507,6 +544,7 @@ quickCodingButtons.forEach((button) => {
 });
 
 function updateCodingGoal() {
+  refreshHistoryDates();
   const todayMinutes = getTodayMinutes();
   const goalMinutes = getPreferences().codingGoalMinutes;
 

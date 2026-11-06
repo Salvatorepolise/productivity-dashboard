@@ -35,6 +35,7 @@ For one browser / one device, it is designed to be used every day.
 - Last 7 days per habit (30-day history, rebuilt from streaks for older data)
 - calendar week (Mon–Sun): habit slots + coding minutes (Day 44)
 - Week-to-date coding comparison against the same weekdays last week, updated as you log time
+- Correct or backfill daily coding totals within the last 30 days, with date and minute validation and immediate summary updates
 - Daily reset on new local calendar day (completions + coding minutes), also while the tab stays open
 - Non-blocking messages (toasts instead of alerts)
 - Today's Goals: check off, edit inline (Enter to save, Esc to cancel), delete, unfinished goals carry over to the next day
@@ -155,6 +156,7 @@ The same tests run on GitHub Actions on every push.
 - **Day 53** (2 November 2026): Quick +15 / +30 coding-minute entries, persistent daily totals, immediate chart updates and daily-limit handling
 - **Day 54** (3 November 2026): Task-first responsive redesign, unified overview, expandable controls/settings, on-demand weather, removal of quotes and duplicated counters, note save feedback and accessibility improvements
 - **Day 55** (4 November 2026): Compare coding minutes through today with the same weekdays last week, including the difference and an empty-history message
+- **Day 56** (6 November 2026): Recover missed coding sessions or correct daily totals in the last 30 days, with explicit save, validated input and refreshed charts and weekly comparisons
 - MRR: $0
 
 ## What's next
